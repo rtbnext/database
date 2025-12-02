@@ -23,7 +23,10 @@ export class Storage {
 
     }
 
-    private pathBuilder ( path: string ) : string {
+    private pathBuilder ( path: string, ext?: 'json' | 'csv' ) : string {
+
+        path = path.replace( /(.json|.csv)/g, '' );
+        if ( this.config.fileExtensions && ext ) path += `.${ext}`;
 
         return join( Config.cwd, this.config.baseDir, path );
 
@@ -31,8 +34,8 @@ export class Storage {
 
     private async saveJson< T extends {} = any > ( path: string, data: T ) : Promise< void > {
 
-        const content = JSON.stringify( data, null, this.config.minify ? undefined : 2 );
-        await writeFile( this.pathBuilder( path ), content, 'utf8' );
+        const content = JSON.stringify( data, null, this.config.compression ? undefined : 2 );
+        await writeFile( this.pathBuilder( path, 'json' ), content, 'utf8' );
 
     }
 
@@ -40,7 +43,7 @@ export class Storage {
 
         if ( ! existsSync( path ) ) return;
 
-        const content = await readFile( this.pathBuilder( path ), 'utf8' );
+        const content = await readFile( this.pathBuilder( path, 'json' ), 'utf8' );
         return JSON.parse( content ) as T;
 
     }
@@ -48,7 +51,7 @@ export class Storage {
     private async saveCSV< T extends [] = any > ( path: string, data: T ) : Promise< void > {
 
         const content = stringify( data, { delimiter: this.config.csvDelimiter } );
-        await writeFile( this.pathBuilder( path ), content, 'utf8' );
+        await writeFile( this.pathBuilder( path, 'csv' ), content, 'utf8' );
 
     }
 
@@ -56,7 +59,7 @@ export class Storage {
 
         if ( ! existsSync( path ) ) return;
 
-        const content = await readFile( this.pathBuilder( path ), 'utf8' );
+        const content = await readFile( this.pathBuilder( path, 'csv' ), 'utf8' );
         return parse( content, { bom: true, delimiter: this.config.csvDelimiter } ) as T;
 
     }

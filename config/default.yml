@@ -1,9 +1,8 @@
 storage:
   baseDir: "api"
   backupDirectory: "backup"
-  minify: true
-  fileExtensions: false
   compression: false
+  fileExtensions: false
   csvDelimiter: " "
 
 api:

@@ -4,9 +4,8 @@ import { load } from 'js-yaml';
 export interface ConfigObject {
     storage: {
         baseDir: string;
-        minify: boolean;
-        fileExtensions: boolean;
         compression: boolean;
+        fileExtensions: boolean;
         csvDelimiter: string;
     };
     api: {
