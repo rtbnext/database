@@ -17,6 +17,9 @@
   "bugs": {
     "url": "https://github.com/rtbnext/database/issues"
   },
+  "scripts": {
+    "install": "tsc"
+  },
   "dependencies": {
     "@rtbnext/schema": "github:rtbnext/schema",
     "csv-parse": "^6.1.0",
@@ -25,6 +28,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
   }
 }
