@@ -1,18 +1,39 @@
-import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { load } from 'js-yaml';
 
+export interface ConfigObject {
+    storage: {
+        baseDir: string;
+        minify: boolean;
+        csvDelimiter: string;
+    };
+}
+
 export class Config {
 
-    private static readonly cwd = process.cwd();
-    private static readonly dir = 'config';
+    private static instance: Config;
+    public static readonly cwd = process.cwd();
+    private readonly config: ConfigObject;
 
-    public static load< T > ( cfg: string ) : T | undefined {
+    private constructor () { this.config = this.loadConfig() }
 
-        const path = join( Config.cwd, Config.dir, cfg + '.yml' );
+    public static getInstance () : Config {
 
-        if ( ! existsSync( path ) ) return undefined;
-        return load( path ) as T;
+        if ( ! Config.instance ) Config.instance = new Config();
+        return Config.instance;
+
+    }
+
+    private loadConfig () : ConfigObject {
+
+        try {
+
+            const path = join( Config.cwd, 'config', 'default.yml' );
+            return load( path ) as ConfigObject;
+
+        } catch ( err ) { throw new Error(
+            `Failed to load configuration: ${err}`
+        ) }
 
     }
 

@@ -1,3 +1,0 @@
-baseDir: "api"
-minify: true
-csvDelimiter: " "
