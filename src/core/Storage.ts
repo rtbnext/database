@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parse } from 'csv-parse';
@@ -65,6 +65,14 @@ export class Storage {
 
         const content = await readFile( this.pathBuilder( path ), 'utf8' );
         return parse( content, { bom: true, delimiter: this.config.csvDelimiter } ) as T;
+
+    }
+
+    public async initDB () {
+
+        [ 'profile', 'list', 'mover', 'filter', 'stats' ].forEach (
+            d => mkdirSync( this.pathBuilder( d ), { recursive: true } )
+        );
 
     }
 
