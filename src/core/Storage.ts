@@ -1,7 +1,8 @@
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-
+import { parse } from 'csv-parse';
+import { stringify } from 'csv-stringify';
 import { Config } from './Config';
 
 export interface StorageConfig {
@@ -34,19 +35,35 @@ export class Storage {
 
     }
 
-    private async saveJson< T = any > ( path: string, data: T ) : Promise< void > {
+    private async saveJson< T extends {} = any > ( path: string, data: T ) : Promise< void > {
 
-        const jsonData = JSON.stringify( data, null, this.config.minify ? undefined : 2 );
-        await writeFile( this.pathBuilder( path ), jsonData, 'utf8' );
+        const content = JSON.stringify( data, null, this.config.minify ? undefined : 2 );
+        await writeFile( this.pathBuilder( path ), content, 'utf8' );
 
     }
 
-    private async loadJson< T = any > ( path: string ) : Promise< T | false > {
+    private async loadJson< T = any > ( path: string ) : Promise< T | undefined > {
 
-        if ( ! existsSync( path ) ) return false;
+        if ( ! existsSync( path ) ) return;
 
-        const data = await readFile( this.pathBuilder( path ), 'utf8' );
-        return JSON.parse( data ) as T;
+        const content = await readFile( this.pathBuilder( path ), 'utf8' );
+        return JSON.parse( content ) as T;
+
+    }
+
+    private async saveCSV< T extends [] = any > ( path: string, data: T ) : Promise< void > {
+
+        const content = stringify( data, { delimiter: ' ' } );
+        await writeFile( this.pathBuilder( path ), content, 'utf8' );
+
+    }
+
+    private async loadCSV< T = any > ( path: string ) : Promise< T | undefined > {
+
+        if ( ! existsSync( path ) ) return;
+
+        const content = await readFile( this.pathBuilder( path ), 'utf8' );
+        return parse( content, { bom: true, delimiter: ' ' } ) as T;
 
     }
 
