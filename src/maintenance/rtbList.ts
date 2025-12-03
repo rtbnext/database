@@ -48,6 +48,8 @@ export class RTBList extends Maintenance {
         const list = res.data?.personList?.personsLists ?? [];
         if ( ! list || list.length === 0 ) this.logger.exit( 'Empty list' );
 
+        this.logger.info( `Proceed ${list.length} list entries ...` );
+
         list.forEach( ( entry, i ) => {
 
             const listData = Parser.mapObject< ListItem >( {
@@ -56,7 +58,7 @@ export class RTBList extends Maintenance {
                 gender: { value: entry.gender, type: 'gender' },
                 age: { value: entry.birthDate, type: 'age' },
                 citizenship: { value: entry.countryOfCitizenship, type: 'country' },
-                industry: { value: entry.industries.shift(), type: 'industry' },
+                industry: { value: ( entry.industries || [] ).shift(), type: 'industry' },
                 source: { value: entry.source, type: 'list' }
             } );
 
