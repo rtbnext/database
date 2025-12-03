@@ -29,6 +29,7 @@ export interface ConfigObject {
     };
     logging: {
         logDir: string;
+        saveLogs: boolean;
         level: number;
     };
 }

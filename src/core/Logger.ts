@@ -59,24 +59,24 @@ export class Logger {
 
     }
 
-    private writeLog ( level: LogLevel, entry: LogEntry ) : void {
+    private log ( level: LogLevel, entry: LogEntry ) : void {
 
         if ( ! this.shouldLog( level ) ) return;
 
-        const logLine = JSON.stringify( entry ) + EOL;
-        appendFileSync( join( this.logPath, this.logFile ), logLine );
-
         const consoleMethod = this.getConsoleMethod( level );
         consoleMethod( `[${ entry.timestamp }] ${ entry.level.toUpperCase() }: ${ entry.message }` );
-
         if ( entry.context ) console.debug( `Context: ${ entry.context }` );
         if ( entry.error ) console.error( `Error: ${ entry.error }` );
+
+        if ( ! this.config.saveLogs ) return;
+        const logLine = JSON.stringify( entry ) + EOL;
+        appendFileSync( join( this.logPath, this.logFile ), logLine );
 
     }
 
     public error ( message: string, context?: string, err?: Error ) : void {
 
-        this.writeLog( LogLevel.ERROR, {
+        this.log( LogLevel.ERROR, {
             timestamp: new Date().toISOString(),
             level: 'error', message, context,
             error: err ? err.stack || err.message : undefined

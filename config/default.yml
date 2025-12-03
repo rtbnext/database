@@ -33,4 +33,5 @@ api:
 
 logging:
   logDir: "logs"
+  saveLogs: true
   level: 3
