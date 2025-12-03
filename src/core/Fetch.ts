@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { Config, ConfigObject } from './Config';
+import { Logger } from './Logger';
 
 export interface Response< T > {
     success: boolean;
@@ -13,11 +14,13 @@ export class Fetch {
 
     private static instance: Fetch;
     private readonly config: ConfigObject[ 'api' ];
+    private logger: Logger;
     private httpClient!: AxiosInstance;
 
     protected constructor () {
 
         this.config = Config.getInstance().getAPIConfig();
+        this.logger = Logger.getInstance();
         this.setupHttpClient();
 
     }
@@ -69,13 +72,11 @@ export class Fetch {
 
         } catch ( err: any ) {
 
-            console.warn( `Request failed: ${err.message}`, `URL: ${target}, Attempt: ${ retries + 1 }`);
+            this.logger.warn( `Request failed: ${err.message}`, `URL: ${target}, Attempt: ${ retries + 1 }`);
 
             if ( retries < this.config.rateLimiting.retries ) {
 
-                console.debug( `Retrying ...` );
                 await this.getRandomDelay();
-
                 return this.request< T >( target, retries + 1 );
 
             }
@@ -100,7 +101,9 @@ export class Fetch {
 
         }
 
-        if ( targets.length ) console.warn( `Batch limit reached. ${ targets.length } requests remaining.` );
+        if ( targets.length ) this.logger.warn(
+            `Batch limit reached. ${ targets.length } requests remaining.`
+        );
 
         return results;
 
