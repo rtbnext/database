@@ -28,5 +28,5 @@ api:
     timeout: 30000
     retries: 3
     requestDelay:
-      max: 10
-      min: 2
+      max: 2500
+      min: 50
