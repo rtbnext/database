@@ -33,4 +33,4 @@ api:
 
 logging:
   logDir: "logs"
-  level: info
+  level: 3

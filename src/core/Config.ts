@@ -29,7 +29,7 @@ export interface ConfigObject {
     };
     logging: {
         logDir: string;
-        level: 'error' | 'warn' | 'info' | 'debug';
+        level: number;
     };
 }
 
