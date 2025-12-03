@@ -16,6 +16,11 @@ export interface ConfigObject {
         };
         rateLimiting: {
             batch: number;
+            timeout: number;
+            delay: {
+                max: number;
+                min: number;
+            };
         };
     };
 }
