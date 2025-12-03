@@ -1,5 +1,6 @@
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { load } from 'js-yaml';
+import { parse } from 'yaml';
 
 export interface ConfigObject {
     storage: {
@@ -53,7 +54,8 @@ export class Config {
         try {
 
             const path = join( Config.cwd, 'config', Config.env + '.yml' );
-            return load( path ) as ConfigObject;
+            const content = readFileSync( path, 'utf8' );
+            return parse( content ) as ConfigObject;
 
         } catch ( err ) { throw new Error(
             `Failed to load configuration: ${err}`
