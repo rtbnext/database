@@ -1,3 +1,4 @@
+import { ListItem } from '@rtbnext/schema/src/collection/list';
 import { Maintenance } from '../core/Maintenance';
 
 export interface RTBResponse {
@@ -46,7 +47,14 @@ export class RTBList extends Maintenance {
         const list = res.data?.personList?.personsLists ?? [];
         if ( ! list || list.length === 0 ) this.logger.exit( 'Empty list' );
 
-        // ...
+        list.forEach( ( entry, i ) => {
+
+            const listData: ListItem = {
+                rank: Number( entry.rank ),
+                networth: Number( entry.finalWorth )
+            };
+
+        } );
 
     }
 
