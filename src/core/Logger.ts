@@ -84,4 +84,31 @@ export class Logger {
 
     }
 
+    public warn ( message: string, context?: string ) : void {
+
+        this.log( LogLevel.WARN, {
+            timestamp: new Date().toISOString(),
+            level: 'warn', message, context
+        } );
+
+    }
+
+    public info ( message: string, context?: string ) : void {
+
+        this.log( LogLevel.INFO, {
+            timestamp: new Date().toISOString(),
+            level: 'info', message, context
+        } );
+
+    }
+
+    public debug ( message: string, context?: string ) : void {
+
+        this.log( LogLevel.DEBUG, {
+            timestamp: new Date().toISOString(),
+            level: 'debug', message, context
+        } );
+
+    }
+
 }
