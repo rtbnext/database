@@ -13,16 +13,12 @@ export class Fetch {
 
     private static instance: Fetch;
     private readonly config: ConfigObject[ 'api' ];
-
     private httpClient!: AxiosInstance;
-    private userAgentPool!: string[];
 
     protected constructor () {
 
         this.config = Config.getInstance().getAPIConfig();
-
         this.setupHttpClient();
-        this.initializeUserAgentPool();
 
     }
 
@@ -43,15 +39,9 @@ export class Fetch {
 
     }
 
-    private initializeUserAgentPool () : void {
-
-        this.userAgentPool = this.config.agentPool;
-
-    }
-
     private getRandomUserAgent () : string {
 
-        return this.userAgentPool[ Math.floor( Math.random() * this.userAgentPool.length ) ];
+        return this.config.agentPool[ Math.floor( Math.random() * this.config.agentPool.length ) ];
 
     }
 
