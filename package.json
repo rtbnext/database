@@ -27,6 +27,7 @@
     "csv-parse": "^6.1.0",
     "csv-stringify": "^6.6.0",
     "i18n-iso-countries": "^7.14.0",
+    "us-state-converter": "^1.0.8",
     "yaml": "^2.8.2"
   },
   "devDependencies": {
