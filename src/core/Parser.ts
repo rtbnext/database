@@ -29,7 +29,11 @@ export class Parser {
 
     }
 
-    public static state () {}
+    public static state ( value: any ) : Const.USStateCode {
+
+        //
+
+    }
 
     public static industry ( value: any ) : Const.Industry {
 
