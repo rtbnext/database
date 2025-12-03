@@ -17,7 +17,7 @@ export class Parser {
 
     public static list ( value: any ) : string[] {
 
-        return this.string( value ).split( ',' ).map(
+        return this.string( value ).split( ',' ).filter( Boolean ).map(
             s => this.string( s )
         );
 
@@ -66,6 +66,24 @@ export class Parser {
         if ( ! value ) return;
         const date = new Date( new Date().getTime() - new Date( value ).getTime() );
         return date.getFullYear() - 1970;
+
+    }
+
+    public static mapObject< T > ( obj: Record< string, {
+        value: any;
+        type: keyof typeof Parser;
+        args?: any[];
+    } > ) : T {
+
+        return Object.entries( obj ).reduce( ( res, [ k, v ] ) => {
+
+            if ( typeof Parser[ v.type ] === 'function' ) {
+                ( res as any )[ k ] = ( Parser as any )[ v.type ]( v.value, ...( v.args || [] ) );
+            }
+
+            return res;
+
+        }, {} as T );
 
     }
 
