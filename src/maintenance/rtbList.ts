@@ -54,6 +54,7 @@ export class RTBList extends Maintenance {
                 rank: Parser.number( entry.rank ),
                 networth: Parser.number( entry.finalWorth, 3 ),
                 gender: Parser.gender( entry.gender ),
+                age: Parser.age( entry.birthDate ),
                 citizenship: Parser.country( entry.countryOfCitizenship ),
                 industry: Parser.industry( entry.industries.shift() ),
                 source: Parser.list( entry.source )

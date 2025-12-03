@@ -1,4 +1,5 @@
 import * as Const from '@rtbnext/schema/src/abstract/const';
+import { DateString } from '@rtbnext/schema/src/abstract/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
 
 export const Industry = ( [
@@ -45,6 +46,21 @@ export class Parser {
             case 'f': return 'f';
             default: return 'd';
         }
+
+    }
+
+    public static birthDate ( value: any ) : DateString | undefined {
+
+        if ( ! value ) return;
+        return new Date( value ).toISOString().split( 'T' )[ 0 ] as DateString;
+
+    }
+
+    public static age ( value: any ) : number | undefined {
+
+        if ( ! value ) return;
+        const date = new Date( new Date().getTime() - new Date( value ).getTime() );
+        return date.getFullYear() - 1970;
 
     }
 
