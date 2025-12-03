@@ -68,7 +68,7 @@ export class Fetch {
 
     private getRandomDelay () : Promise< void > {
 
-        const { max, min } = this.config.rateLimiting.delay;
+        const { max, min } = this.config.rateLimiting.requestDelay;
         const delay = Math.random() * ( max - min ) + min;
         return new Promise( resolve => setTimeout( resolve, delay ) );
 

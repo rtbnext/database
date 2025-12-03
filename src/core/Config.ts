@@ -17,7 +17,8 @@ export interface ConfigObject {
         rateLimiting: {
             batch: number;
             timeout: number;
-            delay: {
+            retries: number;
+            requestDelay: {
                 max: number;
                 min: number;
             };
