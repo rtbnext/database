@@ -27,6 +27,10 @@ export interface ConfigObject {
             };
         };
     };
+    logging: {
+        logDir: string;
+        level: 'error' | 'warn' | 'info' | 'debug';
+    };
 }
 
 export class Config {
@@ -66,5 +70,6 @@ export class Config {
     public getConfig () : ConfigObject { return this.config }
     public getStorageConfig () : ConfigObject[ 'storage' ] { return this.config.storage }
     public getAPIConfig () : ConfigObject[ 'api' ] { return this.config.api }
+    public getLoggingConfig () : ConfigObject[ 'logging' ] { return this.config.logging }
 
 }

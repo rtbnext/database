@@ -30,3 +30,7 @@ api:
     requestDelay:
       max: 2500
       min: 50
+
+logging:
+  logDir: "logs"
+  level: info
