@@ -1,5 +1,4 @@
-import { existsSync, mkdirSync } from 'node:fs';
-import { readFile, writeFile } from 'node:fs/promises';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'csv-parse';
 import { stringify } from 'csv-stringify';
@@ -13,6 +12,7 @@ export class Storage {
     private constructor () {
 
         this.config = Config.getInstance().getStorageConfig();
+        this.initDB();
 
     }
 
@@ -32,39 +32,39 @@ export class Storage {
 
     }
 
-    private async saveJson< T extends {} = any > ( path: string, data: T ) : Promise< void > {
+    public saveJson< T extends {} = any > ( path: string, data: T ) : void {
 
         const content = JSON.stringify( data, null, this.config.compression ? undefined : 2 );
-        await writeFile( this.pathBuilder( path, 'json' ), content, 'utf8' );
+        writeFileSync( this.pathBuilder( path, 'json' ), content, 'utf8' );
 
     }
 
-    private async loadJson< T = any > ( path: string ) : Promise< T | undefined > {
+    public loadJson< T = any > ( path: string ) : T | undefined {
 
         if ( ! existsSync( path ) ) return;
 
-        const content = await readFile( this.pathBuilder( path, 'json' ), 'utf8' );
+        const content = readFileSync( this.pathBuilder( path, 'json' ), 'utf8' );
         return JSON.parse( content ) as T;
 
     }
 
-    private async saveCSV< T extends [] = any > ( path: string, data: T ) : Promise< void > {
+    public saveCSV< T extends [] = any > ( path: string, data: T ) : void {
 
-        const content = stringify( data, { delimiter: this.config.csvDelimiter } );
-        await writeFile( this.pathBuilder( path, 'csv' ), content, 'utf8' );
+        const content = stringify( data, { delimiter: this.config.csvDelimiter } ) as unknown as string;
+        writeFileSync( this.pathBuilder( path, 'csv' ), content, 'utf8' );
 
     }
 
-    private async loadCSV< T = any > ( path: string ) : Promise< T | undefined > {
+    public loadCSV< T = any > ( path: string ) : T | undefined {
 
         if ( ! existsSync( path ) ) return;
 
-        const content = await readFile( this.pathBuilder( path, 'csv' ), 'utf8' );
+        const content = readFileSync( this.pathBuilder( path, 'csv' ), 'utf8' );
         return parse( content, { bom: true, delimiter: this.config.csvDelimiter } ) as T;
 
     }
 
-    public async initDB () {
+    public initDB () {
 
         [ 'profile', 'list', 'mover', 'filter', 'stats' ].forEach (
             d => mkdirSync( this.pathBuilder( d ), { recursive: true } )

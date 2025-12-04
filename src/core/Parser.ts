@@ -3,11 +3,11 @@ import { DateString } from '@rtbnext/schema/src/abstract/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
 import { abbr } from 'us-state-converter';
 
-export const Industry = ( [
+export const Industry = [
     'automotive', 'casinos', 'diversified', 'energy', 'engineering', 'finance',
     'foodstuff', 'healthcare', 'logistics', 'manufacturing', 'media', 'mining',
     'property', 'retail', 'service', 'sports', 'technology', 'telecom'
-] as any ) as Const.Industry;
+] as unknown as Const.Industry;
 
 export class Parser {
 
