@@ -1,6 +1,9 @@
 import { Primitive } from 'devtypes/types/primitives';
+import { Gender } from './Const';
 
 export class Parser {
+
+    // Helper
 
     public static container< T = any > ( obj: Record< string, {
         value: any, method: keyof typeof Parser, strict?: boolean, args?: any[]
@@ -32,7 +35,7 @@ export class Parser {
         return list.map( this.primitive ).filter( Boolean );
     }
 
-    public static map< T extends Primitive, L extends Record< string | number, T > > (
+    public static map< T extends Primitive, L extends readonly T[] | Record< string | number, T > > (
         list: L, value: any, fb: T | undefined = undefined,
         exactMatch: boolean = false, useKey: boolean = true
     ) : T | undefined {
@@ -44,6 +47,8 @@ export class Parser {
             )
         } )?.[ 1 ] || fb;
     }
+
+    // Primitive
 
     public static string ( value: any ) : string {
         return String( value ).trim();
@@ -73,10 +78,16 @@ export class Parser {
                 : date.toISOString().split( 'T' )[ 0 ];
     }
 
+    // Special
+
     public static age ( value: any ) : number | undefined {
         const date = new Date( value );
         return isNaN( date.getTime() ) ? undefined
             : new Date( Date.now() - date.getTime() ).getUTCFullYear() - 1970;
+    }
+
+    public static gender ( value: any ) : Gender | undefined {
+        return this.map< Gender, typeof Gender >( Gender, value );
     }
 
 }
