@@ -18,6 +18,16 @@ export class Parser {
         return list.map( this.primitive ).filter( Boolean );
     }
 
+    public static enum< T extends string, L extends Record< string, T > > (
+        list: L, value: any, fb: T | undefined = undefined, exactMatch: boolean = false
+    ) : T | undefined {
+        value = this.string( value ).toLowerCase();
+        return Object.values( list ).find( v => {
+            const test = this.string( v ).toLowerCase();
+            return exactMatch ? value === test : value.includes( test ) || test.includes( value );
+        } ) || fb;
+    }
+
     public static string ( value: any ) : string {
         return String( value ).trim();
     }
