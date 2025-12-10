@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "devtypes": "^1.0.1",
+    "devtypes": "^1.0.2",
     "i18n-iso-countries": "^7.14.0",
     "us-state-converter": "^1.0.8"
   }
