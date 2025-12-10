@@ -38,7 +38,9 @@ export class Parser {
         value = this.string( value ).toLowerCase();
         return Object.values( list ).find( v => {
             const test = this.string( v ).toLowerCase();
-            return exactMatch ? value === test : value.includes( test ) || test.includes( value );
+            return exactMatch ? value === test : (
+                value.includes( test ) || test.includes( value )
+            );
         } ) || fb;
     }
 
