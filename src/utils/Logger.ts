@@ -26,7 +26,9 @@ export class Logger {
         return entry;
     }
 
-    private log2Console ( entry: string ) : void {}
+    private log2Console ( level: LoggingConfig[ 'level' ], entry: string ) : void {
+        ( console[ level ] ?? console.log )( entry );
+    }
 
     private log2File ( entry: string ) : void {}
 
@@ -34,7 +36,7 @@ export class Logger {
         if ( ! this.shouldLog( level ) ) return;
 
         const entry = this.format( level, msg, meta );
-        if ( this.config.console ) this.log2Console( entry );
+        if ( this.config.console ) this.log2Console( level, entry );
         if ( this.config.file ) this.log2File( entry );
     }
 
@@ -43,8 +45,7 @@ export class Logger {
     }
 
     public exit ( msg: string, error?: Error ) : never {
-        this.log( 'error', msg, error );
-        exit( 1 );
+        this.log( 'error', msg, error ); exit( 1 );
     }
 
     public warn ( msg: string, meta?: any ) : void {
