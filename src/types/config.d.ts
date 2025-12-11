@@ -1,4 +1,21 @@
-export interface FetchConfig {}
+export interface FetchConfig {
+    baseUrl: string;
+    endpoints: {
+        profile: string;
+        list: string;
+    };
+    headers: Record< string, string >;
+    agentPool: string[];
+    rateLimit: {
+        maxBatchSize: number;
+        timeout: number;
+        retries: number;
+        requestDelay: {
+            max: number;
+            min: number;
+        };
+    };
+}
 
 export interface StorageConfig {}
 
