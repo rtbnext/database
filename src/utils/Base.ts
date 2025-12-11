@@ -21,6 +21,18 @@ export class Base {
         ) as L;
     }
 
+    public static mergeArray< T = any > (
+        target: T[], source: T[], mode: 'unique' | 'concat' | 'replace' = 'unique'
+    ) : T[] {
+        switch ( mode ) {
+            case 'replace': return source;
+            case 'concat': return [ ...target, ...source ];
+            case 'unique': return Array.from( new Set(
+                [ ...target, ...source ].map( item => JSON.stringify( item ) )
+            ) ).map( item => JSON.parse( item ) );
+        }
+    }
+
     public static search ( text: string, query: string, exactMatch: boolean = false ) : boolean {
         text = this.sanitize( text ), query = this.sanitize( query );
         return exactMatch ? text.includes( query )
