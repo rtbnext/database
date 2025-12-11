@@ -36,6 +36,7 @@ export class Fetch {
     private async fetch< T > (
         url: string, method: 'get' | 'post' = 'get'
     ) : Promise< Response< T > > {
+        this.logger.info( `Fetching URL: ${url} via ${ method.toUpperCase() }` );
         const { result: res, ms } = await Utils.measure( async () => {
             let res: AxiosResponse< T, any, {} >;
             let retries = 0;
@@ -43,11 +44,13 @@ export class Fetch {
                 const headers = { ...this.config.headers, 'User-Agent': this.getRandomUserAgent() };
                 res = await this.httpClient[ method ]< T >( url, { headers } );
                 if ( res.status === 200 && res.data ) break;
+                this.logger.warn( `Request failed with status: ${ res.status }. Retrying ...` );
                 await this.getRandomDelay();
             } while ( ++retries < this.config.rateLimit.retries );
             return { ...res, retries };
         } );
 
+        this.logger.info( `Fetched URL: ${url} in ${ ms } ms` );
         return Object.assign( { duration: ms, retries: res.retries },
             res.status === 200 && res.data ? { success: true, data: res.data } : {
                 success: false, error: `Invalid response status: ${ res.status }`,
