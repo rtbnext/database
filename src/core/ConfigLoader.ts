@@ -1,4 +1,4 @@
-import { ConfigObject, FetchConfig, LoggingConfig, StorageConfig } from '@/types/config';
+import * as config from '@/types/config';
 import { Helper } from '@/utils/Helper';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -12,7 +12,7 @@ export class ConfigLoader {
     private readonly cwd: string;
     private readonly path: string;
     private readonly env: string;
-    private readonly cfg: ConfigObject;
+    private readonly cfg: config.ConfigObject;
 
     private constructor () {
         this.cwd = cwd();
@@ -21,24 +21,24 @@ export class ConfigLoader {
         this.cfg = this.loadConfig();
     }
 
-    private loadConfigFile ( path: string ) : Partial< ConfigObject > {
+    private loadConfigFile ( path: string ) : Partial< config.ConfigObject > {
         if ( ! existsSync( path = join( this.path, path ) ) ) return {};
-        try { return parse( readFileSync( path, 'utf8' ) ) as Partial< ConfigObject > }
+        try { return parse( readFileSync( path, 'utf8' ) ) as Partial< config.ConfigObject > }
         catch { return {} }
     }
 
-    private loadConfig () : ConfigObject {
-        return deepmerge< ConfigObject >(
+    private loadConfig () : config.ConfigObject {
+        return deepmerge< config.ConfigObject >(
             this.loadConfigFile( 'default.yml' ), this.loadConfigFile( `${this.env}.yml` ),
             { arrayMerge: ( t, s ) => Helper.mergeArray( t, s, 'replace' ) }
         );
     }
 
     public get environment () : string { return this.env }
-    public get config () : ConfigObject { return this.cfg }
-    public get fetch () : FetchConfig { return this.cfg.fetch }
-    public get storage () : StorageConfig { return this.cfg.storage }
-    public get logging () : LoggingConfig { return this.cfg.logging }
+    public get config () : config.ConfigObject { return this.cfg }
+    public get fetch () : config.FetchConfig { return this.cfg.fetch }
+    public get storage () : config.StorageConfig { return this.cfg.storage }
+    public get logging () : config.LoggingConfig { return this.cfg.logging }
 
     public static getInstance () : ConfigLoader {
         return ConfigLoader.instance ||= new ConfigLoader();
