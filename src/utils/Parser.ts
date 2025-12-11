@@ -28,8 +28,8 @@ export class Parser {
     public static primitive ( value: any ) : Primitive {
         return value === null || value === undefined ? value
             : typeof value === 'boolean' ? value
-                : ! isNaN( Number( value ) ) && value !== '' ? this.number( value )
-                    : this.string( value );
+            : ! isNaN( Number( value ) ) && value !== '' ? this.number( value )
+            : this.string( value );
     }
 
     public static list ( value: any, delimiter: string = ',' ) : Primitive[] {
@@ -77,7 +77,7 @@ export class Parser {
         const date = new Date( value );
         return isNaN( date.getTime() ) ? undefined
             : format === 'iso' ? date.toISOString()
-                : date.toISOString().split( 'T' )[ 0 ];
+            : date.toISOString().split( 'T' )[ 0 ];
     }
 
     // Special

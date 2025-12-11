@@ -11,15 +11,13 @@ export class Base {
         value: L, compare?: ( a: any, b: any ) => -1 | 0 | 1
     ) : L {
         compare ||= ( a, b ) => ( a > b ? 1 : a < b ? -1 : 0 );
-        const compareKeys = ( a: any, b: any ) => compare( a[ 0 ], b[ 0 ] );
+        const keys = ( a: any, b: any ) => compare( a[ 0 ], b[ 0 ] );
 
         return ( Array.isArray( value ) ? [ ...value ].sort( compare )
             : value instanceof Set ? new Set( [ ...value ].sort( compare ) )
-            : value instanceof Map ? new Map( [ ...value.entries() ].sort( compareKeys ) )
-            : typeof value === 'object' ? Object.fromEntries(
-                Object.entries( value ).sort( compareKeys )
-            )
-            : [ ...value ].sort( compare )
+            : value instanceof Map ? new Map( [ ...value.entries() ].sort( keys ) )
+            : typeof value === 'object' ? Object.fromEntries( Object.entries( value ).sort( keys ) )
+            : [ ...value as Iterable< any > ].sort( compare )
         ) as L;
     }
 
