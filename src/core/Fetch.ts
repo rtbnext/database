@@ -59,7 +59,17 @@ export class Fetch {
         return this.fetch< T >( url, method );
     }
 
-    public async batch ( url: string[], method: 'get' | 'post' = 'get' ) : Promise< Response< T >[] > {}
+    public async batch< T > ( urls: string[], method: 'get' | 'post' = 'get' ) : Promise< Response< T >[] > {
+        const results: Response<T>[] = [];
+        let url;
+
+        while ( ( url = urls.shift() ) && results.length < this.config.rateLimit.maxBatchSize ) {
+            results.push( await this.fetch< T >( url, method ) );
+            await this.getRandomDelay();
+        }
+
+        return results;
+    }
 
     public async profile ( ...uriLike: string[] ) : Promise< Response< T >[] > {}
 
