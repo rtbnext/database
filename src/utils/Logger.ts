@@ -1,8 +1,13 @@
+import { ConfigLoader } from './ConfigLoader';
+
 export class Logger {
 
     private static instance: Logger;
+    private readonly config;
 
-    private constructor () {}
+    private constructor () {
+        this.config = ConfigLoader.getInstance().logging;
+    }
 
     private format () {}
 
