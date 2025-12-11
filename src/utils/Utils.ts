@@ -49,11 +49,11 @@ export class Utils {
     > ( fn: F ): Promise< { result: R; ms: number } > {
         if ( typeof fn !== 'function' ) throw new TypeError( 'Parameter must be a function' );
 
-        const diff = ( t: bigint ) : number => Number( hrtime.bigint() - t ) / 1e6;
-        const start = process.hrtime.bigint();
+        const now = hrtime.bigint();
+        const diff = () => Number( hrtime.bigint() - now ) / 1e6;
 
-        try { return { result: await fn() as R, ms: diff( start ) } }
-        catch ( err ) { throw { ...err as any, ms: diff( start ) } }
+        try { return { result: await fn() as R, ms: diff() } }
+        catch ( err ) { throw Object.assign( err ?? {}, { ms: diff() } ) }
     }
 
 }
