@@ -6,3 +6,7 @@ export interface Response< T > {
     duration: number;
     retries: number;
 }
+
+export interface ProfileResponse {}
+
+export interface ListResponse {}

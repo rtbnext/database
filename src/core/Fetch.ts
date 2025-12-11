@@ -1,6 +1,6 @@
 import { ConfigLoader } from '@/core/ConfigLoader';
 import { FetchConfig } from '@/types/config';
-import { Response } from '@/types/response';
+import { ListResponse, ProfileResponse, Response } from '@/types/response';
 import { Utils } from '@/utils';
 import { Logger } from '@/utils/Logger';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
@@ -73,15 +73,15 @@ export class Fetch {
         return results;
     }
 
-    public async profile ( ...uriLike: string[] ) : Promise< Response< any >[] > {
+    public async profile ( ...uriLike: string[] ) : Promise< Response< ProfileResponse >[] > {
         const url = this.config.endpoints.profile;
-        return this.batch< any >( uriLike.map(
+        return this.batch< ProfileResponse >( uriLike.map(
             uri => url.replace( '{URI}', Utils.sanitize( uri ) )
         ) );
     }
 
-    public async list ( uriLike: string, year: string ) : Promise< Response< any > > {
-        return this.single< any >( this.config.endpoints.list
+    public async list ( uriLike: string, year: string ) : Promise< Response< ListResponse > > {
+        return this.single< ListResponse >( this.config.endpoints.list
             .replace( '{URI}', Utils.sanitize( uriLike ) )
             .replace( '{YEAR}', year )
         );
