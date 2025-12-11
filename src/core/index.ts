@@ -1,8 +1,10 @@
 import { ConfigLoader } from '@/core/ConfigLoader';
+import { Fetch } from '@/core/Fetch';
 
 const Core = {
-    config: ConfigLoader.getInstance
+    config: ConfigLoader.getInstance,
+    fetch: Fetch.getInstance
 };
 
-export { ConfigLoader };
+export { ConfigLoader, Fetch };
 export default Core;
