@@ -4,6 +4,6 @@ export interface LoggingConfig {
     file?: boolean;
 }
 
-export interface Config {
+export interface ConfigObject {
     logging: LoggingConfig;
 }
