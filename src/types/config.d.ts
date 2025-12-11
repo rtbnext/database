@@ -17,7 +17,10 @@ export interface FetchConfig {
     };
 }
 
-export interface StorageConfig {}
+export interface StorageConfig {
+    baseDir: string;
+    compressing: boolean;
+}
 
 export interface LoggingConfig {
     level: 'error' | 'warn' | 'info' | 'debug';
