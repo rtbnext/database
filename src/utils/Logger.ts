@@ -4,8 +4,8 @@ import { exit } from 'node:process';
 
 export class Logger {
 
-    private static readonly LEVELS: Record< LoggingConfig[ 'level' ], number > = {
-        'error': 0, 'warn': 1, 'info': 2, 'debug': 3
+    private static readonly LEVEL: Record< LoggingConfig[ 'level' ], number > = {
+        error: 0, warn: 1, info: 2, debug: 3
     };
 
     private static instance: Logger;
@@ -16,11 +16,14 @@ export class Logger {
     }
 
     private shouldLog ( level: LoggingConfig[ 'level' ] ) : boolean {
-        return Logger.LEVELS[ level ] <= Logger.LEVELS[ this.config.level ];
+        return Logger.LEVEL[ level ] <= Logger.LEVEL[ this.config.level ];
     }
 
     private format ( level: LoggingConfig[ 'level' ], msg: string, meta?: any ) : string {
-        return `${ new Date().toISOString() } [${ level.toUpperCase() }] ${msg}`;
+        const entry = `[${ new Date().toISOString() }] ${ level.toUpperCase() } ${msg}`;
+        if ( meta instanceof Error ) entry.concat( `: ${ meta.stack?.replaceAll( '\n', ' // ' ) }` );
+        else if ( meta ) entry.concat( `: ${ JSON.stringify( meta ) }` );
+        return entry;
     }
 
     private log2Console ( entry: string ) : void {}
