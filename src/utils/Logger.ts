@@ -1,5 +1,5 @@
 import { LoggingConfig } from '@/types/config';
-import { ConfigLoader } from '@/utils/ConfigLoader';
+import { ConfigLoader } from '@/core/ConfigLoader';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { EOL } from 'node:os';
 import { join } from 'node:path';
