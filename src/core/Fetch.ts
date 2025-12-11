@@ -37,6 +37,7 @@ export class Fetch {
         url: string, method: 'get' | 'post' = 'get'
     ) : Promise< Response< T > > {
         this.logger.info( `Fetching URL: ${url} via ${ method.toUpperCase() }` );
+
         const { result: res, ms } = await Utils.measure( async () => {
             let res: AxiosResponse< T, any, {} >;
             let retries = 0;
@@ -65,10 +66,12 @@ export class Fetch {
 
     public async batch< T > ( urls: string[], method: 'get' | 'post' = 'get' ) : Promise< Response< T >[] > {
         const results: Response< T >[] = []; let url;
+
         while ( ( url = urls.shift() ) && results.length < this.config.rateLimit.maxBatchSize ) {
             results.push( await this.fetch< T >( url, method ) );
             await this.getRandomDelay();
         }
+
         if ( urls.length ) this.logger.warn( `Batch limit reached. ${ urls.length } URLs remaining.` );
         return results;
     }
