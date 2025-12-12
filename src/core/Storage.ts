@@ -1,9 +1,10 @@
 import { StorageConfig } from '@/types/config';
 import { Logger } from '@/utils/Logger';
 import { ConfigLoader } from './ConfigLoader';
-import { existsSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { join, extname } from 'node:path';
 import { cwd } from 'node:process';
+import { parse } from 'csv-string';
 
 export class Storage {
 
@@ -21,6 +22,22 @@ export class Storage {
 
     private resolvePath ( path: string ) : string {
         return join( this.path, path );
+    }
+
+    private read ( path: string, raw: boolean = false ) : any {
+        try {
+            this.assertPath( path = this.resolvePath( path ) );
+            const content = readFileSync( path, 'utf8' );
+            if ( raw ) return content;
+            switch ( extname( path ).toLowerCase() ) {
+                case '.json': return JSON.parse( content );
+                case '.csv': return parse( content );
+            }
+            throw new Error( `Unsupported file extension: ${ extname( path ) }` );
+        } catch ( err ) {
+            this.logger.error( `Failed to read file at path: ${path}`, err as Error );
+            throw err;
+        }
     }
 
     public exists ( path: string ) : boolean {
