@@ -29,14 +29,18 @@ export class Storage {
         return join( this.path, path );
     }
 
+    private fileExt ( path: string ) : string {
+        return extname( path ).toLowerCase().replace( '.', '' );
+    }
+
     private read ( path: string, type?: 'raw' | 'json' | 'csv' ) : any {
         try {
             this.assertPath( path = this.resolvePath( path ) );
             const content = readFileSync( path, 'utf8' );
-            switch ( type ?? extname( path ).toLowerCase() ) {
+            switch ( type ?? this.fileExt( path ) ) {
                 case 'raw': return content;
-                case 'json': case '.json': return JSON.parse( content );
-                case 'csv': case '.csv': return parse( content );
+                case 'json': return JSON.parse( content );
+                case 'csv': return parse( content );
             }
             throw new Error( `Unsupported file extension: ${ extname( path ) }` );
         } catch ( err ) {
@@ -51,11 +55,11 @@ export class Storage {
     ) : void {
         try {
             this.assertPath( path = this.resolvePath( path ) );
-            switch ( type ?? extname( path ).toLowerCase() ) {
-                case 'json': case '.json': content = JSON.stringify(
+            switch ( type ?? this.fileExt( path ) ) {
+                case 'csv': content = stringify( content );
+                case 'json': content = JSON.stringify(
                     content, null, this.config.compressing ? 2 : undefined
                 );
-                case 'csv': case '.csv': content = stringify( content );
             }
             if ( options.nl ) content += EOL;
             if ( options.append ) appendFileSync( path, content, 'utf8' );
@@ -80,9 +84,7 @@ export class Storage {
 
     public scanDir ( path: string, ext: string[] = [ 'json', 'csv' ] ) : string[] {
         this.assertPath( path = this.resolvePath( path ) );
-        return readdirSync( path ).filter(
-            f => ext.includes( extname( f ).toLowerCase().replace( '.', '' ) )
-        );
+        return readdirSync( path ).filter( f => ext.includes( this.fileExt( f ) ) );
     }
 
     public readJSON< T > ( path: string ) : T | false {
