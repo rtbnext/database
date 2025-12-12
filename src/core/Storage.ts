@@ -52,6 +52,16 @@ export class Storage {
         mkdirSync( this.resolvePath( path ), { recursive: true } );
     }
 
+    public readJSON< T > ( path: string ) : T | false {
+        try { return this.read( path ) as T }
+        catch { return false }
+    }
+
+    public readCSV< T extends [] > ( path: string ) : T | false {
+        try { return this.read( path ) as T }
+        catch { return false }
+    }
+
     public initDB () : void {
         [ 'profile', 'list', 'filter', 'mover', 'stats' ].forEach( this.ensurePath );
     }
