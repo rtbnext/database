@@ -1,7 +1,8 @@
 import { StorageConfig } from '@/types/config';
 import { Logger } from '@/utils/Logger';
 import { ConfigLoader } from './ConfigLoader';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { EOL } from 'node:os';
 import { join, extname } from 'node:path';
 import { cwd } from 'node:process';
 import { parse, stringify } from 'csv-string';
@@ -40,14 +41,21 @@ export class Storage {
         }
     }
 
-    private write ( path: string, content: any, type?: 'json' | 'csv' ) : void {
+    private write (
+        path: string, content: any, type?: 'raw' | 'json' | 'csv',
+        options = { append: false, nl: true }
+    ) : void {
         try {
             this.assertPath( path = this.resolvePath( path ) );
             switch ( type ?? extname( path ).toLowerCase() ) {
-                case 'json': case '.json': content = JSON.stringify( content );
+                case 'json': case '.json': content = JSON.stringify(
+                    content, null, this.config.compressing ? 2 : undefined
+                );
                 case 'csv': case '.csv': content = stringify( content );
             }
-            writeFileSync( path, content, 'utf8' );
+            if ( options.nl ) content += EOL;
+            if ( options.append ) appendFileSync( path, content, 'utf8' );
+            else writeFileSync( path, content, 'utf8' );
         } catch ( err ) {
             this.logger.error( `Failed to write ${path}: ${ ( err as Error ).message }`, err as Error );
             throw err;
@@ -83,6 +91,11 @@ export class Storage {
 
     public writeCSV< T extends [] > ( path: string, content: T ) : boolean {
         try { this.write( path, content, 'csv' ); return true }
+        catch { return false }
+    }
+
+    public appendCSV< T extends [] > ( path: string, content: T, nl: boolean = true ) : boolean {
+        try { this.write( path, content, 'csv', { append: true, nl } ); return true }
         catch { return false }
     }
 
