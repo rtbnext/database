@@ -21,6 +21,10 @@ export class Storage {
         this.initDB();
     }
 
+    private logError ( msg: string, err: unknown ) : void {
+        this.logger.error( `${msg}: ${ ( err as Error ).message }`, err as Error );
+    }
+
     private resolvePath ( path: string ) : string {
         return join( this.path, path );
     }
@@ -36,7 +40,7 @@ export class Storage {
             }
             throw new Error( `Unsupported file extension: ${ extname( path ) }` );
         } catch ( err ) {
-            this.logger.error( `Failed to read ${path}: ${ ( err as Error ).message }`, err as Error );
+            this.logError( `Failed to read ${path}`, err );
             throw err;
         }
     }
@@ -57,7 +61,7 @@ export class Storage {
             if ( options.append ) appendFileSync( path, content, 'utf8' );
             else writeFileSync( path, content, 'utf8' );
         } catch ( err ) {
-            this.logger.error( `Failed to write ${path}: ${ ( err as Error ).message }`, err as Error );
+            this.logError( `Failed to write ${path}`, err );
             throw err;
         }
     }
@@ -109,7 +113,7 @@ export class Storage {
             renameSync( from, to );
             return true;
         } catch ( err ) {
-            this.logger.error( `Failed to move ${from} to ${to}: ${ ( err as Error ).message }`, err as Error );
+            this.logError( `Failed to move ${from} to ${to}`, err );
             return false;
         }
     }
@@ -120,7 +124,7 @@ export class Storage {
             rmSync( path, { recursive: true, force } );
             return true;
         } catch ( err ) {
-            this.logger.error( `Failed to delete ${path}: ${ ( err as Error ).message }`, err as Error );
+            this.logError( `Failed to delete ${path}`, err );
             return false;
         }
     }
