@@ -1,10 +1,10 @@
 import { StorageConfig } from '@/types/config';
 import { Logger } from '@/utils/Logger';
 import { ConfigLoader } from './ConfigLoader';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, extname } from 'node:path';
 import { cwd } from 'node:process';
-import { parse } from 'csv-string';
+import { parse, stringify } from 'csv-string';
 
 export class Storage {
 
@@ -40,6 +40,20 @@ export class Storage {
         }
     }
 
+    private write ( path: string, content: any, type?: 'json' | 'csv' ) : void {
+        try {
+            this.assertPath( path = this.resolvePath( path ) );
+            switch ( type ?? extname( path ).toLowerCase() ) {
+                case 'json': case '.json': content = JSON.stringify( content );
+                case 'csv': case '.csv': content = stringify( content );
+            }
+            writeFileSync( path, content, 'utf8' );
+        } catch ( err ) {
+            this.logger.error( `Failed to write ${path}: ${ ( err as Error ).message }`, err as Error );
+            throw err;
+        }
+    }
+
     public exists ( path: string ) : boolean {
         return existsSync( this.resolvePath( path ) );
     }
@@ -57,8 +71,18 @@ export class Storage {
         catch { return false }
     }
 
+    public writeJSON< T > ( path: string, content: T ) : boolean {
+        try { this.write( path, content, 'json' ); return true }
+        catch { return false }
+    }
+
     public readCSV< T extends [] > ( path: string ) : T | false {
         try { return this.read( path, 'csv' ) as T }
+        catch { return false }
+    }
+
+    public writeCSV< T extends [] > ( path: string, content: T ) : boolean {
+        try { this.write( path, content, 'csv' ); return true }
         catch { return false }
     }
 
