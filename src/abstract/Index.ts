@@ -1,7 +1,10 @@
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/utils';
 
-export abstract class Index< T extends Map< string, any >, I > {
+export abstract class Index<
+    I extends { uri: string, text: string },
+    T extends Map< string, I >
+> {
 
     protected readonly storage: Storage;
     protected readonly path: string;
@@ -37,6 +40,26 @@ export abstract class Index< T extends Map< string, any >, I > {
 
     public get ( uriLike: string ) : I | undefined {
         return this.index.get( Utils.sanitize( uriLike ) );
+    }
+
+    public update () : I | false {
+        return false;
+    }
+
+    public add () : I | false {
+        return false;
+    }
+
+    public delete ( uriLike: string ) : void {
+        this.index.delete( Utils.sanitize( uriLike ) );
+        this.saveIndex();
+    }
+
+    public search ( query: string, exactMatch: boolean = false ) : T {
+        const sanitized = Utils.sanitize( query, ' ' );
+        return new Map( [ ...this.index ].filter( ( [ _, { text } ] ) =>
+            Utils.search( text, sanitized, exactMatch )
+        ) ) as T;
     }
 
 }
