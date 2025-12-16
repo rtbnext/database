@@ -4,14 +4,19 @@ import { Utils } from '@/utils';
 export abstract class Index< T extends Map< string, any >, I > {
 
     protected readonly storage: Storage;
+    protected readonly path: string;
     protected index: T;
 
-    constructor () {
+    constructor ( path: string ) {
         this.storage = Storage.getInstance();
+        this.path = path;
         this.index = this.loadIndex();
     }
 
-    protected abstract loadIndex () : T;
+    private loadIndex () : T {
+        const raw = this.storage.readJSON< Record< string, I > > ( this.path ) || {};
+        return new Map( Object.entries( raw ) ) as T;
+    }
 
     protected abstract saveIndex () : void;
 

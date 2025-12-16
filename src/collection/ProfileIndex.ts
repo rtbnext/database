@@ -7,12 +7,7 @@ export class ProfileIndex extends Index< TProfileIndex, TProfileIndexItem > {
     protected static instance: ProfileIndex;
 
     private constructor () {
-        super();
-    }
-
-    protected loadIndex () : TProfileIndex {
-        const raw = this.storage.readJSON< Record< string, TProfileIndexItem > > ( 'profile/index.json' ) || {};
-        return new Map( Object.entries( raw ) );
+        super( 'profile/index.json' );
     }
     
     protected saveIndex () : void {

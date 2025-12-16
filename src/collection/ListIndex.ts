@@ -7,12 +7,7 @@ export class ListIndex extends Index< TListIndex, TListIndexItem > {
     protected static instance: ListIndex;
 
     private constructor () {
-        super();
-    }
-
-    protected loadIndex () : TListIndex {
-        const raw = this.storage.readJSON< Record< string, TListIndexItem > > ( 'list/index.json' ) || {};
-        return new Map( Object.entries( raw ) );
+        super( 'list/index.json' );
     }
 
     protected saveIndex () : void {
