@@ -2,7 +2,7 @@ import { Storage } from '@/core/Storage';
 import { Utils } from '@/utils';
 
 export abstract class Index<
-    I extends { uri: string, text: string },
+    I extends { readonly uri: string, text: string },
     T extends Map< string, I >
 > {
 
