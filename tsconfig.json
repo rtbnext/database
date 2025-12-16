@@ -11,6 +11,8 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": [ "*" ],
+      "@/abstract/*": [ "abstract/*" ],
+      "@/collection/*": [ "collection/*" ],
       "@/core/*": [ "core/*" ],
       "@/types/*": [ "types/*" ],
       "@/utils/*": [ "utils/*" ]
