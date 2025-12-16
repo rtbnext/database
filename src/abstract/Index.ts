@@ -13,12 +13,15 @@ export abstract class Index< T extends Map< string, any >, I > {
         this.index = this.loadIndex();
     }
 
-    private loadIndex () : T {
+    protected loadIndex () : T {
         const raw = this.storage.readJSON< Record< string, I > > ( this.path ) || {};
         return new Map( Object.entries( raw ) ) as T;
     }
 
-    protected abstract saveIndex () : void;
+    protected saveIndex () : void {
+        const content = Object.fromEntries( Utils.sort< T >( this.index ) );
+        this.storage.writeJSON< Record< string, I > >( this.path, content );
+    }
 
     public getIndex () : T {
         return this.index;
