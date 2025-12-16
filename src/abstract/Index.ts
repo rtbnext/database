@@ -12,4 +12,6 @@ export abstract class Index< T > {
 
     protected abstract loadIndex () : T;
 
+    protected abstract saveIndex () : void;
+
 }
