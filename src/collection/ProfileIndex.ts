@@ -2,7 +2,7 @@ import { Index } from '@/abstract/Index';
 import { TProfileIndex, TProfileIndexItem } from '@/types/profile';
 import { Utils } from '@/utils';
 
-export class ProfileIndex extends Index< TProfileIndex > {
+export class ProfileIndex extends Index< TProfileIndex, TProfileIndexItem > {
 
     protected static instance: ProfileIndex;
 

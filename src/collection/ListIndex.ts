@@ -2,7 +2,7 @@ import { Index } from '@/abstract/Index';
 import { TListIndex, TListIndexItem } from '@/types/list';
 import { Utils } from '@/utils';
 
-export class ListIndex extends Index< TListIndex > {
+export class ListIndex extends Index< TListIndex, TListIndexItem > {
 
     protected static instance: ListIndex;
 

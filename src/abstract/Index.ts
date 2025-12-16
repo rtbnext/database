@@ -1,7 +1,7 @@
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/utils';
 
-export abstract class Index< T extends Map< string, any > > {
+export abstract class Index< T extends Map< string, any >, I > {
 
     protected readonly storage: Storage;
     protected index: T;
@@ -27,7 +27,7 @@ export abstract class Index< T extends Map< string, any > > {
         return this.index.has( Utils.sanitize( uriLike ) );
     }
 
-    public get ( uriLike: string ) : any | undefined {
+    public get ( uriLike: string ) : I | undefined {
         return this.index.get( Utils.sanitize( uriLike ) );
     }
 
