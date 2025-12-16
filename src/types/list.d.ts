@@ -1,11 +1,12 @@
 export type TListIndex< T extends string = string > = Map< T, TListIndexItem< T > >;
 
 export interface TListIndexItem< T extends string = string > {
-    uri: T;
+    readonly uri: T;
     name: string;
     short: string;
-    description?: string;
-    latestDate: string;
+    desc: string;
+    text: string;
+    date: string;
     count: number;
     columns: string[];
     filters: string[];
