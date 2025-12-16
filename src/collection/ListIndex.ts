@@ -1,6 +1,7 @@
 import { Index } from '@/abstract/Index';
+import { TListIndex, TListIndexItem } from '@/types/list';
 
-export class ListIndex extends Index< any > {
+export class ListIndex extends Index< TListIndex > {
 
     protected static instance: ListIndex;
 
@@ -8,8 +9,9 @@ export class ListIndex extends Index< any > {
         super();
     }
 
-    protected loadIndex () : any {
-        return {};
+    protected loadIndex () : TListIndex {
+        const raw = this.storage.readJSON< Record< string, TListIndexItem > > ( 'list/index.json' ) || {};
+        return new Map( Object.entries( raw ) );
     }
 
     public static getInstance () {
