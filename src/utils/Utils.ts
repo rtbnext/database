@@ -40,6 +40,36 @@ export class Utils {
         }
     }
 
+    public static aggregate<
+        T extends Record< PropertyKey, unknown >,
+        K extends keyof T = keyof T, R = unknown
+    > (
+        arr: readonly T[], key: K, aggregator:
+            | 'first' | 'last' | 'all' | 'sum' | 'avg'
+            | ( ( values: readonly T[ K ][] ) => R ) = 'first'
+    ) : T[ K ] | T[ K ][] | number | R | undefined {
+        const values = arr.map( item => item[ key ] ).filter(
+            ( v ): v is T[ K ] => v !== undefined
+        );
+
+        if ( ! values.length ) return undefined;
+        if ( typeof aggregator === 'function' ) return aggregator( values );
+
+        const sum = ( acc: number |undefined, val: T[ K ] ) : number | undefined => (
+            acc === undefined || typeof val !== 'number' ? undefined : acc + val
+        );
+
+        switch ( aggregator ) {
+            case 'first': return values[ 0 ];
+            case 'last': return values.at( -1 );
+            case 'all': return values;
+            case 'sum': return values.reduce< number | undefined >( sum, 0 );
+            case 'avg':
+                const s = values.reduce< number | undefined >( sum, 0 );
+                return s ? s / values.length : undefined;
+        }
+    }
+
     public static search ( text: string, query: string, exactMatch: boolean = false ) : boolean {
         text = this.sanitize( text ), query = this.sanitize( query );
         return exactMatch ? text.includes( query )
