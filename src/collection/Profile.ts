@@ -12,6 +12,9 @@ export class Profile {
             info: {
                 ...Parser.name( raw.name, raw.lastName, raw.firstName, Parser.boolean( raw.asianFormat ) ),
                 ...Parser.container< Partial< TProfileData[ 'info' ] > >( {
+                    deceased: { value: raw.deceased, method: 'boolean' },
+                    dropOff: { value: raw.dropOff, method: 'boolean' },
+                    embargo: { value: raw.embargo, method: 'boolean' },
                     gender: { value: raw.gender, method: 'gender' },
                     birthDate: { value: raw.birthDate, method: 'date' },
                     citizenship: { value: raw.countryOfCitizenship || raw.countryOfResidence, method: 'country' },
