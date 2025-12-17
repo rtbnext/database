@@ -40,6 +40,10 @@ export class List {
         return this.dates.includes( Parser.date( dateLike )! );
     }
 
+    public firstDate () : string | undefined {
+        return this.dates[ 0 ];
+    }
+
     public latestDate () : string | undefined {
         return this.dates.slice().reverse()[ 0 ];
     }
