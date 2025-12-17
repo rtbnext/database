@@ -1,3 +1,4 @@
+import { TLocation } from '@/types/generic';
 import { Gender, Industry, MaritalStatus } from '@/utils/Const';
 import { Primitive } from 'devtypes/types/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
@@ -138,6 +139,16 @@ export class Parser {
 
     public static state ( value: any ) : string | undefined {
         return value ? abbr( this.string( value ) ).toLowerCase() : undefined;
+    }
+
+    public static location (
+        value: { country: any, state?: any, city?: any }
+    ) : TLocation | undefined {
+        const country = this.country( value.country );
+        return country ? {
+            country, state: this.state( value.state ),
+            city: this.strict( value.city, 'string' )
+        } : undefined;
     }
 
 }
