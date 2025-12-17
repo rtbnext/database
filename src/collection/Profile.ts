@@ -3,63 +3,8 @@ import { TProfileData } from '@/types/profile';
 import { TProfileResponse } from '@/types/response';
 import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
-import { DeepPartial } from 'devtypes/types/collections';
 
-export class Profile {
-
-    public static parser ( raw: TProfileResponse[ 'person' ] ) : DeepPartial< TProfileData > {
-        const cv: string[] = [], facts: string[] = [];
-        let philanthropyScore: number | undefined = undefined;
-
-        for ( const item of ( raw.personLists ).sort( ( a, b ) => b.date - a.date ) ) {
-            if ( cv.length === 0 ) cv.push( ...Utils.unique( item.bios ?? [] ) );
-            if ( facts.length === 0 ) facts.push( ...Utils.unique( item.abouts ?? [] ) );
-            if ( ! philanthropyScore ) philanthropyScore = item.philanthropyScore;
-            if ( cv.length > 0 && facts.length > 0 && philanthropyScore ) break;
-        }
-
-        return {
-            uri: Utils.sanitize( raw.uri ),
-            info: {
-                ...Parser.name( raw.name, raw.lastName, raw.firstName, Parser.boolean( raw.asianFormat ) ),
-                ...Parser.container< Partial< TProfileData[ 'info' ] > >( {
-                    deceased: { value: raw.deceased, method: 'boolean' },
-                    dropOff: { value: raw.dropOff, method: 'boolean' },
-                    embargo: { value: raw.embargo, method: 'boolean' },
-                    gender: { value: raw.gender, method: 'gender' },
-                    birthDate: { value: raw.birthDate, method: 'date' },
-                    birthPlace: { value: { country: raw.birthCountry, state: raw.birthState, city: raw.birthCity }, method: 'location' },
-                    citizenship: { value: raw.countryOfCitizenship || raw.countryOfResidence, method: 'country' },
-                    residence: { value: { country: raw.countryOfResidence, state: raw.stateProvince, city: raw.city }, method: 'location' },
-                    maritalStatus: { value: raw.maritalStatus, method: 'maritalStatus' },
-                    children: { value: raw.numberOfChildren, method: 'number' },
-                    industry: { value: raw.industries, method: 'industry' },
-                    source: { value: raw.source, method: 'list' },
-                    philanthropyScore: { value: philanthropyScore, method: 'number' }
-                } ),
-                education: ( raw.educations ?? [] ).map( ( { school, degree } ) => Parser.container< TEducation >( {
-                    school: { value: school, method: 'string' },
-                    degree: { value: degree, method: 'string' }
-                } ) ),
-                selfMade: Parser.container< TProfileData[ 'info' ][ 'selfMade' ] >( {
-                    type: { value: raw.selfMadeType, method: 'string' },
-                    is: { value: raw.selfMade, method: 'boolean' },
-                    rank: { value: raw.selfMadeRank, method: 'number' }
-                } ),
-                organization: raw.organization ? Parser.container< TProfileData[ 'info' ][ 'organization' ] >( {
-                    name: { value: raw.organization, method: 'string' },
-                    title: { value: raw.title, method: 'string' }
-                } ) : undefined
-            },
-            bio: Parser.container< TProfileData[ 'bio' ] > ( {
-                cv: { value: cv, method: 'list' },
-                facts: { value: facts, method: 'list' },
-                quotes: { value: raw.quote, method: 'list' }
-            } )
-        };
-    }
-
-}
+export class Profile {}
 
 export class ProfileParser {
 
@@ -75,6 +20,45 @@ export class ProfileParser {
         return Parser.name(
             this.raw.name, this.raw.lastName, this.raw.firstName,
             Parser.boolean( this.raw.asianFormat )
+        );
+    }
+
+    public info () : TProfileData[ 'info' ] {
+        return {
+            ...Parser.container< Partial< TProfileData[ 'info' ] > >( {
+                deceased: { value: this.raw.deceased, method: 'boolean' },
+                dropOff: { value: this.raw.dropOff, method: 'boolean' },
+                embargo: { value: this.raw.embargo, method: 'boolean' },
+                gender: { value: this.raw.gender, method: 'gender' },
+                birthDate: { value: this.raw.birthDate, method: 'date' },
+                birthPlace: { value: {
+                    country: this.raw.birthCountry,
+                    state: this.raw.birthState,
+                    city: this.raw.birthCity
+                }, method: 'location' },
+                residence: { value: {
+                    country: this.raw.countryOfResidence,
+                    state: this.raw.stateProvince,
+                    city: this.raw.city
+                }, method: 'location' },
+                maritalStatus: { value: this.raw.maritalStatus, method: 'maritalStatus' },
+                children: { value: this.raw.numberOfChildren, method: 'number' },
+                industry: { value: this.raw.industries, method: 'industry' },
+                source: { value: this.raw.source, method: 'list' }
+            } ),
+            ...this.name(),
+            citizenship: this.citizenship(),
+            education: this.education(),
+            selfMade: this.selfMade(),
+            philanthropyScore: this.philanthropyScore(),
+            organization: this.organization()
+        } as TProfileData[ 'info' ];
+    }
+
+    public citizenship () : string | undefined {
+        return Parser.strict(
+            this.raw.countryOfCitizenship || this.raw.countryOfResidence,
+            'country'
         );
     }
 
