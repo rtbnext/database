@@ -25,15 +25,18 @@ export class Utils {
         ) as L;
     }
 
+    public static unique< T = any > ( arr: T[] ) : T[] {
+        return Array.from( new Set( arr.map( item => JSON.stringify( item ) ) ) )
+            .map( item => JSON.parse( item ) );
+    }
+
     public static mergeArray< T = any > (
-        target: T[], source: T[], mode: 'unique' | 'concat' | 'replace' = 'unique'
+        target: T[], source: T[], mode: 'concat' | 'replace' | 'unique' = 'unique'
     ) : T[] {
         switch ( mode ) {
-            case 'replace': return source;
             case 'concat': return [ ...target, ...source ];
-            case 'unique': return Array.from( new Set(
-                [ ...target, ...source ].map( item => JSON.stringify( item ) )
-            ) ).map( item => JSON.parse( item ) );
+            case 'replace': return source;
+            case 'unique': return this.unique< T >( [ ...target, ...source ] );
         }
     }
 
