@@ -55,6 +55,12 @@ export class List {
         );
     }
 
+    public datesInRange ( from: string, to: string ) : string[] {
+        const fromDate = Parser.date( from )!;
+        const toDate = Parser.date( to )!;
+        return this.dates.filter( date => date >= fromDate && date <= toDate );
+    }
+
     public static get ( uriLike: string ) : List | false {
         try { return new List( List.index.get( uriLike ) ) }
         catch { return false }
