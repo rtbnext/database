@@ -3,14 +3,19 @@ import { Primitive } from 'devtypes/types/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
 import { abbr } from 'us-state-converter';
 
+interface ContainerEntry {
+    value: any;
+    method: keyof typeof Parser;
+    strict?: boolean;
+    args?: any[];
+};
+
 export class Parser {
 
     // Helper
 
-    public static container< T = any > ( obj: Record< string, {
-        value: any, method: keyof typeof Parser, strict?: boolean, args?: any[]
-    } > ) : T {
-        return Object.fromEntries( Object.entries( obj ).map(
+    public static container< T = any > ( obj: { [ K in keyof T ]: ContainerEntry } ) : T {
+        return Object.fromEntries( Object.entries< ContainerEntry >( obj ).map(
             ( [ key, { value, method, strict, args } ] ) => [
                 key, strict ? this.strict( value, method, ...( args || [] ) )
                     : ( this as any )[ method ]( value, ...( args || [] ) )
