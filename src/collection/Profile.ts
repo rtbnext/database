@@ -29,7 +29,16 @@ export class Profile {
                 education: ( raw.educations ?? [] ).map( ( { school, degree } ) => Parser.container< TEducation >( {
                     school: { value: school, method: 'string' },
                     degree: { value: degree, method: 'string' }
-                } ) )
+                } ) ),
+                selfMade: Parser.container< TProfileData[ 'info' ][ 'selfMade' ] >( {
+                    type: { value: raw.selfMadeType, method: 'string' },
+                    is: { value: raw.selfMade, method: 'boolean' },
+                    rank: { value: raw.selfMadeRank, method: 'number' }
+                } ),
+                organization: raw.organization ? Parser.container< TProfileData[ 'info' ][ 'organization' ] >( {
+                    name: { value: raw.organization, method: 'string' },
+                    title: { value: raw.title, method: 'string' }
+                } ) : undefined
             }
         };
     }
