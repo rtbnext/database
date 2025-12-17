@@ -79,15 +79,15 @@ export class ProfileParser {
     }
 
     public cv () : string[] {
-        return this.lists.filter( i => i.bios )[ 0 ]?.bios ?? [];
+        return Utils.aggregate( this.lists, 'bios', 'first' ) as string[];
     }
 
     public facts () : string[] {
-        return this.lists.filter( i => i.abouts )[ 0 ]?.abouts ?? [];
+        return Utils.aggregate( this.lists, 'abouts', 'first' ) as string[];
     }
 
     public philanthropyScore () : number | undefined {
-        return this.lists.filter( i => i.philanthropyScore )[ 0 ]?.philanthropyScore;
+        return Utils.aggregate( this.lists, 'philanthropyScore', 'first' ) as number | undefined;
     }
 
 }
