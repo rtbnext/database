@@ -71,6 +71,41 @@ export class ProfileParser {
         this.lists = res.person.personLists.sort( ( a, b ) => b.date - a.date );
     }
 
+    public name () : ReturnType< typeof Parser.name > {
+        return Parser.name(
+            this.raw.name, this.raw.lastName, this.raw.firstName,
+            Parser.boolean( this.raw.asianFormat )
+        );
+    }
+
+    public education () : TProfileData[ 'info' ][ 'education' ] {
+        if ( this.raw.educations ) return this.raw.educations.map( ( { school, degree } ) => (
+            Parser.container< TEducation >( {
+                school: { value: school, method: 'string' },
+                degree: { value: degree, method: 'string' }
+            } ) )
+        );
+    }
+
+    public selfMade () : TProfileData[ 'info' ][ 'selfMade' ] {
+        return Parser.container< TProfileData[ 'info' ][ 'selfMade' ] >( {
+            type: { value: this.raw.selfMadeType, method: 'string' },
+            is: { value: this.raw.selfMade, method: 'boolean' },
+            rank: { value: this.raw.selfMadeRank, method: 'number' }
+        } );
+    }
+
+    public philanthropyScore () : number | undefined {
+        return Utils.aggregate( this.lists, 'philanthropyScore', 'first' ) as number | undefined;
+    }
+
+    public organization () : TProfileData[ 'info' ][ 'organization' ] {
+        if ( this.raw.organization ) return Parser.container< TProfileData[ 'info' ][ 'organization' ] >( {
+            name: { value: this.raw.organization, method: 'string' },
+            title: { value: this.raw.title, method: 'string' }
+        } );
+    }
+
     public bio () : TProfileData[ 'bio' ] {
         return {
             cv: this.cv(), facts: this.facts(),
@@ -84,10 +119,6 @@ export class ProfileParser {
 
     public facts () : string[] {
         return Utils.aggregate( this.lists, 'abouts', 'first' ) as string[];
-    }
-
-    public philanthropyScore () : number | undefined {
-        return Utils.aggregate( this.lists, 'philanthropyScore', 'first' ) as number | undefined;
     }
 
 }
