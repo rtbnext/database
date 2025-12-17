@@ -1,6 +1,7 @@
 import { ListIndex } from '@/collection/ListIndex';
 import { Storage } from '@/core/Storage';
 import { TListIndexItem } from '@/types/list';
+import { Parser } from '@/utils/Parser';
 import { join } from 'node:path';
 
 export class List {
@@ -32,6 +33,21 @@ export class List {
 
     public getDates () : string[] {
         return this.dates;
+    }
+
+    public availableDate ( dateLike: string ) : boolean {
+        return this.dates.includes( Parser.date( dateLike )! );
+    }
+
+    public latestDate () : string | undefined {
+        return this.dates.sort().reverse()[ 0 ];
+    }
+
+    public nearestDate ( dateLike: string ) : string | undefined {
+        const target = Parser.date( dateLike )!;
+        return this.dates.slice().sort().reduce(
+            ( nearest, date ) => date > target ? nearest : date
+        );
     }
 
     public static get ( uriLike: string ) : List | false {
