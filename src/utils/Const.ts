@@ -13,3 +13,12 @@ export const Industry = [
     'gambling', 'healthcare', 'logistics', 'manufacturing', 'media', 'mining',
     'property', 'retail', 'service', 'sports', 'technology', 'telecom'
 ] as const;
+
+export type Relationship = ( typeof Relationship )[ number ];
+export const Relationship = [ 'person', 'organization', 'place' ] as const;
+
+export type Flag = ( typeof Flag )[ number ];
+export const Flag = [ 'up', 'down', 'unchanged' ] as const;
+
+export type AssetType = ( typeof AssetType )[ number ];
+export const AssetType = [ 'private', 'public', 'unknown' ] as const;
