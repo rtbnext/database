@@ -9,15 +9,18 @@ export class Profile {
     public static parser ( raw: TProfileResponse[ 'person' ] ) : DeepPartial< TProfileData > {
         return {
             uri: Utils.sanitize( raw.uri ),
-            info: Parser.container< Partial< TProfileData[ 'info' ] > >( {
-                gender: { value: raw.gender, method: 'gender' },
-                birthDate: { value: raw.birthDate, method: 'date' },
-                citizenship: { value: raw.countryOfCitizenship || raw.countryOfResidence, method: 'country' },
-                maritalStatus: { value: raw.maritalStatus, method: 'maritalStatus' },
-                children: { value: raw.numberOfChildren, method: 'number' },
-                industry: { value: raw.industries, method: 'industry' },
-                source: { value: raw.source, method: 'list' }
-            } )
+            info: {
+                ...Parser.name( raw.name, raw.lastName, raw.firstName, Parser.boolean( raw.asianFormat ) ),
+                ...Parser.container< Partial< TProfileData[ 'info' ] > >( {
+                    gender: { value: raw.gender, method: 'gender' },
+                    birthDate: { value: raw.birthDate, method: 'date' },
+                    citizenship: { value: raw.countryOfCitizenship || raw.countryOfResidence, method: 'country' },
+                    maritalStatus: { value: raw.maritalStatus, method: 'maritalStatus' },
+                    children: { value: raw.numberOfChildren, method: 'number' },
+                    industry: { value: raw.industries, method: 'industry' },
+                    source: { value: raw.source, method: 'list' }
+                } )
+            }
         };
     }
 
