@@ -1,6 +1,6 @@
 import { ListIndex } from '@/collection/ListIndex';
 import { Storage } from '@/core/Storage';
-import { TListIndexItem } from '@/types/list';
+import { TListIndexItem, TListSnapshot } from '@/types/list';
 import { Parser } from '@/utils/Parser';
 import { join } from 'node:path';
 
@@ -53,6 +53,18 @@ export class List {
     public static get ( uriLike: string ) : List | false {
         try { return new List( List.index.get( uriLike ) ) }
         catch { return false }
+    }
+
+    public getSnapshot< T extends TListSnapshot > (
+        dateLike: string, exactMatch: boolean = true
+    ) : T | false {
+        const target = Parser.date( dateLike )!;
+        const date = this.availableDate( target ) ? target : exactMatch ? undefined : this.nearestDate( target );
+        return date ? List.storage.readJSON< T >( join( this.path!, `${date}.json` ) ) : false;
+    }
+
+    public getLatest< T extends TListSnapshot > () : T | false {
+        return this.dates.length ? this.getSnapshot< T >( this.latestDate()! ) : false;
     }
 
 }
