@@ -1,4 +1,4 @@
-import { TEducation, TImage } from '@/types/generic';
+import { TEducation, TImage, TRelation } from '@/types/generic';
 import { TProfileData } from '@/types/profile';
 import { TProfileResponse } from '@/types/response';
 import { Relationship } from '@/utils/Const';
@@ -109,13 +109,14 @@ export class ProfileParser {
     }
 
     public related () : TProfileData[ 'related' ] {
-        return ( this.raw.relatedEntities ?? [] ).filter( Boolean )
-            .map( ( { name, type, uri, relationshipType } ) => ( {
-                type: Parser.map( Relationship, type )!,
-                name: Parser.string( name ),
-                relation: Parser.strict( relationshipType, 'string' ),
-                uri: uri ? Utils.sanitize( uri ) : undefined
-            } ) );
+        return ( this.raw.relatedEntities ?? [] ).filter( Boolean ).map( item => ( {
+            uri: item.uri ? Utils.sanitize( item.uri ) : undefined,
+            ...Parser.container< TRelation >( {
+                type: { value: item.type, method: 'map', args: [ Relationship ] },
+                name: { value: item.name, method: 'string' },
+                relation: { value: item.relationshipType, method: 'string' }
+            } )
+        } ) );
     }
 
     public media () : TProfileData[ 'media' ] {
