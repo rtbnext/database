@@ -1,6 +1,7 @@
 import { TEducation } from '@/types/generic';
 import { TProfileData } from '@/types/profile';
 import { TProfileResponse } from '@/types/response';
+import { Relationship } from '@/utils/Const';
 import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
 
@@ -63,12 +64,11 @@ export class ProfileParser {
     }
 
     public education () : TProfileData[ 'info' ][ 'education' ] {
-        if ( this.raw.educations ) return this.raw.educations.map( ( { school, degree } ) => (
-            Parser.container< TEducation >( {
+        if ( this.raw.educations ) return this.raw.educations.filter( Boolean )
+            .map( ( { school, degree } ) => Parser.container< TEducation >( {
                 school: { value: school, method: 'string' },
                 degree: { value: degree, method: 'string' }
-            } ) )
-        );
+            } ) );
     }
 
     public selfMade () : TProfileData[ 'info' ][ 'selfMade' ] {
@@ -103,6 +103,16 @@ export class ProfileParser {
 
     public facts () : string[] {
         return Utils.aggregate( this.lists, 'abouts', 'first' ) as string[];
+    }
+
+    public related () : TProfileData[ 'related' ] {
+        return ( this.raw.relatedEntities ?? [] ).filter( Boolean )
+            .map( ( { name, type, uri, relationshipType } ) => ( {
+                type: Parser.map( Relationship, type )!,
+                name: Parser.string( name ),
+                relation: Parser.strict( relationshipType, 'string' ),
+                uri: uri ? Utils.sanitize( uri ) : undefined
+            } ) );
     }
 
 }
