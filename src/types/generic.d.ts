@@ -1,3 +1,5 @@
+import { Relationship } from '@/utils/Const';
+
 export interface TMetaData {
     schemaVersion: 2,
     lastModified: string;
@@ -12,6 +14,13 @@ export interface TLocation {
 export interface TEducation {
     school: string;
     degree?: string;
+};
+
+export interface TRelation {
+    type: Relationship;
+    name: string;
+    relation?: string;
+    uri?: string;
 };
 
 export interface TImage {

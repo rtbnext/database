@@ -1,5 +1,5 @@
-import { TEducation, TLocation, TMetaData } from '@/types/generic';
-import { Gender, Industry, MaritalStatus } from '@/utils/Const';
+import { TEducation, TLocation, TMetaData, TRelation } from '@/types/generic';
+import { Gender, Industry, MaritalStatus, Relationship } from '@/utils/Const';
 
 export type TProfileIndex< T extends string = string > = Map< T, TProfileIndexItem< T > >;
 
@@ -47,6 +47,7 @@ export interface TProfileData< T extends string = string > {
         facts: string[];
         quotes: string[];
     };
+    related: TRelation[];
 };
 
 export type TProfileHistory = TProfileHistoryItem[];
