@@ -30,6 +30,16 @@ export class Profile {
         };
     }
 
+    public static get ( uriLike: string ) : Profile | false {
+        try { return new Profile( Profile.index.get( uriLike ) ) }
+        catch { return false }
+    }
+
+    public static find ( uriLike: string ) : Profile | false {
+        try { return new Profile( Profile.index.find( uriLike ).values().next().value ) }
+        catch { return false }
+    }
+
 }
 
 
