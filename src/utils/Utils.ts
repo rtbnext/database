@@ -1,3 +1,4 @@
+import { TArgs } from '@/types/generic';
 import { ListLike } from 'devtypes/types/lists';
 import { hrtime } from 'node:process';
 
@@ -76,14 +77,14 @@ export class Utils {
             : query.split( '-' ).every( q => text.includes( q ) );
     }
 
-    public static parseArgs ( args: readonly string[] ) : Record< string, string | boolean > {
+    public static parseArgs ( args: readonly string[] ) : TArgs {
         return args.reduce( ( res, a, i ) => {
             if ( a.startsWith( '--' ) ) {
                 const [ key, val ] = a.slice( 2 ).split( '=', 2 );
                 res[ key ] = val ?? ( args[ i + 1 ]?.startsWith( '--' ) ? true : args[ ++i ] );
             }
             return res;
-        }, {} as Record< string, string | boolean > );
+        }, {} as TArgs );
     }
 
     public static async measure<

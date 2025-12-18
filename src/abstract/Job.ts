@@ -2,6 +2,7 @@ import { ConfigLoader } from '@/core/ConfigLoader';
 import { Fetch } from '@/core/Fetch';
 import { Queue } from '@/core/Queue';
 import { TConfigObject, TLoggingConfig } from '@/types/config';
+import { TArgs } from '@/types/generic';
 import helper, { Utils } from '@/utils';
 
 export abstract class Job {
@@ -33,7 +34,7 @@ export abstract class Job {
         if ( exit ) process.exit( 1 );
     }
 
-    public abstract run ( ...args: any[] ) : void | Promise< void >;
+    public abstract run ( args: TArgs ) : void | Promise< void >;
 
 }
 

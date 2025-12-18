@@ -1,5 +1,7 @@
 import { Relationship } from '@/utils/Const';
 
+export type TArgs = Record< string, string | boolean >;
+
 export interface TMetaData {
     schemaVersion: 2,
     lastModified: string;
