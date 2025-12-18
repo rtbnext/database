@@ -1,10 +1,11 @@
 import { ConfigLoader } from '@/core/ConfigLoader';
 import { Fetch } from '@/core/Fetch';
-import { TConfigObject } from '@/types/config';
+import { TConfigObject, TLoggingConfig } from '@/types/config';
 import helper from '@/utils';
 
 export abstract class Job {
 
+    protected readonly job!: string;
     protected readonly silent: boolean;
     protected readonly safeMode: boolean;
     protected config: TConfigObject;
@@ -15,6 +16,18 @@ export abstract class Job {
         this.safeMode = safeMode;
         this.config = ConfigLoader.getInstance();
         this.fetch = Fetch.getInstance();
+    }
+
+    protected log ( msg: string, meta?: any, as: TLoggingConfig[ 'level' ] = 'info' ) : void {
+        if ( ! this.silent ) helper.log[ as ]( msg, meta );
+    }
+
+    protected err ( err: unknown, msg?: string, exit: boolean = true ) : void {
+        if ( ! this.silent ) helper.log.error(
+            `Job [${this.job}] failed: ${ msg ?? ( err as Error ).message }`,
+            err as Error
+        );
+        if ( exit ) process.exit( 1 );
     }
 
     public abstract run () : void | Promise< void >;
@@ -31,7 +44,10 @@ export function jobRunner< T extends typeof Job > (
         const job = new ( cls as any )( silent, safeMode );
         ( job[ method ] as Function )();
     } catch ( err ) {
-        if ( ! silent ) helper.log.error( `Job failed: ${ ( err as Error ).message }`, err as Error );
+        if ( ! silent ) helper.log.error(
+            `Job failed: ${ ( err as Error ).message }`,
+            err as Error
+        );
         if ( ! safeMode ) throw err;
     }
 }
