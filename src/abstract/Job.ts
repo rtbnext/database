@@ -22,6 +22,17 @@ export abstract class Job {
         this.fetch = Fetch.getInstance();
     }
 
+    protected async catch<
+        F extends ( ...args: any[] ) => any,
+        R = Awaited< ReturnType< F > >
+    > ( fn: F ) : Promise< R | undefined > {
+        try { return await fn() }
+        catch ( err ) {
+            if ( ! this.silent ) this.err( err );
+            if ( ! this.safeMode ) throw err;
+        }
+    }
+
     protected log ( msg: string, meta?: any, as: TLoggingConfig[ 'level' ] = 'info' ) : void {
         if ( ! this.silent ) helper.log[ as ]( msg, meta );
     }
