@@ -1,5 +1,6 @@
 import { ConfigLoader } from '@/core/ConfigLoader';
 import { Fetch } from '@/core/Fetch';
+import { Queue } from '@/core/Queue';
 import { TConfigObject, TLoggingConfig } from '@/types/config';
 import helper from '@/utils';
 
@@ -9,12 +10,14 @@ export abstract class Job {
     protected readonly silent: boolean;
     protected readonly safeMode: boolean;
     protected config: TConfigObject;
+    protected queue: Queue;
     protected fetch: Fetch;
 
     constructor ( silent: boolean, safeMode: boolean ) {
         this.silent = silent;
         this.safeMode = safeMode;
         this.config = ConfigLoader.getInstance();
+        this.queue = Queue.getInstance();
         this.fetch = Fetch.getInstance();
     }
 
