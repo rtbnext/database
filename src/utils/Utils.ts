@@ -90,7 +90,7 @@ export class Utils {
     public static async measure<
         F extends ( ...args: any[] ) => any,
         R = Awaited< ReturnType< F > >
-    > ( fn: F ): Promise< { result: R; ms: number } > {
+    > ( fn: F ) : Promise< { result: R; ms: number } > {
         if ( typeof fn !== 'function' ) throw new TypeError( 'Parameter must be a function' );
 
         const now = hrtime.bigint();
