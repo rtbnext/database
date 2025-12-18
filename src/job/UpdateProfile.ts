@@ -1,5 +1,5 @@
 import { Job, jobRunner } from '@/abstract/Job';
-import { ProfileParser } from '@/collection/Profile';
+import { Profile, ProfileParser } from '@/collection/Profile';
 import { TArgs } from '@/types/generic';
 
 export class UpdateProfile extends Job {
@@ -20,7 +20,16 @@ export class UpdateProfile extends Job {
 
                 const parser = new ProfileParser( row.data );
                 const uri = parser.uri();
-                // create or update profile
+                let profile: Profile| false;
+
+                if ( profile = Profile.find( uri ) ) {
+                    this.log( `Updating profile: ${uri}` );
+                    // update profile data
+                    // maybe rename if uri has changed
+                } else {
+                    this.log( `Creating profile: ${uri}` );
+                    // create new profile
+                }
             }
         } );
     }
