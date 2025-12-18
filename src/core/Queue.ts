@@ -30,8 +30,11 @@ export class Queue {
     }
 
     private saveQueue () : void {
+        const { defaultPrio } = this.config;
         this.storage.writeJSON< TQueueStorage >( 'queue.json', Object.fromEntries(
-            QueueType.map( t => [ t, Array.from( this.queue[ t ].values() ) ] )
+            QueueType.map( t => [ t, Array.from( this.queue[ t ].values() ).sort(
+                ( a, b ) => ( b.prio ?? defaultPrio ) - ( a.prio ?? defaultPrio )
+            ) ] )
         ) as TQueueStorage );
     }
 
