@@ -2,20 +2,17 @@ import { ConfigLoader } from '@/core/ConfigLoader';
 import { Storage } from '@/core/Storage';
 import { TQueueConfig } from '@/types/config';
 import { QueueType, TQueue, TQueueItem, TQueueStorage } from '@/types/queue';
-import { Logger } from '@/utils/Logger';
 import { Utils } from '@/utils/Utils';
 
 export class Queue {
 
     private static instance: Queue;
     private readonly storage: Storage;
-    private readonly logger: Logger;
     private readonly config: TQueueConfig;
     private queue: TQueue;
 
     private constructor () {
         this.storage = Storage.getInstance();
-        this.logger = Logger.getInstance();
         this.config = ConfigLoader.getInstance().queue;
         this.queue = this.loadQueue();
     }
@@ -39,8 +36,8 @@ export class Queue {
         ) as TQueueStorage );
     }
 
-    public getQueue< T extends QueueType = QueueType > ( type: T ) : TQueue[ T ] {
-        return this.queue[ type ];
+    public getQueue ( type: QueueType ) : TQueueItem[] {
+        return Array.from( this.queue[ type ].values() );
     }
 
     public size ( type: QueueType ) : number {
@@ -57,6 +54,20 @@ export class Queue {
         this.queue[ type ].set( uri, { uri, prio, ts: new Date().toISOString() } );
         this.saveQueue();
         return true;
+    }
+
+    public next ( type: QueueType, n: number = 1 ) : TQueueItem[] {
+        const items: TQueueItem[] = [];
+
+        for ( const [ k, item ] of this.queue[ type ] ) {
+            if ( items.length < n ) {
+                items.push( item );
+                this.queue[ type ].delete( k );
+            } else break;
+        }
+
+        this.saveQueue();
+        return items;
     }
 
     public clear ( type: QueueType ) {
