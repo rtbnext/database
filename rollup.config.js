@@ -31,7 +31,7 @@ export default {
             singleQuote: true,
             jsxSingleQuote: true,
             trailingComma: 'none',
-            objectWrap: 'collapse',
+            objectWrap: 'collapse'
         } )
     ]
 };
