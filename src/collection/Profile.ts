@@ -1,12 +1,13 @@
 import { ProfileIndex } from '@/collection/ProfileIndex';
 import { Storage } from '@/core/Storage';
 import { TEducation, TImage, TMetaData, TRelation } from '@/types/generic';
-import { TProfileData, TProfileHistory, TProfileIndexItem } from '@/types/profile';
+import { TProfileData, TProfileHistory, TProfileHistoryItem, TProfileIndexItem } from '@/types/profile';
 import { TProfileResponse } from '@/types/response';
 import { Relationship } from '@/utils/Const';
 import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
 import { join } from 'node:path';
+import deepmerge from 'deepmerge';
 
 export class Profile {
 
@@ -54,6 +55,47 @@ export class Profile {
         return this.data ||= Profile.storage.readJSON< TProfileData >(
             join( this.path, 'profile.json' )
         ) as TProfileData;
+    }
+
+    public setData ( data: TProfileData ) : void {
+        this.data = data;
+        this.touch();
+        Profile.index.update( this.uri, this.data );
+    }
+
+    public updateData (
+        data: Partial< TProfileData >, mode: 'concat' | 'replace' | 'unique' = 'replace'
+    ) : void {
+        this.data = deepmerge< TProfileData >( this.getData(), data, {
+            arrayMerge: ( t, s ) => Utils.mergeArray( t, s, mode )
+        } );
+        this.touch();
+        Profile.index.update( this.uri, this.data );
+    }
+
+    public getHistory () : TProfileHistory {
+        return this.history ||= Profile.storage.readCSV< TProfileHistory >(
+            join( this.path, 'history.csv' )
+        ) as TProfileHistory;
+    }
+
+    public setHistory ( history: TProfileHistory ) : void {
+        this.history = history;
+        this.touch();
+    }
+
+    public addHistory ( row: TProfileHistoryItem ) : void {
+        const history = this.getHistory();
+        history.push( row );
+        this.history = history;
+        this.touch();
+    }
+
+    public save () : void {
+        Profile.storage.ensurePath( this.path );
+        if ( this.data ) Profile.storage.writeJSON< TProfileData >( join( this.path, 'profile.json' ), this.data );
+        if ( this.history ) Profile.storage.writeCSV< TProfileHistory >( join( this.path, 'history.csv' ), this.history );
+        if ( this.meta ) Profile.storage.writeJSON< TMetaData >( join( this.path, 'meta.json' ), this.meta );
     }
 
     public static get ( uriLike: string ) : Profile | false {
