@@ -97,17 +97,17 @@ export class Storage {
         catch { return false }
     }
 
-    public readCSV< T extends [] > ( path: string ) : T | false {
+    public readCSV< T extends any[] > ( path: string ) : T | false {
         try { return this.read( path, 'csv' ) as T }
         catch { return false }
     }
 
-    public writeCSV< T extends [] > ( path: string, content: T ) : boolean {
+    public writeCSV< T extends any[] > ( path: string, content: T ) : boolean {
         try { this.write( path, content, 'csv' ); return true }
         catch { return false }
     }
 
-    public appendCSV< T extends [] > ( path: string, content: T, nl: boolean = true ) : boolean {
+    public appendCSV< T extends any[] > ( path: string, content: T, nl: boolean = true ) : boolean {
         try { this.write( path, content, 'csv', { append: true, nl } ); return true }
         catch { return false }
     }
