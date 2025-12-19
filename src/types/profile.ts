@@ -1,5 +1,5 @@
 import { TEducation, TImage, TLocation, TMetaData, TRelation } from '@/types/generic';
-import { Gender, Industry, MaritalStatus, Relationship } from '@/utils/Const';
+import { Gender, Industry, MaritalStatus } from '@/utils/Const';
 
 export type TProfileIndex< T extends string = string > = Map< T, TProfileIndexItem< T > >;
 
