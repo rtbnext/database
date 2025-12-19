@@ -24,8 +24,16 @@ export class UpdateProfile extends Job {
 
                 if ( profile = Profile.find( uri ) ) {
                     this.log( `Updating profile: ${uri}` );
-                    // update profile data
-                    // maybe rename if uri has changed
+
+                    profile.updateData( {
+                        uri, info: parser.info(), bio: parser.bio(),
+                        related: parser.related(), media: parser.media()
+                    } );
+                    profile.save();
+
+                    if ( uri !== profile.getUri() ) {
+                        // rename if uri has changed
+                    }
                 } else {
                     this.log( `Creating profile: ${uri}` );
                     // create new profile
