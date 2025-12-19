@@ -30,20 +30,26 @@ export class ProfileMerger {
         return true;
     }
 
-    public static mergeProfiles ( target: Profile, source: Profile, force: boolean = false ) : void {
-        if ( ! ( force || this.mergeableProfiles( target.getData(), source.getData() ) ) ) return;
-        target.updateData( source.getData(), [], 'unique' );
+    public static mergeProfiles (
+        target: Profile, source: Profile, force: boolean = false, makeAlias: boolean = true
+    ) : void {
+        if ( ! force && ! this.mergeableProfiles( target.getData(), source.getData() ) ) return;
+
+        const aliases = makeAlias ? [ source.getUri() ] : [];
+        target.updateData( source.getData(), aliases, 'unique' );
         target.mergeHistory( source.getHistory() );
         target.save();
+
         Profile.delete( source.getUri() );
     }
 
     public static findMatch ( data: Partial< TProfileData > ) : Profile | false {
-        const { id, uri } = data;
-        if ( ! id || ! uri ) return false;
-        for ( const test of ProfileMerger.similarURIs( uri ) ) {
-            const profile = Profile.get( test );
-            if ( profile && this.mergeableProfiles( profile.getData(), data as TProfileData ) ) return profile;
+        if ( ! data.id || ! data.uri ) return false;
+        for ( const uri of ProfileMerger.similarURIs( data.uri ) ) {
+            const profile = Profile.get( uri );
+            if ( profile && this.mergeableProfiles(
+                profile.getData(), data as TProfileData
+            ) ) return profile;
         }
         return false;
     }
