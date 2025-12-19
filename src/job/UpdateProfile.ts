@@ -39,12 +39,11 @@ export class UpdateProfile extends Job {
                         this.log( `Renaming profile from ${ profile.getUri() } to ${uri}` );
                         profile.move( uri, true );
                     }
-                } /*else if ( ( profile = ProfileMerger.findMatchForNewProfile( profileData, uri ) ) ) {
-                    this.log( `Merging new profile data into existing profile: ${profile.getUri()}` );
-                    profile.move( uri, true ); // Rename the existing profile to the new URI
-                    profile.updateData( profileData, aliases ); // Update with new data
-                    profile.save();
-                }*/ else {
+                } else if ( ( profile = ProfileMerger.findMatch( profileData ) ) ) {
+                    this.log( `Merging new profile data into existing profile: ${ profile.getUri() }` );
+                    profile.updateData( profileData, aliases );
+                    profile.move( uri, true );
+                } else {
                     this.log( `Creating profile: ${uri}` );
                     Profile.create( uri, profileData, [], aliases );
                 }
