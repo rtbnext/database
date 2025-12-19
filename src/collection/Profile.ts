@@ -16,6 +16,7 @@ export class Profile {
 
     private uri: string;
     private path: string;
+    private item: TProfileIndexItem;
     private data?: TProfileData;
     private history?: TProfileHistory;
     private meta: TMetaData;
@@ -25,6 +26,7 @@ export class Profile {
 
         this.uri = item.uri;
         this.path = join( 'profile', item.uri );
+        this.item = item;
 
         this.meta = Profile.storage.readJSON< TMetaData >( join( this.path, 'meta.json' ) ) || {
             schemaVersion: 2, lastModified: new Date().toISOString()
@@ -33,6 +35,14 @@ export class Profile {
 
     private touch () : void {
         this.meta!.lastModified = new Date().toISOString();
+    }
+
+    private updateIndex ( aliases: string[] = [] ) : void {
+        if ( this.getData() ) this.item = {
+            uri: this.uri, name: this.data!.info.name,
+            aliases: Utils.mergeArray( this.item.aliases, aliases, 'unique' ),
+            text: this.data!.bio.cv.join( ' ' )
+        };
     }
 
     public getUri () : string {
@@ -57,17 +67,20 @@ export class Profile {
         ) as TProfileData;
     }
 
-    public setData ( data: TProfileData ) : void {
+    public setData ( data: TProfileData, aliases?: string[] ) : void {
         this.data = data;
+        this.updateIndex( aliases );
         this.touch();
     }
 
     public updateData (
-        data: Partial< TProfileData >, mode: 'concat' | 'replace' | 'unique' = 'replace'
+        data: Partial< TProfileData >, aliases?: string[],
+        mode: 'concat' | 'replace' | 'unique' = 'replace'
     ) : void {
         this.data = deepmerge< TProfileData >( this.getData(), data, {
             arrayMerge: ( t, s ) => Utils.mergeArray( t, s, mode )
         } );
+        this.updateIndex( aliases );
         this.touch();
     }
 
@@ -90,12 +103,11 @@ export class Profile {
     }
 
     public save () : void {
+        Profile.index.update( this.uri, this.item );
         Profile.storage.ensurePath( this.path );
         if ( this.data ) Profile.storage.writeJSON< TProfileData >( join( this.path, 'profile.json' ), this.data );
         if ( this.history ) Profile.storage.writeCSV< TProfileHistory >( join( this.path, 'history.csv' ), this.history );
         if ( this.meta ) Profile.storage.writeJSON< TMetaData >( join( this.path, 'meta.json' ), this.meta );
-
-        // update index
     }
 
     public static get ( uriLike: string ) : Profile | false {

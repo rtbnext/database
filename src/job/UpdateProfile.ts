@@ -18,22 +18,23 @@ export class UpdateProfile extends Job {
                     continue;
                 }
 
+                let profile: Profile | false;
                 const parser = new ProfileParser( row.data );
                 const uri = parser.uri();
-                let profile: Profile| false;
+                const aliases = parser.aliases();
+                const profileData = {
+                    uri, info: parser.info(), bio: parser.bio(),
+                    related: parser.related(), media: parser.media()
+                };
 
                 if ( profile = Profile.find( uri ) ) {
                     this.log( `Updating profile: ${uri}` );
-
-                    profile.updateData( {
-                        uri, info: parser.info(), bio: parser.bio(),
-                        related: parser.related(), media: parser.media()
-                    } );
+                    profile.updateData( profileData, aliases );
                     profile.save();
 
                     if ( uri !== profile.getUri() ) {
                         this.log( `Renaming profile from ${ profile.getUri() } to ${uri}` );
-                        // rename if uri has changed
+                        // rename profile
                     }
                 } else {
                     this.log( `Creating profile: ${uri}` );
