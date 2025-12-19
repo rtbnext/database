@@ -136,6 +136,21 @@ export class Profile {
         catch { return false }
     }
 
+    public static create (
+        uriLike: string, data: TProfileData, history?: TProfileHistory, aliases: string[] = []
+    ) : Profile | false {
+        const uri = Utils.sanitize( uriLike );
+        const item = Profile.index.add( uri, { uri, name: data.info.name, aliases, text: data.bio.cv.join( ' ' ) } );
+        if ( ! item ) return false;
+
+        const profile = new Profile( item );
+        profile.setData( data );
+        profile.setHistory( history ?? [] );
+        profile.save();
+
+        return profile;
+    }
+
     public static delete ( uriLike: string ) : boolean {
         const uri = Utils.sanitize( uriLike );
         const path = join( 'profile', uri );

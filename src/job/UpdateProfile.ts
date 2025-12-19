@@ -38,7 +38,7 @@ export class UpdateProfile extends Job {
                     }
                 } else {
                     this.log( `Creating profile: ${uri}` );
-                    // create new profile
+                    Profile.create( uri, profileData, [], aliases );
                 }
             }
         } );
