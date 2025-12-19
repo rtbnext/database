@@ -30,6 +30,32 @@ export class Profile {
         };
     }
 
+    private touch () : void {
+        this.meta!.lastModified = new Date().toISOString();
+    }
+
+    public getUri () : string {
+        return this.uri;
+    }
+
+    public getMeta () : TMetaData {
+        return this.meta;
+    }
+
+    public schemaVersion () : number {
+        return this.meta.schemaVersion;
+    }
+
+    public modified () : string {
+        return this.meta.lastModified;
+    }
+
+    public getData () : TProfileData {
+        return this.data ||= Profile.storage.readJSON< TProfileData >(
+            join( this.path, 'profile.json' )
+        ) as TProfileData;
+    }
+
     public static get ( uriLike: string ) : Profile | false {
         try { return new Profile( Profile.index.get( uriLike ) ) }
         catch { return false }
