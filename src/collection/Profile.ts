@@ -97,16 +97,14 @@ export class Profile {
     }
 
     public addHistory ( row: TProfileHistoryItem ) : void {
-        const history = this.getHistory();
-        history.push( row );
-        this.history = history;
+        this.history = [ ...this.getHistory(), row ];
         this.touch();
     }
 
     public mergeHistory ( history: TProfileHistory ) : void {
-        const map = new Map< string, TProfileHistoryItem >();
-        for ( const item of [ ...this.getHistory(), ...history ] ) map.set( item[ 0 ], item );
-        this.history = Array.from( map.values() ).sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) );
+        this.history = Array.from(
+            new Map( [ ...this.getHistory(), ...history ].map( i => [ i[ 0 ], i ] ) ).values()
+        ).sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) );
         this.touch();
     }
 
