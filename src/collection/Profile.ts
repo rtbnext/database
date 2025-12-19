@@ -60,7 +60,6 @@ export class Profile {
     public setData ( data: TProfileData ) : void {
         this.data = data;
         this.touch();
-        Profile.index.update( this.uri, this.data );
     }
 
     public updateData (
@@ -70,7 +69,6 @@ export class Profile {
             arrayMerge: ( t, s ) => Utils.mergeArray( t, s, mode )
         } );
         this.touch();
-        Profile.index.update( this.uri, this.data );
     }
 
     public getHistory () : TProfileHistory {
@@ -96,6 +94,8 @@ export class Profile {
         if ( this.data ) Profile.storage.writeJSON< TProfileData >( join( this.path, 'profile.json' ), this.data );
         if ( this.history ) Profile.storage.writeCSV< TProfileHistory >( join( this.path, 'history.csv' ), this.history );
         if ( this.meta ) Profile.storage.writeJSON< TMetaData >( join( this.path, 'meta.json' ), this.meta );
+
+        // update index
     }
 
     public static get ( uriLike: string ) : Profile | false {
