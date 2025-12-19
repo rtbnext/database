@@ -1,6 +1,6 @@
 import { List } from '@/collection/List';
 import { ListIndex } from '@/collection/ListIndex';
-import { Profile, ProfileParser } from '@/collection/Profile';
+import { Profile } from '@/collection/Profile';
 import { ProfileIndex } from '@/collection/ProfileIndex';
 
 export const index = {
@@ -8,4 +8,4 @@ export const index = {
     listIndex: ListIndex.getInstance
 } as const;
 
-export { List, ListIndex, Profile, ProfileParser, ProfileIndex };
+export { List, ListIndex, Profile, ProfileIndex };
