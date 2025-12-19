@@ -110,6 +110,22 @@ export class Profile {
         if ( this.meta ) Profile.storage.writeJSON< TMetaData >( join( this.path, 'meta.json' ), this.meta );
     }
 
+    public move ( uriLike: string, makeAlias: boolean = true ) : boolean {
+        const newUri = Utils.sanitize( uriLike );
+        const item = Profile.index.move( this.uri, newUri, makeAlias );
+        if ( ! item ) return false;
+
+        const oldPath = this.path;
+        this.uri = newUri;
+        this.path = join( 'profile', newUri );
+        this.item = item;
+        Profile.storage.move( oldPath, this.path );
+
+        this.updateData( { uri: newUri } );
+        this.save();
+        return true;
+    }
+
     public static get ( uriLike: string ) : Profile | false {
         try { return new Profile( Profile.index.get( uriLike ) ) }
         catch { return false }

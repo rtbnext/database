@@ -34,7 +34,7 @@ export class UpdateProfile extends Job {
 
                     if ( uri !== profile.getUri() ) {
                         this.log( `Renaming profile from ${ profile.getUri() } to ${uri}` );
-                        // rename profile
+                        profile.move( uri, true );
                     }
                 } else {
                     this.log( `Creating profile: ${uri}` );
