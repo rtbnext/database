@@ -15,7 +15,7 @@ export class UpdateProfile extends Job {
                 : this.queue.nextUri( 'profile', this.config.fetch.rateLimit.maxBatchSize );
 
             for ( const row of await this.fetch.profile( ...batch ) ) {
-                if ( ! row || ! row.success || ! row.data ) {
+                if ( ! row?.success || ! row.data ) {
                     this.log( 'Request failed', row, 'warn' );
                     continue;
                 }
@@ -31,19 +31,23 @@ export class UpdateProfile extends Job {
                 };
 
                 if ( ( profile = Profile.find( uri ) ) && profile.verify( id ) ) {
+                    // Existing profile, update data
                     this.log( `Updating profile: ${uri}` );
                     profile.updateData( profileData, aliases );
                     profile.save();
 
                     if ( uri !== profile.getUri() ) {
+                        // URI has changed, move profile
                         this.log( `Renaming profile from ${ profile.getUri() } to ${uri}` );
                         profile.move( uri, true );
                     }
-                } else if ( ( profile = ProfileMerger.findMatch( profileData ) ) ) {
-                    this.log( `Merging new profile data into existing profile: ${ profile.getUri() }` );
+                } else if ( profile = ProfileMerger.findMatch( profileData ) ) {
+                    // Similar profile found, merge data
+                    this.log( `Merging new data into existing profile: ${ profile.getUri() }` );
                     profile.updateData( profileData, aliases );
                     profile.move( uri, true );
                 } else {
+                    // New profile, create entry
                     this.log( `Creating profile: ${uri}` );
                     Profile.create( uri, profileData, [], aliases );
                 }

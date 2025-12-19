@@ -45,12 +45,14 @@ export class ProfileMerger {
 
     public static findMatch ( data: Partial< TProfileData > ) : Profile | false {
         if ( ! data.id || ! data.uri ) return false;
+
         for ( const uri of ProfileMerger.similarURIs( data.uri ) ) {
             const profile = Profile.get( uri );
             if ( profile && this.mergeableProfiles(
                 profile.getData(), data as TProfileData
             ) ) return profile;
         }
+
         return false;
     }
 
