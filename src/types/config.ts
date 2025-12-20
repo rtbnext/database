@@ -10,10 +10,10 @@ export interface TStorageConfig {
 }
 
 export interface TFetchConfig {
-    baseUrl: string;
     endpoints: {
-        profile: string;
         list: string;
+        profile: string;
+        wiki: string;
     };
     headers: Record< string, string >;
     agentPool: string[];

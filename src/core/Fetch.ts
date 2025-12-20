@@ -19,8 +19,8 @@ export class Fetch {
     }
 
     private setupHttpClient () : AxiosInstance {
-        const { baseUrl: baseURL, headers, rateLimit: { timeout } } = this.config;
-        return axios.create( { baseURL, headers, timeout } );
+        const { headers, rateLimit: { timeout } } = this.config;
+        return axios.create( { headers, timeout } );
     }
 
     private getRandomUserAgent () : string {
