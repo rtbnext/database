@@ -1,4 +1,4 @@
-import { Relationship } from '@/utils/Const';
+import { AssetType, Relationship } from '@/utils/Const';
 
 export type TArgs = Record< string, string | boolean >;
 
@@ -34,3 +34,37 @@ export interface TImage {
     desc?: string;
     date?: string;
 };
+
+export interface TMap {
+    lat: number;
+    lon: number;
+    country: string;
+    address?: string;
+    area?: number;
+    year?: number;
+    value?: number;
+    polygon?: number[][];
+}
+
+export interface TRanking {
+    list: string;
+    date: string;
+    rank: number;
+    networth?: number;
+    prev?: string;
+    next?: string;
+}
+
+export interface TAsset {
+    type: AssetType;
+    label: string;
+    value?: number;
+    info?: {
+        exchange: string;
+        ticker: string;
+        shares?: number;
+        price: number;
+        currency: string;
+        exRate: number;
+    };
+}

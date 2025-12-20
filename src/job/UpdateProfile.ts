@@ -49,7 +49,10 @@ export class UpdateProfile extends Job {
                 } else {
                     // New profile, create entry
                     this.log( `Creating profile: ${uri}` );
-                    Profile.create( uri, profileData, [], aliases );
+                    Profile.create( uri, {
+                        ...profileData,
+                        ...{ map: [], ranking: [], annual: [], assets: [] }
+                    }, [], aliases );
                 }
             }
         } );

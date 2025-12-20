@@ -1,5 +1,5 @@
-import { TEducation, TImage, TLocation, TMetaData, TRelation } from '@/types/generic';
-import { Gender, Industry, MaritalStatus } from '@/utils/Const';
+import * as Generic from '@/types/generic';
+import * as Const from '@/utils/Const';
 
 export type TProfileIndex< T extends string = string > = Map< T, TProfileIndexItem< T > >;
 
@@ -22,15 +22,15 @@ export interface TProfileData< T extends string = string > {
         shortName: string;
         lastName: string;
         firstName: string;
-        gender: Gender;
+        gender: Const.Gender;
         birthDate?: string;
-        birthPlace?: TLocation;
+        birthPlace?: Generic.TLocation;
         citizenship?: string;
-        residence?: TLocation;
-        maritalStatus?: MaritalStatus;
+        residence?: Generic.TLocation;
+        maritalStatus?: Const.MaritalStatus;
         children?: number;
-        education?: TEducation[];
-        industry: Industry;
+        education?: Generic.TEducation[];
+        industry: Const.Industry;
         source: string[];
         selfMade: {
             type: string;
@@ -48,8 +48,11 @@ export interface TProfileData< T extends string = string > {
         facts: string[];
         quotes: string[];
     };
-    related: TRelation[];
-    media: TImage[];
+    related: Generic.TRelation[];
+    media: Generic.TImage[];
+    map: Generic.TMap[];
+    ranking: Generic.TRanking[];
+    assets: Generic.TAsset[];
 };
 
 export type TProfileHistory = TProfileHistoryItem[];
@@ -57,7 +60,7 @@ export type TProfileHistory = TProfileHistoryItem[];
 export type TProfileHistoryItem = [ string, number, number, number, number ];
 
 export type TProfile< T extends string = string > = {
-    meta: TMetaData;
+    meta: Generic.TMetaData;
     profile: TProfileData< T >;
     history: TProfileHistory;
 };
