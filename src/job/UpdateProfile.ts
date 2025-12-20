@@ -12,16 +12,19 @@ export class UpdateProfile extends Job {
 
     public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
+            // Determine batch of profile URIs to process
             const batch = 'profile' in args && typeof args.profile === 'string'
                 ? args.profile.split( ',' ).filter( Boolean )
                 : this.queue.nextUri( 'profile', this.config.fetch.rateLimit.maxBatchSize );
 
+            // Loop through profile URIs
             for ( const row of await this.fetch.profile( ...batch ) ) {
                 if ( ! row?.success || ! row.data ) {
                     this.log( 'Request failed', row, 'warn' );
                     continue;
                 }
 
+                // Parse profile data
                 const parser = new ProfileParser( row.data );
                 const uri = parser.uri();
                 const id = parser.id();
@@ -31,10 +34,13 @@ export class UpdateProfile extends Job {
                     related: parser.related(), media: parser.media(),
                 };
 
+                // Fetch wiki data
                 const wiki = await Wiki.profile( profileData.info!.shortName );
                 if ( wiki ) profileData.wiki = wiki;
 
+                // Update or create profile entry
                 let profile: Profile | false;
+
                 if ( ( profile = Profile.find( uri ) ) && profile.verify( id ) ) {
                     // Existing profile, update data
                     this.log( `Updating profile: ${uri}` );
