@@ -3,7 +3,7 @@ import { Logger } from '@/utils/Logger';
 import { Config } from '@/core/Config';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { EOL } from 'node:os';
-import { join, extname } from 'node:path';
+import { dirname, extname, join } from 'node:path';
 import { parse, stringify } from 'csv-string';
 
 export class Storage {
@@ -79,7 +79,7 @@ export class Storage {
     }
 
     public ensurePath ( path: string ) : void {
-        mkdirSync( this.resolvePath( path ), { recursive: true } );
+        mkdirSync( dirname( this.resolvePath( path ) ), { recursive: true } );
     }
 
     public scanDir ( path: string, ext: string[] = [ 'json', 'csv' ] ) : string[] {
