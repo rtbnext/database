@@ -37,7 +37,7 @@ export class Wiki {
             thumb: Parser.strict( thumb, 'string' ),
             caption: Parser.strict( meta.ImageDescription?.value, 'string' ),
             date: Parser.date( meta.DateTimeOriginal?.value ?? meta.DateTime?.value, 'iso' ),
-            credits: '© ' + Parser.list( [
+            credits: Parser.list( [
                 clean( meta.Attribution?.value || meta.Artist?.value || meta.Credit?.value ),
                 meta.LicenseShortName?.value || meta.UsageTerms?.value, 'Wikimedia Commons'
             ] ).join( ', ' )
