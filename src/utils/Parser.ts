@@ -63,7 +63,7 @@ export class Parser {
     // Primitive
 
     public static string ( value: any ) : string {
-        return String( value ).trim();
+        return String( value ).trim().replace( /\s+/g, ' ' );
     }
 
     public static boolean ( value: any ) : boolean {
