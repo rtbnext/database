@@ -99,8 +99,8 @@ export type TWikiDataResponseItem = {
     item: { value: string };
     itemLabel: { value: string, xmlLang: string };
 } & { [ K in (
-    | 'birthdate' | 'article' | 'image' | 'iso2' | 'occupation'
-    | 'employer' | 'ownerOf' | 'netWorth'
+    | 'gender' | 'birthdate' | 'article' | 'image' | 'iso2'
+    | 'occupation' | 'employer' | 'ownerOf' | 'netWorth'
 ) ]?: {
     value: string;
 } };
