@@ -121,3 +121,16 @@ export interface TWikipediaResponse {
         }[];
     };
 }
+
+export interface TCommonsResponse {
+    query: {
+        pages: {
+            imageinfo?: {
+                url: string;
+                descriptionurl: string;
+                thumburl?: string;
+                extmetadata?: Record< string, { value?: string } >;
+            }[];
+        }[];
+    };
+}
