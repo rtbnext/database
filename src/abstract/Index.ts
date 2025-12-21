@@ -66,10 +66,10 @@ export abstract class Index<
         this.saveIndex();
     }
 
-    public search ( query: string, exactMatch: boolean = false ) : T {
-        const sanitized = Utils.sanitize( query, ' ' );
+    public search ( query: string, looseMatch: boolean = false ) : T {
+        const tokens = Utils.buildSearchText( query ).split( ' ' ).filter( Boolean );
         return new Map( [ ...this.index ].filter( ( [ _, { text } ] ) =>
-            Utils.search( text, sanitized, exactMatch )
+            Utils.tokenSearch( text, tokens, looseMatch )
         ) ) as T;
     }
 

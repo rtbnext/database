@@ -94,10 +94,8 @@ export class Utils {
         ) ).join( ' ' );
     }
 
-    public static search ( text: string, query: string, looseMatch: boolean = false ) : boolean {
-        if ( ! text || ! query ) return false;
-        const tokens = Utils.buildSearchText( query ).split( ' ' ).filter( Boolean );
-        if ( ! tokens.length ) return false;
+    public static tokenSearch ( text: string, tokens: string[], looseMatch: boolean = false ) : boolean {
+        if ( ! text || ! tokens.length ) return false;
         return tokens[ looseMatch ? 'some' : 'every' ]( t => text.includes( t ) );
     }
 
