@@ -2,6 +2,7 @@ import { Fetch } from '@/core/Fetch';
 import { TProfileData } from '@/types/profile';
 import { TWikidataResponseItem, TWikidataResponse } from '@/types/response';
 import { Gender } from '@/utils/Const';
+import { Parser } from '@/utils/Parser';
 
 export class Wiki {
     
@@ -12,14 +13,14 @@ export class Wiki {
     ) : number {
         let score = 0;
 
-        if ( item.itemLabel.value === name ) score += 40;
-        else if ( item.itemLabel?.value ) score += 25;
+        if ( item.itemLabel.value === name ) score += 0.4;
+        else if ( item.itemLabel?.value ) score += 0.25;
 
-        if ( birth && item.birthdate?.value.startsWith( birth ) ) score += 30;
-        if ( gender ) score += 10;
+        if ( birth && item.birthdate?.value.startsWith( birth ) ) score += 0.3;
+        if ( gender ) score += 0.1;
 
-        if ( item.article ) score += 10;
-        if ( item.image ) score += 10;
+        if ( item.article ) score += 0.1;
+        if ( item.image ) score += 0.1;
 
         return score;
     }
@@ -54,10 +55,10 @@ export class Wiki {
             if ( ! best || score > best.score ) best = { score, item };
         }
 
-        return ( ! best || best.score < 50 ) ? false : {
-            qid: best.item.item.value.split( '/' ).pop()!,
-            article: best.item.article?.value.split( '/' ).pop(),
-            image: best.item.image?.value.split( '/' ).pop(),
+        return ( ! best || best.score < 0.5 ) ? false : {
+            qid: Parser.string( best.item.item.value.split( '/' ).pop()! ),
+            article: Parser.strict( best.item.article?.value.split( '/' ).pop(), 'decodeURI' ),
+            image: Parser.strict( best.item.image?.value.split( '/' ).pop(), 'decodeURI' ),
             score: best.score
         };
     }
