@@ -124,7 +124,7 @@ export class Parser {
         const fN = firstName ? Parser.string( firstName ) : (
             asianFormat ? parts.slice( 1 ).join( ' ' ) : parts.slice( 0, -1 ).join( ' ' )
         );
-        const lN = lastName ? Parser.string( lastName ) : (
+        const lN = lastName ? Parser.string( lastName.replace( /&\s*family/i, '' ) ) : (
             asianFormat ? parts[ 0 ] || '' : parts.pop() || ''
         );
 
