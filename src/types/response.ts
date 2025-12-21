@@ -90,3 +90,15 @@ export interface TProfileResponse {
 }
 
 export interface TListResponse {}
+
+export interface TWikidataResponse {
+    results: { bindings: TWikidataBinding[] };
+}
+
+export interface TWikidataBinding {
+    item: { value: string };
+    itemLabel: { value: string };
+    birthdate?: { value: string };
+    article?: { value: string };
+    image?: { value: string };
+};
