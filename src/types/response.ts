@@ -129,6 +129,7 @@ export interface TCommonsResponse {
                 url: string;
                 descriptionurl: string;
                 thumburl?: string;
+                responsiveUrls?: Record< string, string >;
                 extmetadata?: Record< string, { value?: string } >;
             }[];
         }[];
