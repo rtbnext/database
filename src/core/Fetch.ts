@@ -36,7 +36,7 @@ export class Fetch {
     private async fetch< T > (
         url: string, method: 'get' | 'post' = 'get'
     ) : Promise< TResponse< T > > {
-        this.logger.info( `Fetching URL: ${url} via ${ method.toUpperCase() }` );
+        this.logger.debug( `Fetching URL: ${url} via ${ method.toUpperCase() }` );
 
         const { result: res, ms } = await Utils.measure( async () => {
             let res: AxiosResponse< T, any, {} >;
@@ -51,7 +51,7 @@ export class Fetch {
             return { ...res, retries };
         } );
 
-        this.logger.info( `Fetched URL: ${url} in ${ ms } ms` );
+        this.logger.debug( `Fetched URL: ${url} in ${ ms } ms` );
         return Object.assign( { duration: ms, retries: res.retries },
             res.status === 200 && res.data ? { success: true, data: res.data } : {
                 success: false, error: `Invalid response status: ${ res.status }`,
