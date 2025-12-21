@@ -4,7 +4,6 @@ import { TArgs } from '@/types/generic';
 import { TProfileData } from '@/types/profile';
 import { ProfileMerger } from '@/utils/ProfileMerger';
 import { ProfileParser } from '@/utils/ProfileParser';
-import { Wiki } from '@/utils/Wiki';
 
 export class UpdateProfile extends Job {
 
@@ -33,10 +32,6 @@ export class UpdateProfile extends Job {
                     uri, id, info: parser.info(), bio: parser.bio(),
                     related: parser.related(), media: parser.media(),
                 };
-
-                // Fetch wiki data
-                const wiki = await Wiki.profile( profileData.info!.shortName );
-                if ( wiki ) profileData.wiki = wiki;
 
                 // Update or create profile entry
                 let profile: Profile | false;
