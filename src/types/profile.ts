@@ -6,6 +6,9 @@ export type TProfileIndex< T extends string = string > = Map< T, TProfileIndexIt
 export interface TProfileIndexItem< T extends string = string > {
     readonly uri: T;
     name: string;
+    shortName: string;
+    desc?: string;
+    image?: string;
     aliases: string[];
     text: string;
 };

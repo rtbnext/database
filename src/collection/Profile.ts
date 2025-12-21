@@ -35,10 +35,15 @@ export class Profile {
     }
 
     private updateIndex ( aliases: string[] = [] ) : void {
-        if ( this.getData() ) this.item = {
-            uri: this.uri, name: this.data!.info.name,
+        const {
+            uri, info: { name, shortName }, bio: { cv },
+            wiki: { desc, image: { file, thumb } = {} } = {}
+        } = this.getData();
+
+        this.item = {
+            uri, name, shortName, desc, image: thumb ?? file,
             aliases: Utils.mergeArray( this.item.aliases, aliases, 'unique' ),
-            text: this.data!.bio.cv.join( ' ' )
+            text: Utils.buildSearchText( cv )
         };
     }
 
@@ -146,7 +151,11 @@ export class Profile {
         uriLike: string, data: TProfileData, history?: TProfileHistory, aliases: string[] = []
     ) : Profile | false {
         const uri = Utils.sanitize( uriLike );
-        const item = Profile.index.add( uri, { uri, name: data.info.name, aliases, text: data.bio.cv.join( ' ' ) } );
+        const item = Profile.index.add( uri, {
+            uri, name: data.info.name, shortName: data.info.shortName, aliases,
+            desc: data.wiki?.desc, image: data.wiki?.image?.thumb ?? data.wiki?.image?.file,
+            text: Utils.buildSearchText( data.bio.cv )
+        } );
         if ( ! item ) return false;
 
         const profile = new Profile( item );
