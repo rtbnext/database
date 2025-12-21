@@ -97,6 +97,16 @@ export class Parser {
             : [ latitude, longitude ];
     }
 
+    public static cleanStr ( value: any, allowedTags?: string[] ) : string {
+        return Parser.string( value ).replace( new RegExp( allowedTags?.length
+            ? `<\\/?(?!(${ allowedTags.join( '|' ) })\\b)(\\w+)([^>]*)>` : '<[^>]*>', 'gi'
+        ), '' ).replace( /\s+/g, ' ' ).trim();
+    }
+
+    public static decodeURI ( value: any ) : string {
+        return decodeURIComponent( Parser.string( value ) );
+    }
+
     // Special
 
     public static name (
