@@ -40,4 +40,13 @@ export class UpdateWiki extends Job {
 
 }
 
+/**
+ * UpdateWiki Job
+ * node ./dist/job/UpdateWiki.ts [silent?] [safeMode?] --profile=uri [--check] [--update] [--assign=title]
+ * @param silent Whether to suppress log output
+ * @param safeMode Whether to enable safe mode
+ * @param profile Profile URI to update
+ * @param check|update Whether to check for wiki updates
+ * @param assign Title of wiki page to assign
+ */
 jobRunner( UpdateWiki );
