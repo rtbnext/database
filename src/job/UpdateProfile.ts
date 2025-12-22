@@ -37,8 +37,10 @@ export class UpdateProfile extends Job {
                 };
 
                 // Fetch wiki data
-                const wiki = await Wiki.profile( profileData );
-                if ( wiki ) profileData.wiki = wiki;
+                if ( ! args.skipWiki ) {
+                    const wiki = await Wiki.profile( profileData );
+                    if ( wiki ) profileData.wiki = wiki;
+                }
 
                 // Update or create profile entry
                 let profile: Profile | false;
@@ -72,4 +74,12 @@ export class UpdateProfile extends Job {
 
 }
 
+/**
+ * UpdateProfile Job
+ * node ./dist/job/UpdateProfile.ts [silent?] [safeMode?] [--profile=uri1,uri2,...] [--skipWiki]
+ * @param silent Whether to suppress log output
+ * @param safeMode Whether to enable safe mode
+ * @param profile Comma-separated list of profile URIs to update
+ * @param skipWiki Whether to skip fetching wiki data
+ */
 jobRunner( UpdateProfile );
