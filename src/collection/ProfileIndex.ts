@@ -18,16 +18,19 @@ export class ProfileIndex extends Index< TProfileIndexItem, TProfileIndex > {
     }
 
     public move ( from: string, to: string, makeAlias: boolean = true ) : TProfileIndexItem | false {
-        const sanitizedFrom = Utils.sanitize( from );
-        const sanitizedTo = Utils.sanitize( to );
+        from = Utils.sanitize( from ), to = Utils.sanitize( to );
+        const data = this.index.get( from ), test = this.find( to );
+        if ( ! data || test.size > 1 ) return false;
 
-        const data = this.index.get( sanitizedFrom );
-        if ( ! data || this.find( sanitizedTo ).size ) return false;
+        const foundKey = test.keys().next().value;
+        if ( foundKey && foundKey !== from ) return false;
 
-        const item = { ...data, uri: sanitizedTo };
-        if ( makeAlias ) item.aliases.push( sanitizedFrom );
-        this.index.delete( sanitizedFrom );
-        this.index.set( sanitizedTo, item );
+        const item = { ...data, uri: to, aliases: makeAlias ? [
+            ...data.aliases.filter( alias => alias !== to ), from
+        ] : data.aliases };
+
+        this.index.delete( from );
+        this.index.set( to, item );
         this.saveIndex();
 
         return item;
