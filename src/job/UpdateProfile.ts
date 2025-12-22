@@ -49,7 +49,7 @@ export class UpdateProfile extends Job {
                 const isSimilar = ! isExisting && ( profile = ProfileMerger.findMatch( profileData ) );
                 const wiki = profile && profile.getData().wiki;
 
-                if ( Parser.boolean( args.skipWiki ) ) profileData.wiki = wiki
+                if ( ! Parser.boolean( args.skipWiki ) ) profileData.wiki = wiki
                     ? await Wiki.queryWikiPage( wiki.uri )
                     : await Wiki.fromProfileData( profileData );
 
