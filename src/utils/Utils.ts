@@ -35,6 +35,18 @@ export class Utils {
         ) as L;
     }
 
+    public static sortKeysDeep< T >( value: T, exclude: ReadonlySet< string > = new Set() ) : T {
+        if ( value === null || typeof value !== 'object' ) return value;
+        if ( Array.isArray( value ) ) return value.map( v => Utils.sortKeysDeep( v, exclude ) ) as any;
+
+        return Object.keys( value )
+            .sort( ( a, b ) => exclude.has( a ) || exclude.has( b ) ? 0 : a.localeCompare( b ) )
+            .reduce( ( acc, k ) => {
+                acc[ k ] = Utils.sortKeysDeep( ( value as any )[ k ], exclude );
+                return acc;
+            }, {} as any );
+    }
+
     public static unique< T = any > ( arr: T[] ) : T[] {
         return Array.from( new Set( arr.map( item => JSON.stringify( item ) ) ) )
             .map( item => JSON.parse( item ) );

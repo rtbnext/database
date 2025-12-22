@@ -1,6 +1,7 @@
 import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
 import { TStorageConfig } from '@/types/config';
+import { Utils } from '@/utils/Utils';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
 import { parse, stringify } from 'csv-string';
@@ -91,7 +92,7 @@ export class Storage {
     }
 
     public writeJSON< T > ( path: string, content: T ) : boolean {
-        try { this.write( path, content, 'json' ); return true }
+        try { this.write( path, Utils.sortKeysDeep( content ), 'json' ); return true }
         catch { return false }
     }
 
