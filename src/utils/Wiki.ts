@@ -113,7 +113,7 @@ export class Wiki {
             summary: { value: raw.extract ?? '', method: 'list', args: [ '\n' ], strict: false },
             sortKey: { value: raw.pageprops?.defaultsort, method: 'string' },
             wikidata: { value: qid ?? raw.pageprops?.[ 'wikibase_item' ], method: 'string' },
-            desc: { value: raw.pageprops?.[ 'wikibase-shortdesc' ], method: 'string' }
+            desc: { value: raw.pageprops?.[ 'wikibase-shortdesc' ], method: 'cleanStr' }
         } );
     }
 

@@ -31,11 +31,11 @@ export class Parser {
             : ( Parser as any )[ method ]( value, ...args ) as T;
     }
 
-    public static primitive ( value: any ) : Primitive {
+    public static primitive ( value: any, clean: boolean = true ) : Primitive {
         return value === null || value === undefined ? value
             : typeof value === 'boolean' ? value
             : ! isNaN( Number( value ) ) && value !== '' ? Parser.number( value )
-            : Parser.string( value );
+            : clean ? Parser.cleanStr( value ) : Parser.string( value );
     }
 
     public static list ( value: any, delimiter: string = ',' ) : Primitive[] {

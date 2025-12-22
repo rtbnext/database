@@ -137,8 +137,8 @@ export class ProfileParser {
                 url: { value: item.uri, method: 'string' },
                 credits: { value: item.credit, method: 'string' },
                 file: { value: item.image, method: 'string' },
-                caption: { value: item.caption, method: 'string' },
-                desc: { value: item.description, method: 'string' }
+                caption: { value: item.caption, method: 'cleanStr' },
+                desc: { value: item.description, method: 'cleanStr' }
             } )
         ) );
     }
