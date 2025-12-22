@@ -1,7 +1,7 @@
 import { Fetch } from '@/core/Fetch';
 import { TImage, TWikidata, TWiki } from '@/types/generic';
 import { TProfileData } from '@/types/profile';
-import { TWikidataResponse, TWikidataResponseItem, TWikipediaResponse } from '@/types/response';
+import { TCommonsResponse, TWikidataResponse, TWikidataResponseItem, TWikipediaResponse } from '@/types/response';
 import { Parser } from '@/utils/Parser';
 
 export class Wiki {
@@ -112,6 +112,34 @@ export class Wiki {
             wikidata: { value: qid ?? raw.pageprops?.[ 'wikibase_item' ], method: 'string' },
             desc: { value: raw.pageprops?.[ 'wikibase-shortdesc' ], method: 'cleanStr' }
         } ), image };
+    }
+
+    public static async queryCommonsImage ( title: string ) : Promise< TImage | undefined > {
+        const res = await Wiki.fetch.commons< TCommonsResponse >( {
+            action: 'query', titles: `File:${title}`, prop: 'imageinfo', redirects: 1,
+            iiprop: 'url|extmetadata', iiurlwidth: 400
+        } );
+
+        const info = res.data?.query.pages?.[ 0 ]?.imageinfo?.[ 0 ];
+        if ( ! info ) return;
+
+        const meta = info.extmetadata ?? {};
+        const thumbUrl = info.thumburl ?? Object.values( info.responsiveUrls ?? {} )[ 0 ];
+        const dateTime = meta.DateTimeOriginal?.value ?? meta.DateTime?.value;
+        const credits = Parser.list( [
+            meta.Attribution?.value || meta.Artist?.value || meta.Credit?.value,
+            meta.LicenseShortName?.value || meta.UsageTerms?.value,
+            'via Wikimedia Commons'
+        ] ).join( ', ' );
+
+        return Parser.container< TImage >( {
+            url: { value: info.descriptionurl, method: 'string' },
+            file: { value: info.url, method: 'string' },
+            thumb: { value: thumbUrl, method: 'string' },
+            caption: { value: meta.ImageDescription?.value, method: 'string' },
+            date: { value: dateTime, method: 'date', args: [ 'iso' ] },
+            credits: { value: credits, method: 'cleanStr' }
+        } );
     }
 
 }
