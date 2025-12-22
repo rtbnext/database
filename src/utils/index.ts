@@ -1,17 +1,6 @@
-import * as Const from '@/utils/Const';
-import { log, Logger } from '@/core/Logger';
-import { Parser } from '@/utils/Parser';
-import { ProfileMerger } from '@/utils/ProfileMerger';
-import { ProfileParser } from '@/utils/ProfileParser';
-import { Utils } from '@/utils/Utils';
-
-const helper = {
-    log,
-    parser: Parser,
-    profileMerger: ProfileMerger,
-    profileParser: ProfileParser,
-    utils: Utils
-} as const;
-
-export { Const, Logger, Parser, ProfileMerger, ProfileParser, Utils };
-export default helper;
+export * as Const from '@/utils/Const';
+export { Parser } from '@/utils/Parser';
+export { ProfileMerger } from '@/utils/ProfileMerger';
+export { ProfileParser } from '@/utils/ProfileParser';
+export { Utils } from '@/utils/Utils';
+export { Wiki } from '@/utils/Wiki';
