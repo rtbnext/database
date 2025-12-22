@@ -91,11 +91,11 @@ export interface TProfileResponse {
 
 export interface TListResponse {}
 
-export interface TWikiDataResponse {
-    results: { bindings: TWikiDataResponseItem[] };
+export interface TWikidataResponse {
+    results: { bindings: TWikidataResponseItem[] };
 }
 
-export type TWikiDataResponseItem = {
+export type TWikidataResponseItem = {
     item: { value: string };
     itemLabel: { value: string, xmlLang: string };
 } & { [ K in (

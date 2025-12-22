@@ -1,14 +1,14 @@
 import { Fetch } from '@/core/Fetch';
-import { TWikiData } from '@/types/generic';
+import { TWikidata } from '@/types/generic';
 import { TProfileData } from '@/types/profile';
-import { TWikiDataResponse, TWikiDataResponseItem } from '@/types/response';
+import { TWikidataResponse, TWikidataResponseItem } from '@/types/response';
 import { Parser } from '@/utils/Parser';
 
 export class Wiki {
 
     private static readonly fetch = Fetch.getInstance();
 
-    private static scoreWDItem ( item: TWikiDataResponseItem, data: Partial< TProfileData > ) : number {
+    private static scoreWDItem ( item: TWikidataResponseItem, data: Partial< TProfileData > ) : number {
         const { shortName, gender, birthDate, citizenship } = data.info ?? {};
         let score = 0;
 
@@ -44,7 +44,7 @@ export class Wiki {
         return Math.min( 1, Math.max( 0, score ) );
     }
 
-    public static async queryWikiData ( data: Partial< TProfileData > ) : Promise< TWikiData | undefined > {
+    public static async queryWikidata ( data: Partial< TProfileData > ) : Promise< TWikidata | undefined > {
         const shortName = data.info?.shortName;
         if ( ! shortName ) return;
 
@@ -76,15 +76,15 @@ export class Wiki {
             LIMIT 20
         `;
 
-        const res = await Wiki.fetch.wikidata< TWikiDataResponse >( sparql );
-        let best: { score: number, item: TWikiDataResponseItem } | undefined;
+        const res = await Wiki.fetch.wikidata< TWikidataResponse >( sparql );
+        let best: { score: number, item: TWikidataResponseItem } | undefined;
 
         for ( const item of res.data?.results.bindings ?? [] ) {
             const score = Wiki.scoreWDItem( item, data );
             if ( ! best || score > best.score ) best = { score, item };
         }
 
-        if ( best && best.score >= 0.65 ) return Parser.container< TWikiData >( {
+        if ( best && best.score >= 0.65 ) return Parser.container< TWikidata >( {
             qid: { value: best.item.item.value.split( '/' ).pop()!, method: 'string' },
             article: { value: best.item.article?.value.split( '/' ).pop(), method: 'decodeURI' },
             image: { value: best.item.image?.value.split( '/' ).pop(), method: 'decodeURI' },

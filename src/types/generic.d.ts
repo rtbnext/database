@@ -100,7 +100,7 @@ export interface TAsset {
     };
 }
 
-export interface TWikiData {
+export interface TWikidata {
     qid: string;
     article?: string;
     image?: string;
