@@ -1,6 +1,7 @@
 import { Job, jobRunner } from '@/abstract/Job';
 import { Profile } from '@/collection';
 import { TArgs } from '@/types/generic';
+import { Wiki } from '@/utils/Wiki';
 
 export class UpdateWiki extends Job {
 
@@ -8,9 +9,23 @@ export class UpdateWiki extends Job {
         super( silent, safeMode, 'UpdateWiki' );
     }
 
-    private async update ( profile: Profile ) : Promise< void > {}
+    private async update ( profile: Profile ) : Promise< void > {
+        this.log( `Updating wiki for profile: ${ profile.getUri() }` );
+        const wiki = await Wiki.profile( profile.getData() );
+        if ( ! wiki ) return;
 
-    private async assign ( profile: Profile, title: string ) : Promise< void > {}
+        profile.updateData( { wiki } );
+        profile.save();
+    }
+
+    private async assign ( profile: Profile, title: string ) : Promise< void > {
+        this.log( `Assigning wiki page "${title}" to profile: ${ profile.getUri() }` );
+        const wiki = await Wiki.queryWikiPage( title );
+        if ( ! wiki ) return;
+
+        profile.updateData( { wiki } );
+        profile.save();
+    }
 
     public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
