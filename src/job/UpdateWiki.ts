@@ -1,5 +1,5 @@
 import { Job, jobRunner } from '@/abstract/Job';
-import { Profile } from '@/collection';
+import { Profile } from '@/collection/Profile';
 import { TArgs } from '@/types/generic';
 import { Wiki } from '@/utils/Wiki';
 
@@ -23,6 +23,7 @@ export class UpdateWiki extends Job {
         const wiki = await Wiki.queryWikiPage( title );
         if ( ! wiki ) return;
 
+        wiki.image = await Wiki.queryWikiImage( wiki.uri );
         profile.updateData( { wiki } );
         profile.save();
     }
