@@ -1,8 +1,8 @@
 import { ListIndex } from '@/collection/ListIndex';
 import { Storage } from '@/core/Storage';
 import { TListIndexItem, TListSnapshot } from '@/types/list';
-import { Utils } from '@/utils/Utils';
 import { Parser } from '@/utils/Parser';
+import { Utils } from '@/utils/Utils';
 import { join } from 'node:path';
 
 export class List {
