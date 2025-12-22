@@ -1,5 +1,5 @@
-import { TLoggingConfig } from '@/types/config';
 import { Config } from '@/core/Config';
+import { TLoggingConfig } from '@/types/config';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { exit } from 'node:process';
@@ -77,3 +77,5 @@ export class Logger {
     }
 
 }
+
+export const log = Logger.getInstance();

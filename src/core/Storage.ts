@@ -1,6 +1,6 @@
-import { TStorageConfig } from '@/types/config';
-import { Logger } from '@/utils/Logger';
 import { Config } from '@/core/Config';
+import { TStorageConfig } from '@/types/config';
+import { log } from '@/utils/Logger';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
 import { parse, stringify } from 'csv-string';
@@ -8,12 +8,10 @@ import { parse, stringify } from 'csv-string';
 export class Storage {
 
     private static instance: Storage;
-    private readonly logger: Logger;
     private readonly config: TStorageConfig;
     private readonly path: string;
 
     private constructor () {
-        this.logger = Logger.getInstance();
         const { root, storage } = Config.getInstance();
         this.config = storage;
         this.path = join( root, this.config.baseDir );
@@ -21,7 +19,7 @@ export class Storage {
     }
 
     private logError ( msg: string, err: unknown ) : void {
-        this.logger.error( `${msg}: ${ ( err as Error ).message }`, err as Error );
+        log.error( `${msg}: ${ ( err as Error ).message }`, err as Error );
     }
 
     private resolvePath ( path: string ) : string {
@@ -63,6 +61,7 @@ export class Storage {
             if ( options.nl && ! content.endsWith( '\n' ) ) content += '\n';
             if ( options.append ) appendFileSync( path, content, 'utf8' );
             else writeFileSync( path, content, 'utf8' );
+            log.debug( `Wrote data to ${path} (appending: ${ String( options.append ) })` );
         } catch ( err ) {
             this.logError( `Failed to write ${path}`, err );
             throw err;
@@ -119,6 +118,7 @@ export class Storage {
                 else throw new Error( `Destination path ${to} already exists` );
             }
             renameSync( from, to );
+            log.debug( `Moved ${from} to ${to}` );
             return true;
         } catch ( err ) {
             this.logError( `Failed to move ${from} to ${to}`, err );
@@ -130,6 +130,7 @@ export class Storage {
         try {
             this.assertPath( path = this.resolvePath( path ) );
             rmSync( path, { recursive: true, force } );
+            log.debug( `Removed ${path}` );
             return true;
         } catch ( err ) {
             this.logError( `Failed to delete ${path}`, err );
@@ -138,6 +139,8 @@ export class Storage {
     }
 
     public initDB () : void {
+        log.info( `Initializing storage at ${this.path}` );
+        this.ensurePath( this.path );
         [ 'profile', 'list', 'filter', 'mover', 'stats' ].forEach(
             path => this.ensurePath( path )
         );

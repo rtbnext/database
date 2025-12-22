@@ -2,18 +2,16 @@ import { Config } from '@/core/Config';
 import { TFetchConfig } from '@/types/config';
 import { TListResponse, TProfileResponse, TResponse } from '@/types/response';
 import { Utils } from '@/utils/Utils';
-import { Logger } from '@/utils/Logger';
+import { log } from '@/utils/Logger';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 export class Fetch {
 
     private static instance: Fetch;
-    private readonly logger: Logger;
     private readonly config: TFetchConfig;
     private httpClient: AxiosInstance;
 
     private constructor () {
-        this.logger = Logger.getInstance();
         this.config = Config.getInstance().fetch;
         this.httpClient = this.setupHttpClient();
     }
@@ -36,7 +34,7 @@ export class Fetch {
     private async fetch< T > (
         url: string, method: 'get' | 'post' = 'get'
     ) : Promise< TResponse< T > > {
-        this.logger.debug( `Fetching URL: ${url} via ${ method.toUpperCase() }` );
+        log.debug( `Fetching URL: ${url} via ${ method.toUpperCase() }` );
 
         const { result: res, ms } = await Utils.measure( async () => {
             let res: AxiosResponse< T, any, {} >;
@@ -45,13 +43,13 @@ export class Fetch {
                 const headers = { ...this.config.headers, 'User-Agent': this.getRandomUserAgent() };
                 res = await this.httpClient[ method ]< T >( url, { headers } );
                 if ( res.status === 200 && res.data ) break;
-                this.logger.warn( `Request failed with status: ${ res.status }. Retrying ...` );
+                log.warn( `Request failed with status: ${ res.status }. Retrying ...` );
                 await this.getRandomDelay();
             } while ( ++retries < this.config.rateLimit.retries );
             return { ...res, retries };
         } );
 
-        this.logger.debug( `Fetched URL: ${url} in ${ ms } ms` );
+        log.debug( `Fetched URL: ${url} in ${ ms } ms` );
         return Object.assign( { duration: ms, retries: res.retries },
             res.status === 200 && res.data ? { success: true, data: res.data } : {
                 success: false, error: `Invalid response status: ${ res.status }`,
@@ -72,7 +70,7 @@ export class Fetch {
             await this.getRandomDelay();
         }
 
-        if ( urls.length ) this.logger.warn( `Batch limit reached. ${ urls.length } URLs remaining.` );
+        if ( urls.length ) log.warn( `Batch limit reached. ${ urls.length } URLs remaining.` );
         return results;
     }
 

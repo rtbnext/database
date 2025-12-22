@@ -2,7 +2,8 @@ import { Fetch } from '@/core/Fetch';
 import { TImage, TWiki, TWikiData } from '@/types/generic';
 import { TProfileData } from '@/types/profile';
 import { TCommonsResponse, TWikiDataResponse, TWikiDataResponseItem, TWikipediaResponse } from '@/types/response';
-import helper, { Parser } from '@/utils';
+import { log } from '@/utils/Logger';
+import { Parser } from '@/utils';
 
 export class Wiki {
     
@@ -156,7 +157,7 @@ export class Wiki {
 
     public static async profile ( data: Partial< TProfileData > ) : Promise< TWiki | undefined > {
         const { qid, article, image, score } = await Wiki.queryWikiData( data ) ?? {};
-        helper.log.debug( `Query WikiData for ${ data.info?.shortName }: ${ qid || 'no match' } (score: ${ score || 0 })` );
+        log.debug( `Query WikiData for ${ data.info?.shortName }: ${ qid || 'no match' } (score: ${ score || 0 })` );
 
         const articleData = article ? await this.queryWikiPage( article, qid ) : undefined;
         const imageData = image ? await this.queryCommonsImage( image )

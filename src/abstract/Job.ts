@@ -1,7 +1,11 @@
-import { Config, Fetch, Queue } from '@/core';
+import { Config } from '@/core/Config';
+import { Fetch } from '@/core/Fetch';
+import { Queue } from '@/core/Queue';
 import { TConfigObject, TLoggingConfig } from '@/types/config';
 import { TArgs } from '@/types/generic';
-import helper, { Parser, Utils } from '@/utils';
+import { log } from '@/utils/Logger';
+import { Parser } from '@/utils/Parser';
+import { Utils } from '@/utils/Utils';
 
 export abstract class Job {
 
@@ -35,11 +39,11 @@ export abstract class Job {
     }
 
     protected log ( msg: string, meta?: any, as: TLoggingConfig[ 'level' ] = 'info' ) : void {
-        if ( ! this.silent ) helper.log[ as ]( msg, meta );
+        if ( ! this.silent ) log[ as ]( msg, meta );
     }
 
     protected err ( err: unknown, msg?: string ) : void {
-        if ( ! this.silent ) helper.log.error(
+        if ( ! this.silent ) log.error(
             `Job [${this.job}] failed: ${ msg ?? ( err as Error ).message }`,
             err as Error
         );
@@ -65,10 +69,7 @@ export function jobRunner< T extends typeof Job > (
         const job = new ( cls as any )( silent, safeMode );
         ( job[ method ] as Function )( args );
     } catch ( err ) {
-        if ( ! silent ) helper.log.error(
-            `Job failed: ${ ( err as Error ).message }`,
-            err as Error
-        );
+        if ( ! silent ) log.error( `Job failed: ${ ( err as Error ).message }`, err as Error );
         if ( ! safeMode ) throw err;
     }
 }

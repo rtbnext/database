@@ -1,12 +1,12 @@
 import * as Const from '@/utils/Const';
-import { Logger } from '@/utils/Logger';
+import { log, Logger } from '@/utils/Logger';
 import { Parser } from '@/utils/Parser';
 import { ProfileMerger } from '@/utils/ProfileMerger';
 import { ProfileParser } from '@/utils/ProfileParser';
 import { Utils } from '@/utils/Utils';
 
 const helper = {
-    log: Logger.getInstance(),
+    log,
     parser: Parser,
     profileMerger: ProfileMerger,
     profileParser: ProfileParser,
