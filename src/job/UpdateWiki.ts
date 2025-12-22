@@ -22,7 +22,7 @@ export class UpdateWiki extends Job {
 
     private async update ( profile: Profile ) : Promise< void > {
         this.log( `Updating wiki for profile: ${ profile.getUri() }` );
-        const wiki = await Wiki.profile( profile.getData() );
+        const wiki = await Wiki.fromProfileData( profile.getData() );
         if ( ! wiki ) return;
 
         profile.updateData( { wiki } );
@@ -34,7 +34,6 @@ export class UpdateWiki extends Job {
         const wiki = await Wiki.queryWikiPage( title );
         if ( ! wiki ) return;
 
-        wiki.image = await Wiki.queryWikiImage( wiki.uri );
         profile.updateData( { wiki } );
         profile.save();
     }
