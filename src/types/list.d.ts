@@ -5,9 +5,10 @@ export type TListIndex< T extends string = string > = Map< T, TListIndexItem< T 
 export interface TListIndexItem< T extends string = string > {
     readonly uri: T;
     name: string;
-    short: string;
-    text: string;
+    shortName: string;
+    desc?: string;
     date: string;
+    text: string;
     count: number;
     columns: string[];
     filters: string[];
