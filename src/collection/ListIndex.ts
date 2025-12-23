@@ -1,5 +1,6 @@
 import { Index } from '@/abstract/Index';
 import { TListIndex, TListIndexItem } from '@/types/list';
+import { Ranking } from '@/utils/Ranking';
 
 export class ListIndex extends Index< TListIndexItem, TListIndex > {
 
