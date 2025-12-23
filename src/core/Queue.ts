@@ -52,7 +52,7 @@ export class Queue {
     }
 
     public add ( type: QueueType, uriLike: string, args?: Record< string, any >, prio?: number ) : boolean {
-        if ( this.queue[ type ].size > this.config.maxSize ) return false;
+        if ( ! QueueType.includes( type ) || this.queue[ type ]?.size > this.config.maxSize ) return false;
 
         const uri = Utils.sanitize( uriLike );
         const item = this.queue[ type ].get( uri );

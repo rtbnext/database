@@ -25,7 +25,7 @@ export class ManageQueue extends Job {
     public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
             const type = args.queue as QueueType;
-            if ( QueueType.includes( type ) ) throw new Error( `Invalid queue type provided: ${ type }` );
+            if ( ! QueueType.includes( type ) ) throw new Error( `Invalid queue type provided: ${ type }` );
 
             if ( Parser.boolean( args.clear ) ) this.queue.clear( type );
             else if ( typeof args.add === 'string' ) this.queue.add(
