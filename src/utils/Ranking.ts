@@ -77,9 +77,9 @@ export class Ranking {
             // Queue list for future processing if needed
             if ( queue ) {
                 const indexItem = Ranking.index.get( listUri );
-                if ( ! indexItem || indexItem.date !== main.date ) {
-                    Ranking.queue.add( 'list', listUri );
-                }
+                if ( ! indexItem || indexItem.date !== main.date ) Ranking.queue.add(
+                    'list', listUri, { year: main.date.split( '-' )[ 0 ] }
+                );
             }
         }
 
