@@ -49,6 +49,7 @@ export interface TProfileResponse {
         asianFormat?: 'N' | 'Y';
         personLists: {
             listUri: string;
+            name: string;
             rank?: number;
             bio?: string;
             finalWorth?: number;
