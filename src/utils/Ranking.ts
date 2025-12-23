@@ -1,6 +1,6 @@
 import { ListIndex } from '@/collection/ListIndex';
 import { Queue } from '@/core/Queue';
-import { TRanking } from '@/types/generic';
+import { TRanking, TRankingItem } from '@/types/generic';
 import { TProfileResponse } from '@/types/response';
 import { Parser } from '@/utils/Parser';
 
@@ -10,35 +10,20 @@ export class Ranking {
     private static readonly queue = Queue.getInstance();
 
     public static generateProfileRanking (
-        listData: TProfileResponse[ 'person' ][ 'personLists' ], rankingData: TRanking[] = [],
+        sortedLists: TProfileResponse[ 'person' ][ 'personLists' ], rankingData: TRanking[] = [],
         history: boolean = true, queue: boolean = true
     ) : TRanking[] {
-        for ( const { listUri, date: listDate, timestamp, rank, finalWorth } of listData ) {
+        const map = new Map< string, TRankingItem[] >();
+
+        for ( const { listUri, name, date: _date, timestamp, rank, finalWorth } of sortedLists ) {
             if ( [ 'rtb', 'rtrl' ].includes( listUri ) ) continue;
 
-            const date = Parser.date( listDate ?? timestamp, 'ymd' )!;
-            const list = rankingData.filter( l => l.list === listUri )[ 0 ] ?? { list: listUri, date };
-            if ( list.date === date ) continue;
+            const date = Parser.date( _date ?? timestamp, 'ymd' )!;
+            const item = { date, name, rank: Parser.strict( rank, 'number' ), networth: Parser.strict( finalWorth, 'money' ) };
 
-            if ( history && list.date ) {
-                list.history ??= [];
-                list.history.unshift( {
-                    date: list.date, rank: list.rank, networth: list.networth,
-                    prev: list.prev, next: list.next
-                } );
-            }
-
-            list.date = date;
-            list.rank = Parser.strict( rank, 'number' );
-            list.networth = Parser.strict( finalWorth, 'money' );
-
-            if ( queue ) {
-                const item = Ranking.index.get( listUri );
-                if ( ! item || item.date !== listDate ) Ranking.queue.add( 'list', listUri );
-            }
+            if ( ! map.has( listUri ) ) map.set( listUri, [] );
+            map.get( listUri )!.push( item );
         }
-
-        return rankingData;
     }
 
 }
