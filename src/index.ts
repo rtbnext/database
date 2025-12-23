@@ -1,9 +1,10 @@
+import { MergeProfile } from '@/job/MergeProfile';
 import { MoveProfile } from '@/job/MoveProfile';
 import { UpdateProfile } from '@/job/UpdateProfile';
 import { UpdateWiki } from '@/job/UpdateWiki';
 
 export const jobs = {
-    MoveProfile, UpdateProfile, UpdateWiki
+    MergeProfile, MoveProfile, UpdateProfile, UpdateWiki
 } as const;
 
 export * from '@/collection';
