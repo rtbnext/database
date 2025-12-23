@@ -52,20 +52,26 @@ export class Queue {
     }
 
     public add ( type: QueueType, uriLike: string, args?: Record< string, any >, prio?: number ) : boolean {
-        if ( ! QueueType.includes( type ) || this.queue[ type ]?.size > this.config.maxSize ) return false;
+        try {
+            if ( ! QueueType.includes( type ) ) throw new Error( `Invalid queue type provided: ${ type }` );
+            if ( this.queue[ type ].size > this.config.maxSize ) throw new Error( `Queue size limit reached for type: ${ type }` );
 
-        const uri = Utils.sanitize( uriLike );
-        const item = this.queue[ type ].get( uri );
-        const ts = item?.ts || new Date().toISOString();
-        const data: TQueueItem = { uri, ts, args, prio };
+            const uri = Utils.sanitize( uriLike );
+            const item = this.queue[ type ].get( uri );
+            const ts = item?.ts || new Date().toISOString();
+            const data: TQueueItem = { uri, ts, args, prio };
 
-        if ( JSON.stringify( item ) === JSON.stringify( data ) ) return false;
+            if ( JSON.stringify( item ) === JSON.stringify( data ) ) return false;
 
-        log.debug( `Add to queue [${type}]: ${uri} (prio: ${ prio ?? this.config.defaultPrio })` );
-        this.queue[ type ].set( uri, data );
-        this.saveQueue();
+            log.debug( `Add to queue [${type}]: ${uri} (prio: ${ prio ?? this.config.defaultPrio })` );
+            this.queue[ type ].set( uri, data );
+            this.saveQueue();
 
-        return true;
+            return true;
+        } catch ( err ) {
+            log.warn( ( err as Error ).message );
+            return false;
+        }
     }
 
     public next ( type: QueueType, n: number = 1 ) : TQueueItem[] {

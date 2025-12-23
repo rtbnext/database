@@ -1,12 +1,12 @@
 /**
  * ManageQueue Job
  * 
- * node ./dist/job/ManageQueue.ts [silent?] [safeMode?] [--queue=type] [--clear] [--add=taskUri] [--args=jsonArgs] [--prio=number]
+ * node ./dist/job/ManageQueue.ts [silent?] [safeMode?] [--queue=type] [--clear] [--add=uri1,uri2,...] [--args=jsonArgs] [--prio=number]
  * @arg silent Whether to suppress log output
  * @arg safeMode Whether to enable safe mode
  * @arg queue Type of queue to manage (default: 'profile')
  * @arg clear Whether to clear the specified queue
- * @arg add URI of the task to add to the queue
+ * @arg add Comma-separated list of URIs to add to the queue
  * @arg args JSON-encoded arguments for the task being added
  * @arg prio Priority of the task being added
  */
@@ -28,10 +28,10 @@ export class ManageQueue extends Job {
             if ( ! QueueType.includes( type ) ) throw new Error( `Invalid queue type provided: ${ type }` );
 
             if ( Parser.boolean( args.clear ) ) this.queue.clear( type );
-            else if ( typeof args.add === 'string' ) this.queue.add(
-                type, args.add, typeof args.args === 'string' ? JSON.parse( args.args ) : undefined,
+            else Parser.string( args.add ).split( ',' ).filter( Boolean ).map( uri => this.queue.add(
+                type, uri, typeof args.args === 'string' ? JSON.parse( args.args ) : undefined,
                 Parser.strict( args.prio, 'number' )
-            )
+            ) );
         } );
     }
 
