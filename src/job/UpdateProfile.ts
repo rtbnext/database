@@ -48,7 +48,7 @@ export class UpdateProfile extends Job {
 
                 let profile = Profile.find( uri );
                 const isExisting = profile && profile.verify( id );
-                const isSimilar = ! isExisting && ( profile = ProfileMerger.findMatch( profileData ) );
+                const isSimilar = ! isExisting && ( profile = ProfileMerger.findMatching( profileData )[ 0 ] );
                 const wiki = profile && profile.getData().wiki;
 
                 if ( ! Parser.boolean( args.skipWiki ) ) profileData.wiki = wiki

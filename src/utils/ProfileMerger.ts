@@ -1,6 +1,7 @@
 import { Profile } from '@/collection/Profile';
 import { ProfileIndex } from '@/collection/ProfileIndex';
 import { TProfileData } from '@/types/profile';
+import { Utils } from '@/utils/Utils';
 import { CmpStr, CmpStrResult } from 'cmpstr';
 
 CmpStr.filter.add( 'input', 'normalizeUri', ( uri: string ) : string =>
@@ -43,17 +44,18 @@ export class ProfileMerger {
         Profile.delete( source.getUri() );
     }
 
-    public static findMatch ( data: Partial< TProfileData > ) : Profile | false {
-        if ( ! data.id || ! data.uri ) return false;
+    public static findMatching ( data: Partial< TProfileData > ) : Profile[] {
+        if ( ! data.id || ! data.uri ) return [];
+        const res: Profile[] = [];
 
         for ( const uri of ProfileMerger.similarURIs( data.uri ) ) {
             const profile = Profile.get( uri );
             if ( profile && ProfileMerger.mergeableProfiles(
                 profile.getData(), data as TProfileData
-            ) ) return profile;
+            ) ) res.push( profile );
         }
 
-        return false;
+        return res;
     }
 
 }
