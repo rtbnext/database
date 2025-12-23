@@ -5,6 +5,7 @@
  * @arg silent Whether to suppress log output
  * @arg safeMode Whether to enable safe mode
  * @arg profile Comma-separated list of profile URIs to update
+ * @arg skipRanking Whether to skip ranking data generation
  * @arg skipWiki Whether to skip fetching wiki data
  * @arg replace Whether to replace profile data instead of merging
  */
@@ -16,6 +17,7 @@ import { TProfileData } from '@/types/profile';
 import { Parser } from '@/utils/Parser';
 import { ProfileMerger } from '@/utils/ProfileMerger';
 import { ProfileParser } from '@/utils/ProfileParser';
+import { Ranking } from '@/utils/Ranking';
 import { Wiki } from '@/utils/Wiki';
 
 export class UpdateProfile extends Job {
@@ -54,6 +56,12 @@ export class UpdateProfile extends Job {
                 if ( ! Parser.boolean( args.skipWiki ) ) profileData.wiki = wiki
                     ? await Wiki.queryWikiPage( wiki.uri )
                     : await Wiki.fromProfileData( profileData );
+
+                if ( ! Parser.boolean( args.skipRanking ) ) profileData.ranking =
+                    Ranking.generateProfileRanking(
+                        row.data.person.personLists,
+                        profileData.ranking
+                    );
 
                 if ( isExisting && profile ) {
                     this.log( `Updating profile: ${uri}` );
