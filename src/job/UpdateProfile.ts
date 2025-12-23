@@ -58,10 +58,7 @@ export class UpdateProfile extends Job {
                     : await Wiki.fromProfileData( profileData );
 
                 if ( ! Parser.boolean( args.skipRanking ) ) profileData.ranking =
-                    Ranking.generateProfileRanking(
-                        row.data.person.personLists,
-                        profileData.ranking
-                    );
+                    Ranking.generateProfileRanking( parser.sortedLists(), profileData.ranking );
 
                 if ( isExisting && profile ) {
                     this.log( `Updating profile: ${uri}` );
