@@ -93,6 +93,7 @@ export class Queue {
     }
 
     public clear ( type: QueueType ) {
+        log.debug( `Clear queue [${type}]` );
         this.queue[ type ].clear();
         this.saveQueue();
     }
