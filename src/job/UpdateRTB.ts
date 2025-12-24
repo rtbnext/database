@@ -15,6 +15,11 @@ export class UpdateRTB extends Job {
         await this.protect( async () => {
             const rtStats = this.stats.rt();
             const res = await this.fetch.list< TRTBResponse >( 'rtb', '0' );
+
+            if ( ! res?.success || ! res.data ) {
+                this.log( 'Request failed', res, 'warn' );
+                return;
+            }
         } );
     }
 
