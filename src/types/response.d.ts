@@ -92,6 +92,8 @@ export interface TProfileResponse {
 
 export interface TListResponse {}
 
+export interface TRTBResponse extends TListResponse {}
+
 export interface TWikidataResponse {
     results: { bindings: TWikidataResponseItem[] };
 }

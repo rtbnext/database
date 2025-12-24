@@ -1,6 +1,7 @@
 import { Job, jobRunner } from '@/abstract/Job';
 import { Stats } from '@/collection/Stats';
 import { TArgs } from '@/types/generic';
+import { TRTBResponse } from '@/types/response';
 
 export class UpdateRTB extends Job {
 
@@ -13,7 +14,7 @@ export class UpdateRTB extends Job {
     public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
             const rtStats = this.stats.rt();
-            const res = await this.fetch.list( 'rtb', '0' );
+            const res = await this.fetch.list< TRTBResponse >( 'rtb', '0' );
         } );
     }
 

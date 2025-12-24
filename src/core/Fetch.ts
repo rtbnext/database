@@ -74,8 +74,8 @@ export class Fetch {
         return results;
     }
 
-    public async list ( uriLike: string, year: string ) : Promise< TResponse< TListResponse > > {
-        return this.single< TListResponse >( this.config.endpoints.list
+    public async list< T extends TListResponse > ( uriLike: string, year: string ) : Promise< TResponse< T > > {
+        return this.single< T >( this.config.endpoints.list
             .replace( '{URI}', Utils.sanitize( uriLike ) )
             .replace( '{YEAR}', year )
         );
