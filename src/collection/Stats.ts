@@ -5,19 +5,14 @@ export class Stats {
 
     private static instance: Stats;
     private readonly storage: Storage;
-    private realtime: TRealtimeStats;
+    private data: Record< string, any > = {};
 
     private constructor () {
         this.storage = Storage.getInstance();
-        this.realtime = this.loadRealtimeStats();
-    }
-
-    private loadRealtimeStats () : TRealtimeStats {
-        return this.storage.readJSON< TRealtimeStats >( 'stats/rt.json' ) || {} as TRealtimeStats;
     }
 
     public rt () : TRealtimeStats {
-        return this.realtime;
+        return this.data.rt ||= this.storage.readJSON< TRealtimeStats >( 'stats/rt.json' ) || {};
     }
 
     public static getInstance () : Stats {
