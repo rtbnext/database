@@ -42,7 +42,6 @@ export class ProfileParser {
         return {
             ...Parser.container< Partial< TProfileData[ 'info' ] > >( {
                 deceased: { value: this.raw.deceased, method: 'boolean' },
-                dropOff: { value: this.raw.dropOff, method: 'boolean' },
                 embargo: { value: this.raw.embargo, method: 'boolean' },
                 gender: { value: this.raw.gender, method: 'gender' },
                 birthDate: { value: this.raw.birthDate, method: 'date' },
