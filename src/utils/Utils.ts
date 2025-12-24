@@ -11,7 +11,7 @@ export class Utils {
     }
 
     public static hash ( value: any ) : string {
-        return sha256( String( value ) );
+        return sha256( String( value.split( '/' ).pop() ) );
     }
 
     public static verifyHash ( value: any, hash: string ) : boolean {
