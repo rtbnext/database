@@ -93,6 +93,7 @@ export interface TProfileResponse {
 export interface TListResponse {
     personList: {
         personsLists: {
+            naturalId: string;
             name: string;
             year: number;
             listUri: string;
