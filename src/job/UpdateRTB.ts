@@ -13,6 +13,7 @@ export class UpdateRTB extends Job {
     public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
             const rtStats = this.stats.rt();
+            const res = await this.fetch.list( 'rtb', '0' );
         } );
     }
 
