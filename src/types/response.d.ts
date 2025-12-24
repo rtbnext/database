@@ -90,9 +90,56 @@ export interface TProfileResponse {
     };
 }
 
-export interface TListResponse {}
+export interface TListResponse {
+    personList: {
+        personsLists: {
+            name: string;
+            year: number;
+            listUri: string;
+            uri: string;
+            csfDisplayFields: string[];
+            bios?: string[];
+            abouts?: string[];
+        }[];
+    };
+}
 
-export interface TRTBResponse extends TListResponse {}
+export type TRTBResponse = TListResponse & {
+    personList: {
+        personsLists: {
+            rank: number;
+            finalWorth: number;
+            person?: {
+                name?: string;
+                uri?: string;
+            },
+            personName: string;
+            state?: string;
+            city?: string;
+            source: string;
+            industries: string[];
+            countryOfCitizenship?: string;
+            timestamp: number;
+            gender?: 'M' | 'F';
+            birthDate?: number;
+            lastName?: string;
+            financialAssets: {
+                exchange: string;
+                ticker: string;
+                companyName: string;
+                numberOfShares?: number;
+                sharePrice?: number;
+                currencyCode?: string;
+                exchangeRate?: number;
+                currentPrice?: number;
+            }[];
+            date?: number;
+            estWorthPrev: number;
+            privateAssetsWorth?: number;
+            archivedWorth?: number;
+        }[];
+    };
+};
 
 export interface TWikidataResponse {
     results: { bindings: TWikidataResponseItem[] };
