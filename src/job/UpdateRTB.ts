@@ -43,6 +43,7 @@ export class UpdateRTB extends Job {
             };
 
             for ( const [ i, row ] of Object.entries( entries ) ) {
+                row.date = new Date( listDate ).getTime();
                 const parser = new ListParser( row );
 
                 const uri = parser.uri();
