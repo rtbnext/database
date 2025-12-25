@@ -2,7 +2,7 @@ import { Job, jobRunner } from '@/abstract/Job';
 import { List } from '@/collection/List';
 import { Profile } from '@/collection/Profile';
 import { Stats } from '@/collection/Stats';
-import { TRTBItem } from '@/types/list';
+import { TRTBItem, TRTBSnapshot } from '@/types/list';
 import { TMover } from '@/types/mover';
 import { TProfileData } from '@/types/profile';
 import { TListResponse } from '@/types/response';
@@ -146,9 +146,15 @@ export class UpdateRTB extends Job {
 
             if ( ! list ) throw new Error( 'Failed to create or retrieve RTB list' );
             this.log( `Saving RTB list dated ${listDate} (${items.length} items)` );
-            list.saveSnapshot( { ...Utils.metaData(), date: listDate, items, stats: {
-                count, total, woman, quote: woman / count * 100
-            } } );
+            list.saveSnapshot( {
+                ...Utils.metaData(), date: listDate, items,
+                stats: Parser.container< TRTBSnapshot[ 'stats' ] >( {
+                    count: { value: count, method: 'number' },
+                    total: { value: total, method: 'money' },
+                    woman: { value: woman, method: 'number' },
+                    quote: { value: woman / count * 100, method: 'number', args: [ 3 ] }
+                } )
+            } );
 
             // save movers ...
 
