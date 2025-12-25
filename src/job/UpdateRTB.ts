@@ -27,6 +27,7 @@ export class UpdateRTB extends Job {
             const listDate = Parser.date( raw[ 0 ].date || raw[ 0 ].timestamp, 'ymd' )!;
             if ( rtStats.date === listDate ) throw new Error( 'RTB list is already up to date' );
 
+            this.log( `Processing RTB list dated ${listDate} (${raw.length} items)` );
             const items: TRTBItem[] = [];
             let count = 0, woman = 0, total = 0;
             let prev: string, next: string;
@@ -40,16 +41,15 @@ export class UpdateRTB extends Job {
 
                 const uri = parser.uri();
                 const id = parser.id();
-                const profileData = {
+                let profileData = {
                     uri, id, info: parser.info(), bio: parser.bio(),
                     assets: parser.assets()
                 };
 
-                let profile = Profile.find( uri ), named: TProfileData;
+                let profile = Profile.find( uri );
                 const isExisting = profile && profile.verify( id );
                 const isSimilar = ! isExisting && ( profile = ProfileMerger.findMatching(
-                    named = deepmerge< TProfileData >(
-                        profileData as TProfileData,
+                    profileData = deepmerge< TProfileData >( profileData as TProfileData,
                         { info: { ...parser.name() } } as TProfileData
                     )
                 )[ 0 ] );
@@ -59,14 +59,18 @@ export class UpdateRTB extends Job {
                 } else if ( isSimilar && profile ) {
                     // merge profile + add to queue (5)
                 } else {
-                    // create profile + add to queue (10)
+                    this.log( `Creating profile: ${uri}` );
+                    profile = Profile.create( uri, profileData as TProfileData, [] );
+                    this.queue.add( 'profile', uri, undefined, 10 );
                 }
 
                 // prev, next & realtime data
 
+                if ( profile ) profileData = profile.getData();
+
                 items.push( {
                     uri, rank, networth,
-                    name: '',
+                    name: profileData.info.shortName!,
                     gender: profileData.info.gender,
                     age: parser.age(),
                     citizenship: profileData.info.citizenship,
