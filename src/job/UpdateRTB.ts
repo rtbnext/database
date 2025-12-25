@@ -27,7 +27,7 @@ export class UpdateRTB extends Job {
             if ( ! res?.success || ! res.data ) throw new Error( 'Request failed' );
 
             const raw = res.data.personList.personsLists;
-            const listDate = Parser.date( raw[ 0 ].date || raw[ 0 ].timestamp, 'ymd' )!;
+            const listDate = new Date().toISOString().split( 'T' )[ 0 ];
             if ( rtStats.date === listDate ) throw new Error( 'RTB list is already up to date' );
 
             this.log( `Processing RTB list dated ${listDate} (${raw.length} items)` );
