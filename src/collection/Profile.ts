@@ -118,7 +118,7 @@ export class Profile {
 
     public save () : void {
         Profile.index.update( this.uri, this.item );
-        Profile.storage.ensurePath( this.path );
+        Profile.storage.ensurePath( this.path, true );
         if ( this.data ) Profile.storage.writeJSON< TProfileData >( join( this.path, 'profile.json' ), this.data );
         if ( this.history ) Profile.storage.writeCSV< TProfileHistory >( join( this.path, 'history.csv' ), this.history );
         if ( this.meta ) Profile.storage.writeJSON< TMetaData >( join( this.path, 'meta.json' ), this.meta );

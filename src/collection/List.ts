@@ -20,7 +20,7 @@ export class List {
 
         this.uri = item.uri;
         this.path = join( 'list', item.uri );
-        List.storage.ensurePath( this.path );
+        List.storage.ensurePath( this.path, true );
 
         this.data = item;
         this.dates = Utils.sort( List.storage.scanDir( this.path ) );

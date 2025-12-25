@@ -77,8 +77,9 @@ export class Storage {
         if ( ! this.exists( path ) ) throw new Error( `Path ${path} does not exist` );
     }
 
-    public ensurePath ( path: string ) : void {
-        mkdirSync( dirname( this.resolvePath( path ) ), { recursive: true } );
+    public ensurePath ( path: string, isDir: boolean = false ) : void {
+        path = this.resolvePath( path );
+        mkdirSync( isDir ? path : dirname( path ), { recursive: true } );
     }
 
     public scanDir ( path: string, ext: string[] = [ 'json', 'csv' ] ) : string[] {
@@ -143,7 +144,7 @@ export class Storage {
         log.info( `Initializing storage at ${this.path}` );
         this.ensurePath( this.path );
         [ 'profile', 'list', 'filter', 'mover', 'stats' ].forEach(
-            path => this.ensurePath( path )
+            path => this.ensurePath( path, true )
         );
     }
 
