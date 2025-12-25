@@ -1,9 +1,8 @@
 import { Job, jobRunner } from '@/abstract/Job';
-import { Profile } from '@/collection/Profile';
 import { Stats } from '@/collection/Stats';
 import { TArgs } from '@/types/generic';
+import { TRTBSnapshot } from '@/types/list';
 import { TRTBResponse } from '@/types/response';
-import { ProfileMerger } from '@/utils';
 import { Parser } from '@/utils/Parser';
 
 export class UpdateRTB extends Job {
@@ -25,14 +24,20 @@ export class UpdateRTB extends Job {
             if ( rtStats.date === listDate ) throw new Error( 'RTB list is already up to date' );
 
             rtStats.date = listDate;
-            const items = [];
+            const items: TRTBSnapshot[ 'items' ] = [];
 
             for ( const row of raw ) {
-                let profile = Profile.find( row.uri );
-                const isExisting = profile && profile.verify( row.naturalId );
-                const isSimilar = ! isExisting && ( profile = Profile.get(
-                    ProfileMerger.listCandidates( row.uri )[ row.uri ][ 0 ]
-                ) );
+                const data: TRTBSnapshot[ 'items' ][ number ] = {
+                    uri: row.uri,
+                    name: row.person?.name ?? row.personName,
+                    rank: row.rank,
+                    networth: row.finalWorth,
+                    gender: row.gender,
+                    age: row.birthDate,
+                    citizenship: row.countryOfCitizenship,
+                    industry: row.industries,
+                    source: row.source
+                };
             }
         } );
     }
