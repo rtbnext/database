@@ -29,19 +29,17 @@ export class UpdateRTB extends Job {
 
             this.log( `Processing RTB list dated ${listDate} (${raw.length} items)` );
             const th = Date.now() - this.config.queue.profileAge;
+            const entries = raw.filter( i => i.rank && i.finalWorth ).filter( Boolean );
             const items: TRTBItem[] = [];
             let count = 0, woman = 0, total = 0;
-            let prev: string, next: string;
 
-            for ( const row of raw ) {
+            for ( const [ i, row ] of Object.entries( entries ) ) {
                 const parser = new ListParser( row );
-
-                const rank = parser.rank();
-                const networth = parser.networth();
-                if ( ! rank || ! networth ) continue;
 
                 const uri = parser.uri();
                 const id = parser.id();
+                const rank = parser.rank()!;
+                const networth = parser.networth()!;
                 let profileData = {
                     uri, id, info: parser.info(), bio: parser.bio(),
                     assets: parser.assets()
