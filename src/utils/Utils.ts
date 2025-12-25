@@ -1,4 +1,4 @@
-import { TArgs } from '@/types/generic';
+import { TArgs, TMetaData } from '@/types/generic';
 import { hrtime } from 'node:process';
 import { ListLike } from 'devtypes/types/lists';
 import { sha256 } from 'js-sha256';
@@ -16,6 +16,10 @@ export class Utils {
 
     public static verifyHash ( value: any, hash: string ) : boolean {
         return value === hash || Utils.hash( value ) === hash;
+    }
+
+    public static metaData () : { '@metadata': TMetaData } {
+        return { '@metadata': { schemaVersion: 2, lastModified: new Date().toISOString() } };
     }
 
     public static sort< L extends ListLike > (

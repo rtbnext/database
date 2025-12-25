@@ -25,9 +25,8 @@ export class Profile {
         this.path = join( 'profile', item.uri );
         this.item = item;
 
-        this.meta = Profile.storage.readJSON< TMetaData >( join( this.path, 'meta.json' ) ) || {
-            schemaVersion: 2, lastModified: new Date().toISOString()
-        };
+        this.meta = Profile.storage.readJSON< TMetaData >( join( this.path, 'meta.json' ) ) ||
+            Utils.metaData()[ '@metadata' ];
     }
 
     private touch () : void {
