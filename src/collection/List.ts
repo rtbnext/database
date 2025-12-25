@@ -83,4 +83,10 @@ export class List {
         return this.dates.length ? this.getSnapshot< T >( this.latestDate()! ) : false;
     }
 
+    public saveSnapshot< T extends TListSnapshot > ( snapshot: T, force: boolean = false ) : boolean {
+        if ( ! force && this.availableDate( snapshot.date ) ) return false;
+        // renew list index item
+        return List.storage.writeJSON< T >( join( this.path, `${snapshot.date}.json` ), snapshot );
+    }
+
 }

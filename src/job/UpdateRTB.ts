@@ -130,7 +130,7 @@ export class UpdateRTB extends Job {
                 total += networth;
             }
 
-            // save list & movers
+            // (create) + save list & movers
 
             rtStats.date = listDate;
             rtStats.count = Parser.number( count );
