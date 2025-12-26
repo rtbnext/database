@@ -13,15 +13,18 @@ export class ProfileMerger {
     private static readonly index = ProfileIndex.getInstance();
 
     private static similarURIs ( uri: string ) : string[] {
-        return ProfileMerger.cmp.match< CmpStrResult[] >(
-            [ ...ProfileMerger.index.getIndex().keys() ], uri, 0.5
-        ).map( i => i.source );
+        const revUri = uri.split( '-' ).reverse().join( '-' );
+        const keys = [ ...ProfileMerger.index.getIndex().keys() ];
+        return [ ...new Set( [
+            ...ProfileMerger.cmp.match< CmpStrResult[] >( keys, uri, 0.9 ).map( i => i.source ),
+            ...ProfileMerger.cmp.match< CmpStrResult[] >( keys, revUri, 0.8 ).map( i => i.source )
+        ] ) ];
     }
 
     public static mergeableProfiles ( target: TProfileData, source: TProfileData ) : boolean {
         if ( target.id === source.id ) return true;
 
-        for ( const test of [ 'gender', 'birthDate', 'birthPlace', 'citizenship' ] ) if (
+        for ( const test of [ 'gender', 'birthDate', 'birthPlace', 'citizenship', 'industry' ] ) if (
             test in target.info && test in source.info &&
             JSON.stringify( ( target.info as any )[ test ] ) !==
             JSON.stringify( ( source.info as any )[ test ] )
@@ -33,7 +36,9 @@ export class ProfileMerger {
     public static mergeProfiles (
         target: Profile, source: Profile, force: boolean = false, makeAlias: boolean = true
     ) : boolean {
-        if ( ! force && ! ProfileMerger.mergeableProfiles( target.getData(), source.getData() ) ) return false;
+        if ( ! force && ! ProfileMerger.mergeableProfiles(
+            target.getData(), source.getData()
+        ) ) return false;
 
         const aliases = makeAlias ? [ source.getUri() ] : [];
         target.updateData( source.getData(), aliases, 'unique' );
