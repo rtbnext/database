@@ -8,7 +8,8 @@ export interface TQueueOptions {
 }
 
 export interface TQueueItem {
-    uri: string;
+    readonly key: string;
+    readonly uri: string;
     ts: string;
     args?: Record< string, any >;
     prio?: number;
