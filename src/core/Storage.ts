@@ -54,10 +54,10 @@ export class Storage {
         try {
             this.ensurePath( path = this.resolvePath( path ) );
             switch ( type ?? this.fileExt( path ) ) {
-                case 'csv': content = stringify( content ); break;
+                case 'csv': content = stringify( content ).trim(); break;
                 case 'json': content = JSON.stringify(
                     content, null, this.config.compressing ? undefined : 2
-                ); break;
+                ).trim(); break;
             }
             if ( options.nl && ! content.endsWith( '\n' ) ) content += '\n';
             if ( options.append ) appendFileSync( path, content, 'utf8' );
