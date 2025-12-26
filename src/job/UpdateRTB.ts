@@ -2,7 +2,7 @@ import { Job, jobRunner } from '@/abstract/Job';
 import { List } from '@/collection/List';
 import { Profile } from '@/collection/Profile';
 import { Stats } from '@/collection/Stats';
-import { TRTBItem } from '@/types/list';
+import { TListStats, TRTBItem } from '@/types/list';
 import { TMover } from '@/types/mover';
 import { TProfileData } from '@/types/profile';
 import { TQueueOptions } from '@/types/queue';
@@ -23,19 +23,20 @@ export class UpdateRTB extends Job {
 
     public async run () : Promise< void > {
         await this.protect( async () => {
-            const rtStats = this.stats.getRealtime();
             const res = await this.fetch.list< TListResponse >( 'rtb', '0' );
             if ( ! res?.success || ! res.data ) throw new Error( 'Request failed' );
 
-            const raw = res.data.personList.personsLists;
+            const { date } = this.stats.getRealtime();
             const listDate = new Date().toISOString().split( 'T' )[ 0 ];
-            if ( rtStats.date === listDate ) throw new Error( 'RTB list is already up to date' );
+            if ( date === listDate ) throw new Error( 'RTB list is already up to date' );
 
-            this.log( `Processing RTB list dated ${listDate} (${raw.length} items)` );
+            const raw = res.data.personList.personsLists;
             const th = Date.now() - this.config.queue.profileAge;
             const entries = raw.filter( i => i.rank && i.finalWorth ).filter( Boolean ).sort(
                 ( a, b ) => a.rank! - b.rank!
             );
+
+            this.log( `Processing RTB list dated ${listDate} (${entries.length} items)` );
 
             let count = 0, woman = 0, total = 0, change = 0, ytd = 0;
             const items: TRTBItem[] = [];
@@ -153,16 +154,19 @@ export class UpdateRTB extends Job {
             if ( ! list ) throw new Error( 'Failed to create or retrieve RTB list' );
             this.log( `Saving RTB list dated ${listDate} (${items.length} items)` );
 
-            rtStats.date = listDate;
-            rtStats.count = Parser.number( count );
-            rtStats.totalWealth = Parser.money( total );
-            rtStats.womanCount = Parser.number( woman );
-            rtStats.quota = Parser.number( woman / count * 100, 3 );
-            rtStats.today = { value: Parser.money( change ), pct: Parser.pct( change / total * 100 ) };
-            rtStats.ytd = { value: Parser.money( ytd ), pct: Parser.pct( ytd / total * 100 ) };
+            const stats: TListStats = Parser.container< TListStats >( {
+                date: { value: listDate, method: 'string' },
+                count: { value: count, method: 'number' },
+                totalWealth: { value: total, method: 'money' },
+                womanCount: { value: woman, method: 'number' },
+                quota: { value: woman / count * 100, method: 'pct' }
+            } );
 
-            list.saveSnapshot( { ...Utils.metaData(), date: listDate, items, stats: rtStats } );
-            this.stats.setRealtime( rtStats );
+            stats.today = { value: Parser.money( change ), pct: Parser.pct( change / total * 100 ) };
+            stats.ytd = { value: Parser.money( ytd ), pct: Parser.pct( ytd / total * 100 ) };
+
+            list.saveSnapshot( { ...Utils.metaData(), date: listDate, items, stats } );
+            this.stats.setRealtime( stats );
             this.queue.addMany( queue );
 
             // save movers ...
