@@ -5,6 +5,7 @@ import { TQueueConfig } from '@/types/config';
 import { TQueue, TQueueItem, TQueueOptions, TQueueStorage } from '@/types/queue';
 import { QueueType } from '@/utils/Const';
 import { Utils } from '@/utils/Utils';
+import { sha256 } from 'js-sha256';
 
 export class Queue {
 
@@ -39,6 +40,10 @@ export class Queue {
         ) as TQueueStorage );
     }
 
+    private key ( uri: string, args?: any ) : string {
+        return sha256( uri + JSON.stringify( args ) );
+    }
+
     public getQueue ( type: QueueType ) : TQueueItem[] {
         return Array.from( this.queue[ type ].values() );
     }
@@ -47,8 +52,13 @@ export class Queue {
         return this.queue[ type ].size;
     }
 
-    public has ( type: QueueType, uriLike: string ) : boolean {
-        return this.queue[ type ].has( Utils.sanitize( uriLike ) );
+    public getByUri ( type: QueueType, uriLike: string ) : TQueueItem[] {
+        const uri = Utils.sanitize( uriLike );
+        return [ ...this.queue[ type ].values() ].filter( i => i.uri === uri );
+    }
+
+    public hasUri ( type: QueueType, uriLike: string ) : boolean {
+        return this.getByUri( type, uriLike ).length !== 0;
     }
 
     public add ( opt: TQueueOptions, save: boolean = true ) : boolean {
@@ -58,14 +68,15 @@ export class Queue {
             if ( this.queue[ type ].size > this.config.maxSize ) throw new Error( `Queue size limit reached for type: ${ type }` );
 
             const uri = Utils.sanitize( uriLike );
-            const item = this.queue[ type ].get( uri );
+            const key = this.key( uri, args );
+            const item = this.queue[ type ].get( key );
             const ts = item?.ts || new Date().toISOString();
-            const data: TQueueItem = { uri, ts, args, prio };
+            const data: TQueueItem = { key, uri, ts, args, prio };
 
             if ( JSON.stringify( item ) === JSON.stringify( data ) ) return false;
 
             log.debug( `Add to queue [${type}]: ${uri} (prio: ${ prio ?? this.config.defaultPrio })` );
-            this.queue[ type ].set( uri, data );
+            this.queue[ type ].set( key, data );
             if ( save ) this.saveQueue();
 
             return true;
@@ -99,13 +110,13 @@ export class Queue {
         return this.next( type, n ).filter( Boolean ).map( i => i.uri );
     }
 
-    public clear ( type: QueueType ) {
+    public clear ( type: QueueType ) : void {
         log.debug( `Clear queue [${type}]` );
         this.queue[ type ].clear();
         this.saveQueue();
     }
 
-    public static getInstance () {
+    public static getInstance () : Queue {
         return Queue.instance ||= new Queue();
     }
 
