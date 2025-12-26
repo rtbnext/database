@@ -65,7 +65,7 @@ export class ListParser {
                 type: { value: 'public', method: 'string' },
                 label: { value: a.companyName, method: 'string' },
                 value: { value: a.numberOfShares && a.currentPrice
-                    ? a.numberOfShares * a.currentPrice
+                    ? a.numberOfShares * a.currentPrice / 1e6
                     : undefined, method: 'money' }
             } ),
             info: Parser.container< TAsset[ 'info' ] >( {
