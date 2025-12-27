@@ -1,16 +1,12 @@
-import { Storage } from '@/core/Storage';
-import { Utils } from '@/utils/Utils';
+import { Dated } from '@/abstract/Dated';
+import { TMover } from '@/types/mover';
 
-export class Mover {
+export class Mover extends Dated< TMover > {
 
     private static instance: Mover;
-    private readonly storage: Storage;
-    private dates: string[];
 
     private constructor () {
-        this.storage = Storage.getInstance();
-        this.storage.ensurePath( 'movers', true );
-        this.dates = Utils.sort( this.storage.scanDir( 'movers' ) );
+        super( 'mover' );
     }
 
     public static getInstance () : Mover {

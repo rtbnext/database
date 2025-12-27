@@ -34,8 +34,6 @@ export class List extends Dated< TListSnapshot > {
 
         this.data.date = snapshot.date;
         this.data.count = snapshot.stats.count;
-        this.dates = this.scanDates();
-
         return true;
     }
 
