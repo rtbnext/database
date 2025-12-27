@@ -1,22 +1,28 @@
 import { Storage } from '@/core/Storage';
 import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
+import { join } from 'node:path';
 
 export abstract class Dated {
 
     protected readonly storage: Storage;
-    private readonly path: string;
     private dates: string[];
 
-    constructor ( path: string ) {
+    constructor (
+        private readonly path: string,
+        private readonly ext: 'json' | 'csv' = 'json'
+    ) {
         this.storage = Storage.getInstance();
-        this.path = path;
         this.storage.ensurePath( this.path );
         this.dates = this.scanDates();
     }
 
-    private scanDates () : string[] {
+    protected scanDates () : string[] {
         return Utils.sort( this.storage.scanDir( this.path ) );
+    }
+
+    protected datedPath ( date: string ) : string {
+        return join( this.path, `${date}.${this.ext}` );
     }
 
     public getDates () : string[] {
@@ -51,6 +57,23 @@ export abstract class Dated {
     public latestInYear ( year: string | number ) : string | undefined {
         const target = Parser.string( year );
         return this.dates.filter( date => date.substring( 0, 4 ) === target ).at( -1 );
+    }
+
+    public getSnapshot< T > ( dateLike: string, exactMatch: boolean = true ) : T | false {
+        const target = Parser.date( dateLike )!;
+        const date = this.hasDate( target ) ? target : exactMatch ? undefined : this.nearestDate( target );
+        return date ? this.storage.readJSON< T >( this.datedPath( date ) ) : false;
+    }
+
+    public getLatest< T > () : T | false {
+        return this.dates.length ? this.getSnapshot< T >( this.latestDate()! ) : false;
+    }
+
+    public saveSnapshot< T > ( date: string, snapshot: T, force: boolean = false ) : boolean {
+        if ( ! force && this.hasDate( date ) ) return false;
+        if ( ! this.storage.writeJSON< T >( this.datedPath( date ), snapshot ) ) return false;
+        this.dates = this.scanDates();
+        return true;
     }
 
 }
