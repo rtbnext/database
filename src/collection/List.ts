@@ -1,12 +1,8 @@
 import { Dated } from '@/abstract/Dated';
 import { ListIndex } from '@/collection/ListIndex';
-import { Storage } from '@/core/Storage';
 import { TListIndexItem, TListSnapshot } from '@/types/list';
-import { Parser } from '@/utils/Parser';
-import { Utils } from '@/utils/Utils';
-import { join } from 'node:path';
 
-export class List extends Dated {
+export class List extends Dated< TListSnapshot > {
 
     private static readonly index = ListIndex.getInstance();
 
@@ -19,6 +15,14 @@ export class List extends Dated {
         super( `list/${item.uri}` );
         this.uri = item.uri;
         this.data = item;
+    }
+
+    public getUri () : string {
+        return this.uri;
+    }
+
+    public getData () : TListIndexItem {
+        return this.data;
     }
 
     public static get ( uriLike: string ) : List | false {
