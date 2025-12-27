@@ -6,11 +6,11 @@ import { join } from 'node:path';
 export abstract class Dated {
 
     protected readonly storage: Storage;
-    private dates: string[];
+    protected dates: string[];
 
     constructor (
-        private readonly path: string,
-        private readonly ext: 'json' | 'csv' = 'json'
+        protected readonly path: string,
+        protected readonly ext: 'json' | 'csv' = 'json'
     ) {
         this.storage = Storage.getInstance();
         this.storage.ensurePath( this.path );
