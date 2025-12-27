@@ -165,7 +165,7 @@ export class UpdateRTB extends Job {
             stats.today = { value: Parser.money( change ), pct: Parser.pct( change / total * 100 ) };
             stats.ytd = { value: Parser.money( ytd ), pct: Parser.pct( ytd / total * 100 ) };
 
-            list.saveSnapshot( { ...Utils.metaData(), date: listDate, items, stats } );
+            list.saveSnapshot( listDate, { ...Utils.metaData(), date: listDate, items, stats } );
             this.stats.setRealtime( stats );
             this.queue.addMany( queue );
 
