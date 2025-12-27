@@ -15,6 +15,7 @@ export abstract class Index<
     constructor ( path: string ) {
         this.storage = Storage.getInstance();
         this.path = path;
+        this.storage.ensurePath( this.path );
         this.index = this.loadIndex();
     }
 
