@@ -145,6 +145,11 @@ export class Profile {
         catch { return false }
     }
 
+    public static getByItem ( item: TProfileIndexItem ) : Profile | false {
+        try { return new Profile( item ) }
+        catch { return false }
+    }
+
     public static find ( uriLike: string ) : Profile | false {
         try { return new Profile( Profile.index.find( uriLike ).values().next().value ) }
         catch { return false }
