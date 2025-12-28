@@ -2,7 +2,7 @@ import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
 import { TFetchConfig } from '@/types/config';
 import { TListResponse, TProfileResponse, TResponse } from '@/types/response';
-import { Parser } from '@/utils';
+import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
