@@ -81,20 +81,20 @@ export class ListParser {
 
     public realtime ( data?: Partial< TProfileData >, prev?: string, next?: string ) : TRealtime | undefined {
         if ( ! this.raw.finalWorth ) return;
-        const dailyChange = this.raw.finalWorth - ( data?.realtime?.networth ?? 0 );
-        const ytdChange = this.raw.finalWorth - (
-            data?.annual?.sort( ( a, b ) => b.year - a.year
-        )?.[ 0 ]?.networth?.last ?? 0 );
+        const lastDay = data?.realtime?.networth ?? 0;
+        const dailyChange = this.raw.finalWorth - lastDay;
+        const lastYear = data?.annual?.sort( ( a, b ) => b.year - a.year )?.[ 0 ]?.networth?.last ?? 0;
+        const ytdChange = this.raw.finalWorth - lastYear;
 
         return {
             date: this.date(), rank: this.rank(), networth: this.networth(), prev, next,
-            today: data && data.realtime ? {
+            today: data && data.realtime && lastDay ? {
                 value: Parser.money( dailyChange ),
-                pct: Parser.pct( dailyChange / this.raw.finalWorth * 100 )
+                pct: Parser.pct( dailyChange / lastDay * 100 )
             } : undefined,
-            ytd: data && data.annual?.length ? {
+            ytd: data && data.annual?.length && lastYear ? {
                 value: Parser.money( ytdChange ),
-                pct: Parser.pct( ytdChange / this.raw.finalWorth * 100 )
+                pct: Parser.pct( ytdChange / lastYear * 100 )
             } : undefined
         };
     }
