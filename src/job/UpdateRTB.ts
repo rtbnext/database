@@ -12,6 +12,7 @@ import { List } from '@/collection/List';
 import { Mover } from '@/collection/Mover';
 import { Profile } from '@/collection/Profile';
 import { Stats } from '@/collection/Stats';
+import { TArgs } from '@/types/generic';
 import { TListStats, TRTBItem } from '@/types/list';
 import { TMover } from '@/types/mover';
 import { TProfileData } from '@/types/profile';
@@ -31,10 +32,11 @@ export class UpdateRTB extends Job {
         super( silent, safeMode, 'UpdateRTB' );
     }
 
-    public async run () : Promise< void > {
+    public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
-            // date => archive.org
-            const res = await this.fetch.list< TListResponse >( 'rtb', '0' );
+            const res = args.date
+                ? await this.fetch.wayback< TListResponse >( '', args.date as string )
+                : await this.fetch.list< TListResponse >( 'rtb', '0' );
             if ( ! res?.success || ! res.data ) throw new Error( 'Request failed' );
 
             const { date } = this.stats.getRealtime();
