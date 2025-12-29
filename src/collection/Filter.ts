@@ -11,7 +11,7 @@ export class Filter {
     private data: Partial< TFilterCollection > = {};
 
     private constructor () {
-        for ( const g of FilterGroup ) Filter.storage.ensurePath( `filter/${g}`, true );
+        for ( const group of FilterGroup ) Filter.storage.ensurePath( `filter/${group}`, true );
     }
 
     private saveFilter ( path: string, list: TFilter[] ) : void {
@@ -30,6 +30,13 @@ export class Filter {
 
     private saveSpecial ( special: FilterSpecial, data: TFilter[] ) : void {
         this.saveFilter( `special/${special}`, data );
+    }
+
+    public save ( collection: Partial< TFilterCollection > ) : void {
+        for ( const group of FilterGroup ) if ( collection[ group ] )
+            this.saveGroup( group, collection[ group ] );
+        for ( const special of FilterSpecial ) if ( collection.special?.[ special ] )
+            this.saveSpecial( special, collection.special[ special ] );
     }
 
     public static getInstance () : Filter {
