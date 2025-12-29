@@ -6,6 +6,10 @@ export type TStatsHistory = TStatsHistoryItem[];
 
 export type TStatsHistoryItem = [ string, number, number, number, number, number, number ];
 
+export type TDailyStats = TStatsHistory;
+
+export type TRealtimeStats = TListStats;
+
 export interface TStats< T extends string > {
     index: TMetaData & { [ K in T ]: TListStats & { first: {
         readonly uri: string;
