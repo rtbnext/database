@@ -1,6 +1,7 @@
 import { Storage } from '@/core/Storage';
 import { TFilter, TFilterCollection, TFilterList } from '@/types/filter';
-import { Utils } from '@/utils';
+import { FilterGroup, FilterSpecial } from '@/utils/Const';
+import { Utils } from '@/utils/Utils';
 
 export class Filter {
 
@@ -8,13 +9,9 @@ export class Filter {
     private static readonly storage = Storage.getInstance();
 
     private data: Partial< TFilterCollection > = {};
-    private readonly filterGroups = [
-        'industry', 'citizenship', 'country', 'state', 'gender',
-        'age', 'maritalStatus', 'special'
-    ];
 
     private constructor () {
-        for ( const g of this.filterGroups ) Filter.storage.ensurePath( `filter/${g}`, true );
+        for ( const g of FilterGroup ) Filter.storage.ensurePath( `filter/${g}`, true );
     }
 
     private saveFilter ( path: string, list: TFilter[] ) : void {
@@ -22,9 +19,17 @@ export class Filter {
             ( a, b ) => a.uri.localeCompare( b.uri )
         );
 
-        Filter.storage.writeJSON< TFilterList >( path, {
+        Filter.storage.writeJSON< TFilterList >( `filter/${path}.json`, {
             ...Utils.metaData(), items, count: items.length
         } );
+    }
+
+    private saveGroup ( group: FilterGroup, data: Record< string | number, TFilter[] > ) : void {
+        for ( const [ k, list ] of Object.entries( data ) ) this.saveFilter( `${group}/${k}`, list );
+    }
+
+    private saveSpecial ( special: FilterSpecial, data: TFilter[] ) : void {
+        this.saveFilter( `special/${special}`, data );
     }
 
     public static getInstance () : Filter {
