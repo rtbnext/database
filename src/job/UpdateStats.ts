@@ -10,6 +10,7 @@ import { Parser } from '@/utils/Parser';
 
 export class UpdateStats extends Job {
 
+    private readonly filter = Filter.getInstance();
     private readonly stats = Stats.getInstance();
 
     constructor ( silent: boolean, safeMode: boolean ) {
@@ -62,7 +63,8 @@ export class UpdateStats extends Job {
                 } );
             }
 
-            Filter.getInstance().save( filter );
+            this.filter.save( filter );
+            this.stats.scatter( scatter );
         } );
     }
 

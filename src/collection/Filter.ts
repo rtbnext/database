@@ -5,8 +5,8 @@ import { Utils } from '@/utils/Utils';
 
 export class Filter {
 
-    private static instance: Filter;
     private static readonly storage = Storage.getInstance();
+    private static instance: Filter;
 
     private data: Partial< TFilterCollection > = {};
 
