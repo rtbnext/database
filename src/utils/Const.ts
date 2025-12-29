@@ -58,3 +58,12 @@ export const AssetType = [ 'private', 'public', 'unknown' ] as const;
 
 export const QueueType = [ 'profile', 'list' ] as const;
 export type QueueType = ( typeof QueueType )[ number ];
+
+export type FilterGroup = ( typeof FilterGroup )[ number ];
+export const FilterGroup = [
+    'industry', 'citizenship', 'country', 'state', 'gender', 'age',
+    'maritalStatus', 'special'
+] as const;
+
+export type FilterSpecial = ( typeof FilterSpecial )[ number ];
+export const FilterSpecial = [ 'deceased', 'dropOff', 'family', 'selfMade:' ] as const;
