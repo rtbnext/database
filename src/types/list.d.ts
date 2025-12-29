@@ -20,8 +20,8 @@ export type TList = Record< string, TListSnapshot >;
 export type TListStats = TChange & {
     date: string;
     count: number;
-    totalWealth: number;
-    womanCount: number;
+    total: number;
+    woman: number;
     quota: number;
 };
 
