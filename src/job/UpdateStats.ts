@@ -64,7 +64,7 @@ export class UpdateStats extends Job {
             }
 
             this.filter.save( filter );
-            this.stats.scatter( scatter );
+            this.stats.setScatter( scatter );
         } );
     }
 

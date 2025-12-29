@@ -8,9 +8,12 @@ export class Stats {
 
     private constructor () {}
 
-    public scatter ( data?: TScatter ) : TScatter {
-        if ( data ) Stats.storage.writeJSON< TScatter >( 'stats/scatter.json', data );
-        return data ?? ( Stats.storage.readJSON< TScatter >( 'stats/scatter.json' ) || [] );
+    public getScatter () : TScatter {
+        return Stats.storage.readJSON< TScatter >( 'stats/scatter.json' ) || [];
+    }
+
+    public setScatter ( data: TScatter ) : void {
+        Stats.storage.writeJSON< TScatter >( 'stats/scatter.json', data );
     }
 
     public static getInstance () : Stats {
