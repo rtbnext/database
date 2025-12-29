@@ -1,8 +1,15 @@
 import { Gender, MaritalStatus } from '@/utils/Const';
+import { TMetaData } from './generic';
 
 export interface TFilter {
     readonly uri: string;
     name: string;
+}
+
+export interface TFilterList {
+    '@metadata': TMetaData;
+    items: TFilter[];
+    count: number;
 }
 
 export interface TFilterCollection {
