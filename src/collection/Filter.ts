@@ -15,7 +15,7 @@ export class Filter {
     }
 
     private setFilterData ( path: string, items: TFilter[] ) : void {
-        const [ group, key ] = path.split( '/' );
+        const [ group, key ] = path.replace( '.json', '' ).split( '/' ).slice( -2 );
         if ( ! group || ! key ) return;
 
         if ( group === 'special' ) ( this.data.special ??= {} as Record< FilterSpecial, TFilter[] > )[ key as FilterSpecial ] = items;
