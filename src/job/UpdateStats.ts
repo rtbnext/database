@@ -1,11 +1,12 @@
 import { Job, jobRunner } from '@/abstract/Job';
 import { Filter } from '@/collection/Filter';
 import { Profile } from '@/collection/Profile';
-import { Stats } from '@/collection/Stats';
 import { ProfileIndex } from '@/collection/ProfileIndex';
+import { Stats } from '@/collection/Stats';
 import { TFilter, TFilterCollection } from '@/types/filter';
 import { TArgs } from '@/types/generic';
 import { TScatter } from '@/types/stats';
+import { StatsGroup } from '@/utils/Const';
 import { Parser } from '@/utils/Parser';
 
 export class UpdateStats extends Job {
@@ -19,6 +20,7 @@ export class UpdateStats extends Job {
 
     public async run ( args: TArgs ) : Promise< void > {
         await this.protect( async () => {
+            const date = new Date().toISOString().split( 'T' )[ 0 ];
             const stats: any = { industry: {}, citizenship: {} };
             const scatter: TScatter = [];
             const filter: TFilterCollection = {
@@ -37,6 +39,7 @@ export class UpdateStats extends Job {
                 const woman = info.gender === 'f';
                 const fItem: TFilter = { uri, name: info.shortName ?? info.name };
                 const sItem = { ...fItem, gender: info.gender, age, networth };
+                const nItem = { ...fItem, rank, networth };
                 
                 if ( info.industry ) ( filter.industry[ info.industry ] ??= [] ).push( fItem );
                 if ( info.citizenship ) ( filter.citizenship[ info.citizenship ] ??= [] ).push( fItem );
@@ -52,18 +55,29 @@ export class UpdateStats extends Job {
 
                 if ( info.gender && age && networth ) scatter.push( sItem as any );
 
-                [ 'industry', 'citizenship' ].forEach( key => {
+                StatsGroup.forEach( key => {
                     const k = ( info as any )[ key ];
                     if ( k && networth ) {
-                        let s = stats[ key ][ k ];
-                        s = s || { count: 0, total: 0, woman: 0, first: { ...sItem, rank } };
-                        s.count++; s.total += networth; s.woman += +woman;
-                        if ( rank! < s.first.rank ) s.first = { ...sItem, rank };
+                        stats[ key ][ k ] ||= {
+                            date, count: 0, total: 0, woman: 0, quota: 0, first: nItem,
+                            today: { value: 0, pct: 0 }, ytd: { value: 0, pct: 0 }
+                        };
+                        stats[ key ][ k ].count++;
+                        stats[ key ][ k ].total += networth;
+                        stats[ key ][ k ].woman += +woman;
+                        stats[ key ][ k ].quota = stats[ key ][ k ].woman / stats[ key ][ k ].count * 100;
+                        if ( rank! < stats[ key ][ k ].first.rank ) stats[ key ][ k ].first = nItem;
+                        stats[ key ][ k ].today.change += realtime.today?.value ?? 0;
+                        stats[ key ][ k ].today.pct += realtime.today?.pct ?? 0;
+                        stats[ key ][ k ].ytd.change += realtime.ytd?.value ?? 0;
+                        stats[ key ][ k ].ytd.pct += realtime.ytd?.pct ?? 0;
                     }
                 } );
             }
 
             this.filter.save( filter );
+            this.stats.setGroupStats( 'industry', stats.industry );
+            this.stats.setGroupStats( 'citizenship', stats.citizenship );
             this.stats.setScatter( scatter );
         } );
     }
