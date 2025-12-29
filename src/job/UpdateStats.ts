@@ -1,6 +1,7 @@
 import { Job, jobRunner } from '@/abstract/Job';
 import { Filter } from '@/collection/Filter';
 import { Profile } from '@/collection/Profile';
+import { Stats } from '@/collection/Stats';
 import { ProfileIndex } from '@/collection/ProfileIndex';
 import { TFilter, TFilterCollection } from '@/types/filter';
 import { TArgs } from '@/types/generic';
@@ -8,6 +9,8 @@ import { TScatter } from '@/types/stats';
 import { Parser } from '@/utils/Parser';
 
 export class UpdateStats extends Job {
+
+    private readonly stats = Stats.getInstance();
 
     constructor ( silent: boolean, safeMode: boolean ) {
         super( silent, safeMode, 'UpdateStats' );
@@ -57,7 +60,6 @@ export class UpdateStats extends Job {
                         if ( rank! < s.first.rank ) s.first = { ...sItem, rank };
                     }
                 } );
-
             }
 
             Filter.getInstance().save( filter );
