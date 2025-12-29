@@ -1,13 +1,17 @@
-export type TFilter = string[];
+export interface TFilter {
+    readonly uri: string;
+    name: string;
+}
 
 export interface TFilterCollection {
-    industry: Record< string, TFilter >;
-    country: Record< string, TFilter >;
-    state: Record< string, TFilter >;
+    industry: Record< string, TFilter[] >;
+    country: Record< string, TFilter[] >;
+    state: Record< string, TFilter[] >;
+    gender: Record< string, TFilter[] >;
+    age: Record< string, TFilter[] >;
     special: {
-        gender: TFilter;
-        deceased: TFilter;
-        dropOff: TFilter;
-        family: TFilter;
+        deceased: TFilter[];
+        dropOff: TFilter[];
+        family: TFilter[];
     };
 }
