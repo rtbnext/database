@@ -1,3 +1,4 @@
+export { Filter } from '@/collection/Filter';
 export { List } from '@/collection/List';
 export { ListIndex } from '@/collection/ListIndex';
 export { Mover } from '@/collection/Mover';
