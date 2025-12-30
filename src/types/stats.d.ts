@@ -27,7 +27,26 @@ export interface TStatsCollection {
     citizenship: TStats< string >;
 }
 
-export type TAgePyramid = Record< Gender, Record< number, number > >;
+export type TStatsList< T extends string > = { [ K in T ]?: number };
+
+export type TAgePyramid = Record< Gender, {
+    groups: TStatsList< string >;
+    max: number;
+    min: number;
+    avg: number;
+} >;
+
+export interface TProfileStats {
+    gender: TStatsList< Gender >;
+    maritalStatus: TStatsList< MaritalStatus >;
+    agePyramide: TAgePyramid;
+    children: {
+        full: TStatsList< string >;
+        short: TStatsList< 'none' | 'one' | 'two' | 'three' | 'four' | '5-to-10' | 'over-10' >;
+    };
+    selfMade: TStatsList< string >;
+    philanthropyScore: TStatsList< string >;
+}
 
 export interface TScatterItem {
     readonly uri: string;
