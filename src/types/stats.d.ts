@@ -62,7 +62,7 @@ export interface TWealthStats {
     stdDev: number;
     decades: TStatsList< string >;
     gender: TStatsList< Gender >;
-    spread: TStatsList< '1' | '5' | '10' | '25' | '50' | '100' | '250' >;
+    spread: TStatsList< '1' | '2' | '5' | '10' | '20' | '50' | '100' | '200' | '500' >;
 }
 
 export interface TScatterItem {

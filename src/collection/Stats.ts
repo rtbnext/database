@@ -74,10 +74,10 @@ export class Stats {
             scatter[ medianIndex - 1 ].networth + scatter[ medianIndex ].networth
         ) / 2 : scatter[ medianIndex ].networth );
         const mean = Parser.money( total / count );
-        const variance = Parser.number( scatter.reduce( ( acc, i ) => {
+        const variance = Parser.money( scatter.reduce( ( acc, i ) => {
             const diff = i.networth - mean; return acc + diff * diff;
         }, 0 ) / count );
-        const stdDev = Parser.number( Math.sqrt( variance ) );
+        const stdDev = Parser.money( Math.sqrt( variance ) );
 
         const percentiles: TWealthStats[ 'percentiles' ] = {};
         Percentiles.forEach( p => {
@@ -99,9 +99,12 @@ export class Stats {
             const decade = Math.max( 30, Math.min( 90, Math.floor( item.age / 10 ) * 10 ) );
             decades[ decade ] = Parser.money( ( decades[ decade ] || 0 ) + item.networth );
             gender[ item.gender ] = Parser.money( ( gender[ item.gender ] || 0 ) + item.networth );
-            const spreadKey = item.networth <= 1000 ? '1' : item.networth <= 5000 ? '5' : item.networth <= 10000 ? '10' :
-                item.networth <= 25000 ? '25' : item.networth <= 50000 ? '50' : item.networth <= 100000 ? '100' : '250';
-            spread[ spreadKey ] = ( spread[ spreadKey ] || 0 ) + 1;
+
+            [ 1, 2, 5, 10, 20, 50, 100, 200, 500 ].forEach( n => {
+                if ( item.networth >= n * 1000 ) ( spread as any )[ n ] = (
+                    ( spread as any )[ n ] || 0
+                ) + 1;
+            } );
         } );
 
         this.setWealthStats( {
