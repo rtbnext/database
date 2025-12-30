@@ -22,7 +22,7 @@ export class Stats {
     }
 
     public updateHistory ( data: TRealtimeStats ) : void {
-        Stats.storage.appendCSV< TStatsHistoryItem >( 'stats/history.csv', [
+        Stats.storage.datedCSV< TStatsHistoryItem >( 'stats/history.csv', [
             data.date, data.count, data.total, data.woman, data.quota,
             data.today?.value ?? 0, data.today?.pct ?? 0
         ] );
@@ -35,7 +35,7 @@ export class Stats {
             i.today = { value: Parser.money( i.today?.value ), pct: Parser.pct( i.today?.pct ) };
             i.ytd = { value: Parser.money( i.ytd?.value ), pct: Parser.pct( i.ytd?.pct ) };
 
-            Stats.storage.appendCSV< TStatsHistoryItem >( `stats/${group}/${k}.csv`, [
+            Stats.storage.datedCSV< TStatsHistoryItem >( `stats/${group}/${k}.csv`, [
                 i.date, i.count, i.total, i.woman, i.quota, i.today?.value ?? 0, i.today?.pct ?? 0
             ] );
 
