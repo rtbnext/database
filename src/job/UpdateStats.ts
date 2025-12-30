@@ -123,6 +123,7 @@ export class UpdateStats extends Job {
             this.filter.save( filter );
             this.stats.setGroupStats( 'industry', groups.industry );
             this.stats.setGroupStats( 'citizenship', groups.citizenship );
+            this.stats.setProfileStats( pStats );
             this.stats.setScatter( scatter );
         } );
     }

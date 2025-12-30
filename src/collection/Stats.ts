@@ -1,5 +1,5 @@
 import { Storage } from '@/core/Storage';
-import { TRealtimeStats, TScatter, TStats, TStatsHistoryItem, TStatsItem } from '@/types/stats';
+import { TProfileStats, TRealtimeStats, TScatter, TStats, TStatsHistoryItem, TStatsItem } from '@/types/stats';
 import { StatsGroup } from '@/utils/Const';
 import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
@@ -45,6 +45,14 @@ export class Stats {
         Stats.storage.writeJSON< TStats< T >[ 'index' ] >( `stats/${group}/index.json`, {
             ...Utils.metaData(), ...data
         } );
+    }
+
+    public getProfileStats () : TProfileStats {
+        return Stats.storage.readJSON< TProfileStats >( 'stats/profile.json' ) || {} as TProfileStats;
+    }
+
+    public setProfileStats ( data: TProfileStats ) : void {
+        Stats.storage.writeJSON< TProfileStats >( 'stats/profile.json', data );
     }
 
     public getScatter () : TScatter {
