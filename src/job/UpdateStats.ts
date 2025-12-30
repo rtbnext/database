@@ -19,7 +19,9 @@ export class UpdateStats extends Job {
 
     public async run () : Promise< void > {
         await this.protect( async () => {
-            const date = new Date().toISOString().split( 'T' )[ 0 ];
+            const date = this.stats.getRealtime().date;
+            if ( ! date ) throw new Error( `Needs to run after UpdateRTB job` );
+
             const stats: any = { industry: {}, citizenship: {} };
             const scatter: TScatter = [];
             const filter: TFilterCollection = {
@@ -51,6 +53,8 @@ export class UpdateStats extends Job {
                 if ( info.dropOff ) filter.special.dropOff.push( fItem );
                 if ( info.family ) filter.special.family.push( fItem );
                 if ( info.selfMade?.is ) filter.special.selfMade.push( fItem );
+
+                if ( realtime?.date !== date ) continue;
 
                 if ( info.gender && age && networth ) scatter.push( sItem as any );
 
