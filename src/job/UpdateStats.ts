@@ -4,7 +4,7 @@ import { Profile } from '@/collection/Profile';
 import { ProfileIndex } from '@/collection/ProfileIndex';
 import { Stats } from '@/collection/Stats';
 import { TFilter, TFilterCollection } from '@/types/filter';
-import { TProfileStats, TScatterItem } from '@/types/stats';
+import { TProfileStats, TScatterItem, TWealthStats } from '@/types/stats';
 import { Gender, StatsGroup } from '@/utils/Const';
 import { Parser } from '@/utils/Parser';
 import { Utils } from '@/utils/Utils';
@@ -21,10 +21,10 @@ export class UpdateStats extends Job {
     public async run () : Promise< void > {
         await this.protect( async () => {
             const date = this.stats.getRealtime().date;
+            const meta = Utils.metaData();
             if ( ! date ) throw new Error( `Needs to run after UpdateRTB job` );
 
-            const groups: any = { industry: {}, citizenship: {} };
-            const pStats: TProfileStats = { ...Utils.metaData(),
+            const pStats: TProfileStats = { ...meta,
                 gender: {}, maritalStatus: {}, selfMade: {}, philanthropyScore: {},
                 children: { full: {}, short: {} },
                 agePyramid: {
@@ -34,6 +34,13 @@ export class UpdateStats extends Job {
                 }
             };
 
+            const wStats: TWealthStats = { ...meta,
+                percentiles: {}, quartiles: [ 0, 0, 0 ], total: 0,
+                max: -Infinity, min: Infinity, mean: 0, median: 0,
+                stdDev: 0, decades: {}, gender: {}, spread: {}
+            };
+
+            const groups: any = { industry: {}, citizenship: {} };
             const scatter: TScatterItem[] = [];
             const filter: TFilterCollection = {
                 industry: {}, citizenship: {}, country: {}, state: {}, gender: {}, age: {}, maritalStatus: {},
@@ -128,7 +135,7 @@ export class UpdateStats extends Job {
             this.stats.setGroupStats( 'industry', groups.industry );
             this.stats.setGroupStats( 'citizenship', groups.citizenship );
             this.stats.setProfileStats( pStats );
-            this.stats.setScatter( { ...Utils.metaData(), items: scatter } );
+            this.stats.setScatter( { ...meta, items: scatter } );
         } );
     }
 
