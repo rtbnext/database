@@ -39,7 +39,7 @@ export type TAgePyramid = Record< Gender, {
 export interface TProfileStats {
     gender: TStatsList< Gender >;
     maritalStatus: TStatsList< MaritalStatus >;
-    agePyramide: TAgePyramid;
+    agePyramid: TAgePyramid;
     children: {
         full: TStatsList< string >;
         short: TStatsList< 'none' | 'one' | 'two' | 'three' | 'four' | '5-to-10' | 'over-10' >;
