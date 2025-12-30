@@ -21,8 +21,15 @@ export class UpdateStats extends Job {
     public async run () : Promise< void > {
         await this.protect( async () => {
             const date = this.stats.getRealtime().date;
-            const meta = Utils.metaData();
             if ( ! date ) throw new Error( `Needs to run after UpdateRTB job` );
+
+            const meta = Utils.metaData();
+            const groups: any = { industry: {}, citizenship: {} };
+            const scatter: TScatterItem[] = [];
+            const filter: TFilterCollection = {
+                industry: {}, citizenship: {}, country: {}, state: {}, gender: {}, age: {}, maritalStatus: {},
+                special: { deceased: [], dropOff: [], family: [], selfMade: [] }
+            };
 
             const pStats: TProfileStats = { ...meta,
                 gender: {}, maritalStatus: {}, selfMade: {}, philanthropyScore: {},
@@ -38,13 +45,6 @@ export class UpdateStats extends Job {
                 percentiles: {}, quartiles: [ 0, 0, 0 ], total: 0,
                 max: -Infinity, min: Infinity, mean: 0, median: 0,
                 stdDev: 0, decades: {}, gender: {}, spread: {}
-            };
-
-            const groups: any = { industry: {}, citizenship: {} };
-            const scatter: TScatterItem[] = [];
-            const filter: TFilterCollection = {
-                industry: {}, citizenship: {}, country: {}, state: {}, gender: {}, age: {}, maritalStatus: {},
-                special: { deceased: [], dropOff: [], family: [], selfMade: [] }
             };
 
             for ( const item of ProfileIndex.getInstance().getIndex().values() ) {
