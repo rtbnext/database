@@ -56,10 +56,12 @@ export class UpdateStats extends Job {
                 if ( info.family ) filter.special.family.push( fItem );
                 if ( info.selfMade?.is ) filter.special.selfMade.push( fItem );
 
+                if ( info.gender && decade ) agePyramid[ info.gender ][ decade ]++;
+
+                // The following stats only consider profiles updated in the same RTB run
                 if ( realtime?.date !== date ) continue;
 
                 if ( info.gender && age && networth ) scatter.push( sItem as any );
-                if ( info.gender && decade ) agePyramid[ info.gender ][ decade ]++;
 
                 StatsGroup.forEach( key => {
                     const k = ( info as any )[ key ];
