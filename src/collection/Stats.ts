@@ -56,7 +56,7 @@ export class Stats {
     }
 
     public getScatter () : TScatter {
-        return Stats.storage.readJSON< TScatter >( 'stats/scatter.json' ) || [];
+        return Stats.storage.readJSON< TScatter >( 'stats/scatter.json' ) || {} as TScatter;
     }
 
     public setScatter ( data: TScatter ) : void {

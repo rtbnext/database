@@ -4,9 +4,10 @@ import { Profile } from '@/collection/Profile';
 import { ProfileIndex } from '@/collection/ProfileIndex';
 import { Stats } from '@/collection/Stats';
 import { TFilter, TFilterCollection } from '@/types/filter';
-import { TProfileStats, TScatter } from '@/types/stats';
+import { TProfileStats, TScatterItem } from '@/types/stats';
 import { Gender, StatsGroup } from '@/utils/Const';
 import { Parser } from '@/utils/Parser';
+import { Utils } from '@/utils/Utils';
 
 export class UpdateStats extends Job {
 
@@ -23,7 +24,7 @@ export class UpdateStats extends Job {
             if ( ! date ) throw new Error( `Needs to run after UpdateRTB job` );
 
             const groups: any = { industry: {}, citizenship: {} };
-            const pStats: TProfileStats = {
+            const pStats: TProfileStats = { ...Utils.metaData(),
                 gender: {}, maritalStatus: {}, selfMade: {}, philanthropyScore: {},
                 children: { full: {}, short: {} },
                 agePyramid: {
@@ -33,7 +34,7 @@ export class UpdateStats extends Job {
                 }
             };
 
-            const scatter: TScatter = [];
+            const scatter: TScatterItem[] = [];
             const filter: TFilterCollection = {
                 industry: {}, citizenship: {}, country: {}, state: {}, gender: {}, age: {}, maritalStatus: {},
                 special: { deceased: [], dropOff: [], family: [], selfMade: [] }
@@ -127,7 +128,7 @@ export class UpdateStats extends Job {
             this.stats.setGroupStats( 'industry', groups.industry );
             this.stats.setGroupStats( 'citizenship', groups.citizenship );
             this.stats.setProfileStats( pStats );
-            this.stats.setScatter( scatter );
+            this.stats.setScatter( { ...Utils.metaData(), items: scatter } );
         } );
     }
 

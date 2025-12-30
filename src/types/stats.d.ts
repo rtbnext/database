@@ -38,6 +38,7 @@ export type TAgePyramid = Record< Gender, {
 } >;
 
 export interface TProfileStats {
+    '@metadata': TMetaData;
     gender: TStatsList< Gender >;
     maritalStatus: TStatsList< MaritalStatus >;
     agePyramid: TAgePyramid;
@@ -57,4 +58,7 @@ export interface TScatterItem {
     networth: number;
 }
 
-export type TScatter = TScatterItem[];
+export interface TScatter {
+    '@metadata': TMetaData;
+    items: TScatterItem[];
+}
