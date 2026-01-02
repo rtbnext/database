@@ -35,6 +35,10 @@ export class Utils {
         }
     }
 
+    public static queryStr ( query: Record< string, any > ) : string {
+        return new URLSearchParams( query ).toString();
+    }
+
     // Search index
 
     public static buildSearchText ( value: any, minLength: number = 4 ) : string {
