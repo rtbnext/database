@@ -129,4 +129,11 @@ export class Parser {
         return value ? abbr( Parser.string( value ) ).toUpperCase() : undefined;
     }
 
+    public static latLng ( lat: any, lng: any ) : [ number, number ] | undefined {
+        const latitude = Parser.number( lat, 6 );
+        const longitude = Parser.number( lng, 6 );
+        return isNaN( latitude ) || isNaN( longitude ) ? undefined
+            : [ latitude, longitude ];
+    }
+
 }
