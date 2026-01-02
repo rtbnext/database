@@ -20,4 +20,19 @@ export class Utils {
         return { '@metadata': { schemaVersion: 2, lastModified: new Date().toISOString() } };
     }
 
+    public static unique< T = any > ( arr: T[] ) : T[] {
+        return Array.from( new Set( arr.map( item => JSON.stringify( item ) ) ) )
+            .map( item => JSON.parse( item ) );
+    }
+
+    public static mergeArray< T = any > (
+        target: T[], source: T[], mode: 'concat' | 'replace' | 'unique' = 'unique'
+    ) : T[] {
+        switch ( mode ) {
+            case 'concat': return [ ...target, ...source ];
+            case 'replace': return source;
+            case 'unique': return Utils.unique< T >( [ ...target, ...source ] );
+        }
+    }
+
 }
