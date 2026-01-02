@@ -23,6 +23,23 @@ export class Parser {
         return list.map( Parser.primitive ).filter( Boolean );
     }
 
+    public static map<
+        T extends Primitive,
+        L extends readonly T[] | Record< string | number, T >
+    > (
+        value: any, list: L, fb: T | undefined = undefined,
+        exactMatch: boolean = false, useKey?: boolean
+    ) : T | undefined {
+        if ( useKey === undefined ) useKey = ! Array.isArray( list );
+        value = Parser.string( value ).toLowerCase();
+        return Object.entries( list ).find( ( [ k, v ] ) => {
+            const test = Parser.string( useKey ? k : v ).toLowerCase();
+            return exactMatch ? value === test : (
+                value.includes( test ) || test.includes( value )
+            );
+        } )?.[ 1 ] || fb;
+    }
+
     // Primitive
 
     public static string ( value: any ) : string {
