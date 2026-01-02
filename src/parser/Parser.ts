@@ -9,4 +9,19 @@ export class Parser {
             : ( Parser as any )[ method ]( value, ...args ) as T;
     }
 
+    // Primitive
+
+    public static string ( value: any ) : string {
+        return String( value ).trim().replace( /\s+/g, ' ' );
+    }
+
+    public static boolean ( value: any ) : boolean {
+        const truthyValues = [ '1', 'true', 'yes', 'y' ];
+        return value !== null && value !== undefined && (
+            typeof value === 'boolean' ? value : truthyValues.includes(
+                Parser.string( value ).toLowerCase()
+            )
+        );
+    }
+
 }
