@@ -15,6 +15,12 @@ export class Parser {
         return String( value ).trim().replace( /\s+/g, ' ' );
     }
 
+    public static safeStr ( value: any, allowedTags?: string[] ) : string {
+        return Parser.string( value ).replace( new RegExp( allowedTags?.length
+            ? `<\\/?(?!(${ allowedTags.join( '|' ) })\\b)(\\w+)([^>]*)>` : '<[^>]*>', 'gi'
+        ), '' ).replace( /\s+/g, ' ' ).trim();
+    }
+
     public static boolean ( value: any ) : boolean {
         const truthyValues = [ '1', 'true', 'yes', 'y' ];
         return value !== null && value !== undefined && (
