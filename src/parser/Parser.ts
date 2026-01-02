@@ -30,4 +30,16 @@ export class Parser {
         );
     }
 
+    public static number ( value: any, digits: number = 0 ) : number {
+        return Number( Number( value ).toFixed( digits ) );
+    }
+
+    public static money ( value: any ) : number {
+        return Parser.number( value, 3 );
+    }
+
+    public static pct ( value: any, digits: number = 2 ) : number {
+        return Parser.number( value, digits );
+    }
+
 }
