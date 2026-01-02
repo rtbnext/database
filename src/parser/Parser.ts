@@ -2,6 +2,8 @@ import { Gender, IndustryResolver, MaritalStatusResolver } from '@/core/Const';
 import { TIndustryResolver, TMaritalStatusResolver } from '@/types/generic';
 import { TGender, TIndustry, TMaritalStatus } from '@rtbnext/schema/src/abstract/const';
 import { Primitive } from 'devtypes/types/primitives';
+import { getAlpha2Code } from 'i18n-iso-countries';
+import { abbr } from 'us-state-converter';
 
 export class Parser {
 
@@ -83,7 +85,7 @@ export class Parser {
             : date.toISOString().split( 'T' )[ 0 ];
     }
 
-    // Special
+    // Profile
 
     public static age ( value: any ) : number | undefined {
         const date = new Date( value );
@@ -114,6 +116,17 @@ export class Parser {
         return Parser.map< TIndustry, TIndustryResolver >(
             value, IndustryResolver, 'diversified'
         )!;
+    }
+
+    // Location
+
+    public static country ( value: any ) : string | undefined {
+        const code = getAlpha2Code( Parser.string( value ), 'en' );
+        return code ? code.toUpperCase() : undefined;
+    }
+
+    public static state ( value: any ) : string | undefined {
+        return value ? abbr( Parser.string( value ) ).toUpperCase() : undefined;
     }
 
 }
