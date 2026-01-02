@@ -1,5 +1,6 @@
 import { TArgs } from '@/types/generic';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
+import { ListLike } from 'devtypes/types/lists';
 import { sha256 } from 'js-sha256';
 
 export class Utils {
@@ -21,6 +22,39 @@ export class Utils {
         return { '@metadata': { schemaVersion: 2, lastModified: new Date().toISOString() } };
     }
 
+    // Sorting arrays and objects
+
+    public static sort< L extends ListLike > (
+        value: L, compare?: ( a: any, b: any ) => number,
+        objCompare?: ( a: any, b: any ) => number
+    ) : L {
+        compare ||= ( a, b ) => ( a > b ? 1 : a < b ? -1 : 0 );
+        objCompare ||= ( a, b ) => compare( a[ 0 ], b[ 0 ] );
+
+        return ( Array.isArray( value ) ? [ ...value ].sort( compare )
+            : value instanceof Set ? new Set( [ ...value ].sort( compare ) )
+            : value instanceof Map ? new Map( [ ...value.entries() ].sort( objCompare ) )
+            : typeof value === 'object' ? Object.fromEntries(
+                Object.entries( value ).sort( objCompare )
+            )
+            : [ ...value as Iterable< any > ].sort( compare )
+        ) as L;
+    }
+
+    public static sortKeysDeep< T >( value: T, exclude: ReadonlySet< string > = new Set() ) : T {
+        if ( value === null || typeof value !== 'object' ) return value;
+        if ( Array.isArray( value ) ) return value.map( v => Utils.sortKeysDeep( v, exclude ) ) as any;
+
+        return Object.keys( value )
+            .sort( ( a, b ) => exclude.has( a ) || exclude.has( b ) ? 0 : a.localeCompare( b ) )
+            .reduce( ( acc, k ) => {
+                acc[ k ] = Utils.sortKeysDeep( ( value as any )[ k ], exclude );
+                return acc;
+            }, {} as any );
+    }
+
+    // Array merging
+
     public static unique< T = any > ( arr: T[] ) : T[] {
         return Array.from( new Set( arr.map( item => JSON.stringify( item ) ) ) )
             .map( item => JSON.parse( item ) );
@@ -35,6 +69,8 @@ export class Utils {
             case 'unique': return Utils.unique< T >( [ ...target, ...source ] );
         }
     }
+
+    // Queries & args
 
     public static queryStr ( query: Record< string, any > ) : string {
         return new URLSearchParams( query ).toString();
