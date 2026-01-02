@@ -1,3 +1,4 @@
+import { Parser } from '@/parser/Parser';
 import { TAggregator, TArgs, TMeasuredResult } from '@/types/generic';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
 import { hrtime } from 'node:process';
@@ -9,14 +10,14 @@ export class Utils {
     // Sanitize IDs and URIs
 
     public static sanitize ( value: any, delimiter: string ) : string {
-        return String( value ).toLowerCase().trim().replace( /[^a-z0-9]/g, delimiter )
+        return Parser.string( value ).toLowerCase().replace( /[^a-z0-9]/g, delimiter )
             .replace( new RegExp( `[${delimiter}]{2,}`, 'g' ), delimiter );
     }
 
     // Hashing
 
     public static hash ( value: any ) : string {
-        return sha256( String( value.split( '/' ).pop() ) );
+        return sha256( Parser.string( value.split( '/' ).pop() ) );
     }
 
     public static verifyHash ( value: any, hash: string ) : boolean {
