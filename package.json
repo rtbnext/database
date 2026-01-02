@@ -12,11 +12,11 @@
     "build": "rollup -c & tsc-alias",
     "install": "npm run build"
   },
-  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
+    "@rtbnext/schema": "github:rtbnext/schema",
     "@types/node": "^25.0.3",
     "rollup": "^4.54.0",
     "rollup-plugin-prettier": "^4.1.2",
