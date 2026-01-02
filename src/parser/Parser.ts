@@ -6,7 +6,24 @@ import { Primitive } from 'devtypes/types/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
 import { abbr } from 'us-state-converter';
 
+export interface TParserContainer {
+    value: any;
+    type: keyof typeof Parser;
+    strict?: boolean;
+    args?: any[];
+}
+
 export class Parser {
+
+    // Container
+
+    public static container< T = any > ( obj: { [ K in keyof T ]: TParserContainer } ) : T {
+        return Object.fromEntries( Object.entries< TParserContainer >( obj ).map(
+            ( [ key, { value, type, strict = true, args } ] ) => [
+            key, strict ? Parser.strict( value, type, ...( args || [] ) )
+                : ( Parser as any )[ type ]( value, ...( args || [] ) )
+        ] ) ) as T;
+    }
 
     // Helper
 
