@@ -1,4 +1,4 @@
-import { TArgs } from '@/types/generic';
+import { TAggregator, TArgs } from '@/types/generic';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
 import { ListLike } from 'devtypes/types/lists';
 import { sha256 } from 'js-sha256';
@@ -20,6 +20,42 @@ export class Utils {
 
     public static metaData () : TMetaData {
         return { '@metadata': { schemaVersion: 2, lastModified: new Date().toISOString() } };
+    }
+
+    // Aggregate from object arrays
+
+    public static aggregate<
+        T extends Record< PropertyKey, unknown >,
+        K extends keyof T = keyof T, R = unknown
+    > (
+        arr: readonly T[], key: K, aggregator: TAggregator = 'first'
+    ) : T[ K ] | T[ K ][] | number | R | undefined {
+        const values = arr.map( item => item[ key ] ).filter(
+            ( v ): v is T[ K ] => v !== undefined
+        );
+
+        if ( ! values.length ) return undefined;
+        if ( typeof aggregator === 'function' ) return aggregator( values );
+
+        const sum = ( acc: number | undefined, val: T[ K ] ) : number | undefined => (
+            acc === undefined || typeof val !== 'number' ? undefined : acc + val
+        );
+
+        switch ( aggregator ) {
+            case 'all': return values;
+            case 'first': return values[ 0 ];
+            case 'last': return values.at( -1 );
+            case 'sum': return values.reduce< number | undefined >( sum, 0 );
+            case 'min': return values.reduce< T[ K ] | undefined >( ( acc, val ) => (
+                acc === undefined || val < acc! ? val : acc
+            ), Infinity as unknown as T[ K ] );
+            case 'max': return values.reduce< T[ K ] | undefined >( ( acc, val ) => (
+                acc === undefined || val > acc! ? val : acc
+            ), -Infinity as unknown as T[ K ] );
+            case 'mean':
+                const s = values.reduce< number | undefined >( sum, 0 );
+                return s === undefined ? undefined : s / values.length;
+        }
     }
 
     // Sorting arrays and objects
