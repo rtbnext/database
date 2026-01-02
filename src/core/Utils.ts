@@ -1,3 +1,4 @@
+import { TArgs } from '@/types/generic';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
 import { sha256 } from 'js-sha256';
 
@@ -37,6 +38,16 @@ export class Utils {
 
     public static queryStr ( query: Record< string, any > ) : string {
         return new URLSearchParams( query ).toString();
+    }
+
+    public static parseArgs ( args: readonly string[] ) : TArgs {
+        return args.reduce( ( res, a, i ) => {
+            if ( a.startsWith( '--' ) ) {
+                const [ key, val ] = a.slice( 2 ).split( '=', 2 );
+                res[ key ] = val ?? ( args[ i + 1 ]?.startsWith( '--' ) ? true : args[ ++i ] );
+            }
+            return res;
+        }, {} as TArgs );
     }
 
     // Search index
