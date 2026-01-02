@@ -1,3 +1,5 @@
+import { Primitive } from 'devtypes/types/primitives';
+
 export class Parser {
 
     // Helper
@@ -7,6 +9,13 @@ export class Parser {
     ) : T | undefined {
         return value === null || value === undefined ? undefined
             : ( Parser as any )[ method ]( value, ...args ) as T;
+    }
+
+    public static primitive ( value: any, clean: boolean = true ) : Primitive {
+        return value === null || value === undefined ? value
+            : typeof value === 'boolean' ? value
+            : ! isNaN( Number( value ) ) && value !== '' ? Parser.number( value )
+            : clean ? Parser.safeStr( value ) : Parser.string( value );
     }
 
     // Primitive
