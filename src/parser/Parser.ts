@@ -1,6 +1,7 @@
 import { Gender, IndustryResolver, MaritalStatusResolver } from '@/core/Const';
 import { TIndustryResolver, TMaritalStatusResolver } from '@/types/generic';
 import { TGender, TIndustry, TMaritalStatus } from '@rtbnext/schema/src/abstract/const';
+import { TLocation } from '@rtbnext/schema/src/abstract/generic';
 import { Primitive } from 'devtypes/types/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
 import { abbr } from 'us-state-converter';
@@ -134,6 +135,16 @@ export class Parser {
         const longitude = Parser.number( lng, 6 );
         return isNaN( latitude ) || isNaN( longitude ) ? undefined
             : [ latitude, longitude ];
+    }
+
+    public static location (
+        value: { country: any, state?: any, city?: any }
+    ) : TLocation | undefined {
+        const country = Parser.country( value.country );
+        return country ? {
+            country, state: Parser.state( value.state ),
+            city: Parser.strict( value.city, 'string' )
+        } : undefined;
     }
 
 }
