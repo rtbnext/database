@@ -1,3 +1,5 @@
+import { Gender } from '@/core/Const';
+import { TGender } from '@rtbnext/schema/src/abstract/const';
 import { Primitive } from 'devtypes/types/primitives';
 
 export class Parser {
@@ -95,6 +97,10 @@ export class Parser {
         return age === undefined ? undefined : Math.max(
             min, Math.min( max, Math.floor( age / 10 ) * 10 )
         );
+    }
+
+    public static gender ( value: any ) : TGender | undefined {
+        return Parser.map( value, Gender );
     }
 
 }
