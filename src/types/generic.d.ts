@@ -1,3 +1,5 @@
+import { TIndustry, TMaritalStatus } from '@rtbnext/schema/src/abstract/const';
+
 export type TArgs = Record< string, string | boolean >;
 
 export type TAggregator =
@@ -8,3 +10,6 @@ export interface TMeasuredResult< R > {
     result: R;
     ms: number;
 }
+
+export type TMaritalStatusResolver = Record< string, TMaritalStatus >;
+export type TIndustryResolver = Record< string, TIndustry >;
