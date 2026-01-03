@@ -2,7 +2,7 @@ import { Config } from '@/core/Config';
 import { Utils } from '@/core/Utils';
 import { Parser } from '@/parser/Parser';
 import { TFetchConfig } from '@/types/config';
-import { TResponse, TWaybackResponse } from '@/types/response';
+import { TListResponse, TProfileResponse, TResponse, TWaybackResponse } from '@/types/response';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 export class Fetch {
@@ -98,6 +98,23 @@ export class Fetch {
 
         const snapshotUrl = res.data.archived_snapshots.closest.url;
         return this.single< T >( snapshotUrl.replace( '/http', 'if_/http' ) );
+    }
+
+    public async list< T extends TListResponse > (
+        uriLike: string, year: string, ts?: any
+    ) : Promise< TResponse< T > > {
+        const url: string = this.config.endpoints.list
+            .replace( '{URI}', Utils.sanitize( uriLike ) )
+            .replace( '{YEAR}', year );
+
+        return ts ? this.wayback< T >( url, ts ) : this.single< T >( url );
+    }
+
+    public async profile ( ...uriLike: string[] ) : Promise< TResponse< TProfileResponse >[] > {
+        const url = this.config.endpoints.profile;
+        return this.batch< TProfileResponse >( uriLike.map(
+            uri => url.replace( '{URI}', Utils.sanitize( uri ) )
+        ) );
     }
 
     public static getInstance () {
