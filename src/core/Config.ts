@@ -2,7 +2,7 @@ import { Utils } from '@/core/Utils';
 import { TConfigObject } from '@/types/config';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { cwd } from 'node:process';
+import process, { cwd } from 'node:process';
 import deepmerge from 'deepmerge';
 import { parse } from 'yaml';
 
