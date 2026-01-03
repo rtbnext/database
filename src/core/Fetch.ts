@@ -10,6 +10,12 @@ export class Fetch {
 
     private constructor () {
         this.config = Config.getInstance().fetch;
+        this.httpClient = this.setupHttpClient();
+    }
+
+    private setupHttpClient () : AxiosInstance {
+        const { headers, rateLimit: { timeout } } = this.config;
+        return axios.create( { headers, timeout } );
     }
 
     public static getInstance () {
