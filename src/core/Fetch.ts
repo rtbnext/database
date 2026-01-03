@@ -1,7 +1,8 @@
 import { Config } from '@/core/Config';
 import { Utils } from '@/core/Utils';
+import { Parser } from '@/parser/Parser';
 import { TFetchConfig } from '@/types/config';
-import { TResponse } from '@/types/response';
+import { TResponse, TWaybackResponse } from '@/types/response';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 export class Fetch {
@@ -80,6 +81,23 @@ export class Fetch {
 
         if ( urls.length ) console.warn( `Batch limit reached. ${ urls.length } URLs remaining.` );
         return results;
+    }
+
+    public async wayback< T > ( url: string, ts: any ) : Promise< TResponse< T > > {
+        const timestamp = Parser.date( ts, 'ymd' )!.replaceAll( /[^\d]/g, '' );
+        const res = await this.single< TWaybackResponse >(
+            this.config.endpoints.wayback
+                .replace( '{URL}', encodeURIComponent( url ) )
+                .replace( '{TS}', timestamp )
+        );
+
+        if ( ! res?.success || ! res.data?.archived_snapshots?.closest?.available ) return {
+            success: false, error: 'No archived snapshot found',
+            duration: res.duration, retries: res.retries
+        };
+
+        const snapshotUrl = res.data.archived_snapshots.closest.url;
+        return this.single< T >( snapshotUrl.replace( '/http', 'if_/http' ) );
     }
 
     public static getInstance () {
