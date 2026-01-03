@@ -6,7 +6,7 @@ export class Storage {
 
     private static instance: Storage;
 
-    private readonly config: TStorageConfig = Config.getInstance().storage;
+    private readonly config: TStorageConfig;
     private readonly path: string;
 
     private constructor () {
