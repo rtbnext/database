@@ -1,6 +1,9 @@
 export interface TLoggingConfig {}
 
-export interface TStorageConfig {}
+export interface TStorageConfig {
+    baseDir: string;
+    compression: boolean;
+}
 
 export interface TFetchConfig {
     endpoints: {
