@@ -40,7 +40,11 @@ export class Fetch {
             let retries = 0;
 
             do {
-                const headers = { ...this.config.headers, 'User-Agent': this.getRandomUserAgent() };
+                const headers = {
+                    ...this.config.headers,
+                    'User-Agent': this.getRandomUserAgent()
+                };
+
                 res = await this.httpClient[ method ]< T >( url, { headers } );
                 if ( res.status === 200 && res.data ) break;
 
