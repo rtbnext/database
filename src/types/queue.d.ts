@@ -14,6 +14,6 @@ export interface TQueueItem {
     prio?: number;
 }
 
-export type TQueue = { [ K in QueueType ]: Map< string, TQueueItem > };
+export type TQueue = Map< string, TQueueItem >;
 
-export type TQueueStorage = { [ K in QueueType ]: TQueueItem[] };
+export type TQueueStorage = TQueueItem[];
