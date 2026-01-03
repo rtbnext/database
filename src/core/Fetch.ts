@@ -8,6 +8,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 export class Fetch {
 
     private static instance: Fetch;
+    private readonly wikiQuery = { format: 'json', formatversion: 2 };
     private readonly config: TFetchConfig;
     private httpClient: AxiosInstance;
 
@@ -79,7 +80,10 @@ export class Fetch {
             await this.getRandomDelay();
         }
 
-        if ( urls.length ) console.warn( `Batch limit reached. ${ urls.length } URLs remaining.` );
+        if ( urls.length ) console.warn(
+            `Batch limit reached. ${ urls.length } URLs remaining.`
+        );
+
         return results;
     }
 
@@ -117,6 +121,33 @@ export class Fetch {
         return this.batch< Response.TProfileResponse >( uriLike.map(
             uri => url.replace( '{URI}', Utils.sanitize( uri ) )
         ) );
+    }
+
+    public async wikipedia< T > (
+        query: Record< string, any >, lang: string = 'en'
+    ) : Promise< Response.TResponse< T > > {
+        return this.single< T >(
+            this.config.endpoints.wikipedia
+                .replace( '{QUERY}', Utils.queryStr( { ...this.wikiQuery, ...query } ) )
+                .replace( '{LANG}', lang )
+        );
+    }
+
+    public async wikidata< T > ( sparql: string ) : Promise< Response.TResponse< T > > {
+        return this.single< T >(
+            this.config.endpoints.wikidata.replace( '{SPARQL}',
+                encodeURIComponent( sparql.replace( /\s+/g, ' ' ).trim() )
+            )
+        );
+    }
+
+    public async commons< T > (
+        query: Record< string, any >
+    ) : Promise< Response.TResponse< T > > {
+        return this.single< T >(
+            this.config.endpoints.commons
+                .replace( '{QUERY}', Utils.queryStr( { ...this.wikiQuery, ...query } ) )
+        );
     }
 
     public static getInstance () {
