@@ -7,6 +7,8 @@ import { sha256 } from 'js-sha256';
 
 export class Utils {
 
+    private static metadata: TMetaData;
+
     // Sanitize IDs and URIs
 
     public static sanitize ( value: any, delimiter: string ) : string {
@@ -41,8 +43,12 @@ export class Utils {
 
     // Meta data
 
-    public static metaData () : TMetaData {
-        return { '@metadata': { schemaVersion: 2, lastModified: new Date().toISOString() } };
+    public static metaData ( force: boolean = false ) : TMetaData {
+        if ( force ) Utils.metadata = undefined!;
+        return Utils.metadata ||= { '@metadata': {
+            schemaVersion: 2,
+            lastModified: new Date().toISOString()
+        } };
     }
 
     // Aggregate from object arrays
