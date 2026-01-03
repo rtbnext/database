@@ -2,7 +2,7 @@ import { Config } from '@/core/Config';
 import { Utils } from '@/core/Utils';
 import { Parser } from '@/parser/Parser';
 import { TFetchConfig } from '@/types/config';
-import { TListResponse, TProfileResponse, TResponse, TWaybackResponse } from '@/types/response';
+import * as Response from '@/types/response';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 export class Fetch {
@@ -35,7 +35,7 @@ export class Fetch {
 
     private async fetch< T > (
         url: string, method: 'get' | 'post' = 'get'
-    ) : Promise< TResponse< T > > {
+    ) : Promise< Response.TResponse< T > > {
         const { result: res, ms } = await Utils.measure( async () => {
             let res: AxiosResponse< T, any, {} >;
             let retries = 0;
@@ -65,14 +65,14 @@ export class Fetch {
 
     public async single< T > (
         url: string, method: 'get' | 'post' = 'get'
-    ) : Promise< TResponse< T > > {
+    ) : Promise< Response.TResponse< T > > {
         return this.fetch< T >( url, method );
     }
 
     public async batch< T > (
         urls: string[], method: 'get' | 'post' = 'get'
-    ) : Promise< TResponse< T >[] > {
-        const results: TResponse< T >[] = []; let url;
+    ) : Promise< Response.TResponse< T >[] > {
+        const results: Response.TResponse< T >[] = []; let url;
 
         while ( ( url = urls.shift() ) && results.length < this.config.rateLimit.batchSize ) {
             results.push( await this.fetch< T >( url, method ) );
@@ -83,9 +83,9 @@ export class Fetch {
         return results;
     }
 
-    public async wayback< T > ( url: string, ts: any ) : Promise< TResponse< T > > {
+    public async wayback< T > ( url: string, ts: any ) : Promise< Response.TResponse< T > > {
         const timestamp = Parser.date( ts, 'ymd' )!.replaceAll( /[^\d]/g, '' );
-        const res = await this.single< TWaybackResponse >(
+        const res = await this.single< Response.TWaybackResponse >(
             this.config.endpoints.wayback
                 .replace( '{URL}', encodeURIComponent( url ) )
                 .replace( '{TS}', timestamp )
@@ -100,9 +100,9 @@ export class Fetch {
         return this.single< T >( snapshotUrl.replace( '/http', 'if_/http' ) );
     }
 
-    public async list< T extends TListResponse > (
+    public async list< T extends Response.TListResponse > (
         uriLike: string, year: string, ts?: any
-    ) : Promise< TResponse< T > > {
+    ) : Promise< Response.TResponse< T > > {
         const url: string = this.config.endpoints.list
             .replace( '{URI}', Utils.sanitize( uriLike ) )
             .replace( '{YEAR}', year );
@@ -110,9 +110,11 @@ export class Fetch {
         return ts ? this.wayback< T >( url, ts ) : this.single< T >( url );
     }
 
-    public async profile ( ...uriLike: string[] ) : Promise< TResponse< TProfileResponse >[] > {
+    public async profile ( ...uriLike: string[] ) : Promise<
+        Response.TResponse< Response.TProfileResponse >[]
+    > {
         const url = this.config.endpoints.profile;
-        return this.batch< TProfileResponse >( uriLike.map(
+        return this.batch< Response.TProfileResponse >( uriLike.map(
             uri => url.replace( '{URI}', Utils.sanitize( uri ) )
         ) );
     }
