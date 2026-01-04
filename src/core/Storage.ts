@@ -1,6 +1,6 @@
 import { Config } from '@/core/Config';
 import { TStorageConfig } from '@/types/config';
-import { join } from 'node:path';
+import { extname, join } from 'node:path';
 
 export class Storage {
 
@@ -13,6 +13,14 @@ export class Storage {
         const { root, storage } = Config.getInstance();
         this.config = storage;
         this.path = join( root, this.config.baseDir );
+    }
+
+    private resolvePath ( path: string ) : string {
+        return path.includes( this.path ) ? path : join( this.path, path );
+    }
+
+    private fileExt ( path: string ) : string {
+        return extname( this.resolvePath( path ) ).toLowerCase().replace( '.', '' );
     }
 
     public static getInstance () : Storage {
