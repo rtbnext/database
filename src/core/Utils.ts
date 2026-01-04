@@ -43,11 +43,16 @@ export class Utils {
 
     // Meta data
 
+    public static date ( format: 'ymd' | 'iso' = 'ymd' ) : string {
+        const iso = new Date().toISOString();
+        return format === 'iso' ? iso : iso.split( 'T' )[ 0 ];
+    }
+
     public static metaData ( force: boolean = false ) : TMetaData {
         if ( force ) Utils.metadata = undefined!;
         return Utils.metadata ||= { '@metadata': {
             schemaVersion: 2,
-            lastModified: new Date().toISOString()
+            lastModified: Utils.date( 'iso' )
         } };
     }
 
