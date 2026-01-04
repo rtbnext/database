@@ -1,7 +1,7 @@
 import { Config } from '@/core/Config';
 import { Utils } from '@/core/Utils';
 import { TLoggingConfig } from '@/types/config';
-import { mkdirSync } from 'node:fs';
+import { appendFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 export class Logger {
@@ -34,6 +34,15 @@ export class Logger {
         if ( meta instanceof Error ) entry.concat( `: ${ meta.stack?.replaceAll( '\n', ' // ' ) }` );
         else if ( meta ) entry.concat( `: ${ JSON.stringify( meta ) }` );
         return entry;
+    }
+
+    private log2Console ( level: TLoggingConfig[ 'level' ], entry: string ) : void {
+        ( console[ level ] ?? console.log )( entry );
+    }
+
+    private log2File ( entry: string ) : void {
+        const path = join( this.path, `${ Utils.date( 'ym' ) }.log` );
+        appendFileSync( path, entry + '\n', 'utf8' );
     }
 
 }
