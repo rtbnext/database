@@ -45,6 +45,13 @@ export class Logger {
         appendFileSync( path, entry + '\n', 'utf8' );
     }
 
+    private log ( level: TLoggingConfig[ 'level' ], msg: string, meta?: any ) : void {
+        if ( ! this.shouldLog( level ) ) return;
+        const entry = this.format( level, msg, meta );
+        if ( this.config.console ) this.log2Console( level, entry );
+        if ( this.config.file ) this.log2File( entry );
+    }
+
 }
 
 export const log = Logger.getInstance();
