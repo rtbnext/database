@@ -1,7 +1,9 @@
 import { Config } from '@/core/Config';
+import { log } from '@/core/Logger';
 import { TStorageConfig } from '@/types/config';
-import { existsSync, mkdirSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
+import { parse, stringify } from 'csv-string';
 
 export class Storage {
 
@@ -22,6 +24,19 @@ export class Storage {
 
     private fileExt ( path: string ) : string {
         return extname( this.resolvePath( path ) ).toLowerCase().replace( '.', '' );
+    }
+
+    private read ( path: string, type?: 'raw' | 'json' | 'csv' ) : any {
+        return log.catch( () => {
+            this.assertPath( path = this.resolvePath( path ) );
+            const content = readFileSync( path, 'utf8' );
+            switch ( type ?? this.fileExt( path ) ) {
+                case 'raw': return content;
+                case 'json': return JSON.parse( content );
+                case 'csv': return parse( content );
+            }
+            throw new Error( `Unsupported file extension: ${ extname( path ) }` );
+        }, `Failed to read ${path}` );
     }
 
     public exists ( path: string ) : boolean {
