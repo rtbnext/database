@@ -1,7 +1,7 @@
 import { Config } from '@/core/Config';
 import { Utils } from '@/core/Utils';
 import { TLoggingConfig } from '@/types/config';
-import { appendFileSync, mkdirSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { exit } from 'node:process';
 
@@ -67,6 +67,11 @@ export class Logger {
 
     public debug ( msg: string, meta?: any ) : void {
         this.log( 'debug', msg, meta );
+    }
+
+    public getLogFile ( date: string ) : string | undefined {
+        try { return readFileSync( join( this.path, `${ date }.log` ), 'utf8' ) }
+        catch ( e ) { this.error( `Could not read log file for date ${ date }`, e as Error ) }
     }
 
     public static getInstance () : Logger {
