@@ -1,4 +1,8 @@
-export interface TLoggingConfig {}
+export interface TLoggingConfig {
+    level: 'error' | 'warn' | 'info' | 'debug';
+    console?: boolean;
+    file?: boolean;
+}
 
 export interface TStorageConfig {
     baseDir: string;
