@@ -1,3 +1,5 @@
+import { TQueueItem, TQueueOptions } from '@/types/queue';
+
 export interface IQueue {
     getQueue () : TQueueItem[];
     size () : number;

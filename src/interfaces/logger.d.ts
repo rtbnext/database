@@ -1,3 +1,5 @@
+import { TLoggingConfig } from '@/types/config';
+
 export interface ILogger {
     error ( msg: string, error?: Error ) : void;
     errMsg ( err: unknown, msg?: string ) : void;
