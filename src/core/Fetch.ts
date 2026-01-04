@@ -1,12 +1,13 @@
 import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
 import { Utils } from '@/core/Utils';
+import { IFetch } from '@/interfaces/fetch';
 import { Parser } from '@/parser/Parser';
 import { TFetchConfig } from '@/types/config';
 import * as Resp from '@/types/response';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
-export class Fetch {
+export class Fetch implements IFetch {
 
     private static instance: Fetch;
     private readonly wikiQuery = { format: 'json', formatversion: 2 };
