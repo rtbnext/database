@@ -16,4 +16,10 @@ export class Logger {
         mkdirSync( this.path, { recursive: true } );
     }
 
+    public static getInstance () : Logger {
+        return Logger.instance ||= new Logger();
+    }
+
 }
+
+export const log = Logger.getInstance();
