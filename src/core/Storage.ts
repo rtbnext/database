@@ -1,5 +1,6 @@
 import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
+import { Utils } from '@/core/Utils';
 import { TStorageConfig } from '@/types/config';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
@@ -43,7 +44,7 @@ export class Storage {
         path: string, content: any, type?: 'raw' | 'json' | 'csv',
         options = { append: false, nl: true }
     ) : void {
-        return log.catch( () => {
+        log.catch( () => {
             this.ensurePath( path = this.resolvePath( path ) );
             switch ( type ?? this.fileExt( path ) ) {
                 case 'csv': content = stringify( content ).trim(); break;
@@ -75,6 +76,16 @@ export class Storage {
             this.assertPath( path = this.resolvePath( path ) );
             return readdirSync( path ).filter( f => ext.includes( this.fileExt( f ) ) );
         }, `Failed to scan ${path}` ) ?? [];
+    }
+
+    public readJSON< T > ( path: string ) : T | false {
+        try { return this.read( path, 'json' ) as T }
+        catch { return false }
+    }
+
+    public writeJSON< T > ( path: string, content: T ) : boolean {
+        try { this.write( path, Utils.sortKeysDeep( content ), 'json' ); return true }
+        catch { return false }
     }
 
     public static getInstance () : Storage {
