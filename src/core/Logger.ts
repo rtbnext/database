@@ -69,12 +69,31 @@ export class Logger {
         this.log( 'debug', msg, meta );
     }
 
-    public getLogFile ( date: string ) : string | undefined {
-        try { return readFileSync( join( this.path, `${ date }.log` ), 'utf8' ) }
-        catch ( e ) { this.error( `Could not read log file for date ${ date }`, e as Error ) }
+    public catch< F extends ( ...args: any[] ) => any, R = ReturnType< F > > (
+        fn: F, msg: string, level: TLoggingConfig[ 'level' ] = 'error'
+    ) : R | undefined {
+        try { return fn() }
+        catch ( err ) { this.log( level, msg, err as Error ) }
     }
 
-    getCurrentLogFile () : string | undefined {
+    public async catchAsync<
+        F extends ( ...args: any[] ) => Promise< any >,
+        R = Awaited< ReturnType< F > >
+    > (
+        fn: F, msg: string, level: TLoggingConfig[ 'level' ] = 'error'
+    ) : Promise< R | undefined > {
+        try { return await fn() }
+        catch ( err ) { this.log( level, msg, err as Error ) }
+    }
+
+    public getLogFile ( date: string ) : string | undefined {
+        return this.catch(
+            () => readFileSync( join( this.path, `${date}.log` ), 'utf8' ),
+            `Could not read log file for date ${date}`
+        );
+    }
+
+    public getCurrentLogFile () : string | undefined {
         return this.getLogFile( Utils.date( 'ym' ) );
     }
 
