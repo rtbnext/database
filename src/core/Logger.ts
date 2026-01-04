@@ -74,6 +74,10 @@ export class Logger {
         catch ( e ) { this.error( `Could not read log file for date ${ date }`, e as Error ) }
     }
 
+    getCurrentLogFile () : string | undefined {
+        return this.getLogFile( Utils.date( 'ym' ) );
+    }
+
     public static getInstance () : Logger {
         return Logger.instance ||= new Logger();
     }
