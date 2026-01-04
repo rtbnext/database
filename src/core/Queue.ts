@@ -1,4 +1,5 @@
 import { Config } from '@/core/Config';
+import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { TQueueConfig } from '@/types/config';
@@ -71,6 +72,12 @@ abstract class Queue {
         return this.getByUri( uriLike ).length !== 0;
     }
 
+    public clear () : void {
+        log.debug( `Clear queue [${this.type}]` );
+        this.queue.clear();
+        this.saveQueue();
+    }
+
     // Get items from queue (processing)
 
     public next ( n: number = 1 ) : TQueueItem[] {
@@ -81,6 +88,7 @@ abstract class Queue {
         } else break;
 
         this.saveQueue();
+        log.debug( `Process ${items.length} item(s) from queue [${this.type}]`, items );
         return items;
     }
 
