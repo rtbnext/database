@@ -1,24 +1,40 @@
 import { Config } from '@/core/Config';
+import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { TQueueConfig } from '@/types/config';
-import { TQueue, TQueueItem, TQueueType } from '@/types/queue';
+import { TQueue, TQueueItem, TQueueStorage, TQueueType } from '@/types/queue';
+import { join } from 'node:path';
 import { sha256 } from 'js-sha256';
 
 abstract class Queue {
 
+    private static readonly storage = Storage.getInstance();
+
     private readonly config: TQueueConfig;
     private readonly queueType: TQueueType;
+    private readonly path: string;
     private queue: TQueue;
 
     protected constructor ( type: TQueueType ) {
-        this.config = Config.getInstance().queue;
+        const { root, queue } = Config.getInstance();
+        this.config = queue;
         this.queueType = type;
-        this.queue = new Map();
+        this.path = join( root, `queue/${type}.json` );
+        Queue.storage.ensurePath( this.path );
+        this.queue = this.loadQueue();
+    }
+
+    private loadQueue () : TQueue {
+        return new Map( ( Queue.storage.readJSON< TQueueStorage >( this.path ) || [] ).map(
+            ( i: TQueueItem ) => [ i.key, i ]
+        ) );
     }
 
     private key ( uri: string, args?: any ) : string {
         return sha256( uri + JSON.stringify( args ) );
     }
+
+    // Basic queue operations
 
     public getQueue () : TQueueItem[] {
         return Array.from( this.queue.values() );
