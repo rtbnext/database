@@ -53,6 +53,10 @@ export class Logger {
         this.log( 'error', msg, error );
     }
 
+    public errMsg ( err: unknown, msg?: string ) : void {
+        this.log( 'error', ( msg ? `${msg}: ` : '' ) + ( err as Error ).message, err as Error );
+    }
+
     public exit ( msg: string, error?: Error ) : never {
         this.log( 'error', msg, error ); exit( 1 );
     }
