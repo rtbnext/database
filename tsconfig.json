@@ -12,6 +12,7 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
+      "@/abstract/*": [ "abstract/*" ],
       "@/core/*": [ "core/*" ],
       "@/interfaces/*": [ "interfaces/*" ],
       "@/job/*": [ "job/*" ],
