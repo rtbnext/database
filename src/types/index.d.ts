@@ -4,9 +4,9 @@ import { IListIndex, IProfileIndex } from '@/interfaces/index';
 import { IQueue } from '@/interfaces/queue';
 import { IStorage } from '@/interfaces/storage';
 
-export interface TModel {
-    profileIndex: IProfileIndex;
-    listIndex: IListIndex;
+export interface TIndex {
+    profile: IProfileIndex;
+    list: IListIndex;
 }
 
 export interface TServices {
