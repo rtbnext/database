@@ -10,6 +10,8 @@ export class ListIndex extends Index< TListIndexItem, TListIndex > implements IL
         super( 'list', 'list/index.json' );
     }
 
+    // Instantitate
+
     public static getInstance () {
         return ListIndex.instance ||= new ListIndex();
     }
