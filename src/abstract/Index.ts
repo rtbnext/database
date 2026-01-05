@@ -62,7 +62,7 @@ export abstract class Index<
             const uri = Utils.sanitize( uriLike );
             if ( ! allowUpdate && this.index.has( uri ) ) return false;
 
-            log.debug( `Updating index [${this.type}] item: ${uri}` );
+            log.debug( `Updating index [${this.type}] item: ${uri}`, data );
             const item = deepmerge< I >( this.index.get( uri ) ?? {}, data, {
                 arrayMerge: ( t, s ) => Utils.mergeArray( t, s, 'unique' )
             } );
@@ -72,6 +72,17 @@ export abstract class Index<
 
             return item;
         }, `Failed to update index [${this.type}] item: ${uriLike}` ) ?? false;
+    }
+
+    public add ( uriLike: string, data: I ) : I | false {
+        log.debug( `Adding index [${this.type}] item: ${uriLike}` );
+        return this.update( uriLike, data, false );
+    }
+
+    public delete ( uriLike: string ) : void {
+        log.debug( `Deleting index [${this.type}] item: ${uriLike}` );
+        this.index.delete( Utils.sanitize( uriLike ) );
+        this.saveIndex();
     }
 
 }
