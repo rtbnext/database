@@ -1,8 +1,10 @@
 import { Config } from '@/core/Config';
 import { FilterGroup } from '@/core/Const';
+import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { IFilter } from '@/interfaces/filter';
 import { TFilterGroup, TFilterSpecial } from '@rtbnext/schema/src/abstract/const';
+import { TFilterCollection } from '@rtbnext/schema/src/model/filter';
 import { join } from 'node:path';
 
 export class Filter implements IFilter {
@@ -11,9 +13,11 @@ export class Filter implements IFilter {
     private static instance: Filter;
 
     private readonly path: string;
+    private data: Partial< TFilterCollection > = {};
 
     private constructor () {
         this.path = join( Config.getInstance().root, 'filter' );
+        this.initDB();
     }
 
     // Path helper
@@ -30,6 +34,13 @@ export class Filter implements IFilter {
 
     private resolvePath ( path: string ) : string | false {
         return this.joinPath( ...( this.splitPath( path ) ?? [] ) as any );
+    }
+
+    // Init DB
+
+    public initDB () : void {
+        log.debug( `Initializing filter storage at ${this.path}` );
+        FilterGroup.forEach( group => Filter.storage.ensurePath( join( this.path, group ), true ) );
     }
 
     // Instantiate
