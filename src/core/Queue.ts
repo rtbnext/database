@@ -10,12 +10,12 @@ import { sha256 } from 'js-sha256';
 
 abstract class Queue implements IQueue {
 
-    private static readonly storage = Storage.getInstance();
+    protected static readonly storage = Storage.getInstance();
 
-    private readonly config: TQueueConfig;
-    private readonly type: TQueueType;
-    private readonly path: string;
-    private queue: TQueue;
+    protected readonly config: TQueueConfig;
+    protected readonly type: TQueueType;
+    protected readonly path: string;
+    protected queue: TQueue;
 
     protected constructor ( type: TQueueType ) {
         const { root, queue } = Config.getInstance();
@@ -26,13 +26,13 @@ abstract class Queue implements IQueue {
         this.queue = this.loadQueue();
     }
 
-    private loadQueue () : TQueue {
+    protected loadQueue () : TQueue {
         return new Map( ( Queue.storage.readJSON< TQueueStorage >( this.path ) || [] ).map(
             ( i: TQueueItem ) => [ i.key, i ]
         ) );
     }
 
-    private saveQueue () : void {
+    protected saveQueue () : void {
         const { defaultPrio = 0 } = this.config;
         Queue.storage.writeJSON< TQueueStorage >( this.path,
             Array.from( this.queue.values() ).sort( ( a: TQueueItem, b: TQueueItem ) =>
@@ -42,7 +42,7 @@ abstract class Queue implements IQueue {
         );
     }
 
-    private key ( uri: string, args?: any ) : string {
+    protected key ( uri: string, args?: any ) : string {
         return sha256( uri + JSON.stringify( args ) );
     }
 
