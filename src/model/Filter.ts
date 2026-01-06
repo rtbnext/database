@@ -4,7 +4,7 @@ import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IFilter } from '@/interfaces/filter';
 import { TFilterGroup, TFilterSpecial } from '@rtbnext/schema/src/abstract/const';
-import { TFilter, TFilterItem, TFilterCollection } from '@rtbnext/schema/src/model/filter';
+import { TFilter, TFilterItem, TFilterList } from '@rtbnext/schema/src/model/filter';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import { join } from 'node:path';
 
@@ -13,7 +13,7 @@ export class Filter implements IFilter {
     private static readonly storage = Storage.getInstance();
     private static instance: Filter;
 
-    private data: Partial< TFilterCollection > = {};
+    private data: Partial< TFilterList > = {};
 
     private constructor () {
         this.initDB();
@@ -90,6 +90,12 @@ export class Filter implements IFilter {
 
     private saveSpecial ( special: TFilterSpecial, data: TFilterItem[] ) : void {
         this.saveFilter( 'special', special, data );
+    }
+
+    // Get filter
+
+    public getFilter ( group: TFilterGroup, key: string ) : TFilterItem[] | false {
+        return ( this.data[ group ] as any )?.[ key ] ?? this.loadFilter( group, key ) ?? [];
     }
 
     // Instantiate
