@@ -144,4 +144,33 @@ export class Filter implements IFilter {
         return Filter.instance ||= new Filter();
     }
 
+    // Aggregate filter data
+
+    public static aggregate (
+        data: TProfileData, col: Partial< TFilterList > = { special: {
+            deceased: [], dropOff: [], family: [], selfMade: []
+        } }
+    ) : Partial< TFilterList > {
+        const { uri, info: {
+            shortName, name, industry, citizenship, residence, gender,
+            maritalStatus, deceased, dropOff, family, selfMade
+        }, realtime } = data;
+
+        const item: TFilterItem = { uri, name: shortName ?? name, value: undefined };
+
+        if ( industry ) ( ( col.industry ??= {} )[ industry ] ??= [] ).push( { ...item, value: industry } );
+        if ( citizenship ) ( ( col.citizenship ??= {} )[ citizenship ] ??= [] ).push( { ...item, value: citizenship } );
+        if ( residence?.country ) ( ( col.country ??= {} )[ residence.country ] ??= [] ).push( { ...item, value: residence.country } );
+        if ( residence?.state ) ( ( col.state ??= {} )[ residence.state ] ??= [] ).push( { ...item, value: residence.state } );
+        if ( gender ) ( ( col.gender ??= {} )[ gender ] ??= [] ).push( { ...item, value: gender } );
+        if ( maritalStatus ) ( ( col.maritalStatus ??= {} )[ maritalStatus ] ??= [] ).push( { ...item, value: maritalStatus } );
+
+        if ( deceased ) col.special?.deceased.push( item );
+        if ( dropOff ) col.special?.dropOff.push( { ...item, value: realtime?.date } );
+        if ( family ) col.special?.family.push( item );
+        if ( selfMade.is ) col.special?.selfMade.push( { ...item, value: selfMade.rank } );
+
+        return col;
+    }
+
 }
