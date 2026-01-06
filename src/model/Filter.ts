@@ -121,6 +121,16 @@ export class Filter implements IFilter {
         return this.data.special?.[ special ] || [];
     }
 
+    // Has filter
+
+    public has ( path: string, uriLike: string ) : boolean {
+        const [ group, key ] = this.splitPath( path ) ?? [];
+        const uri = Utils.sanitize( uriLike );
+        return !! group && !! key && (
+            ( this.getFilter( group, key ) || [] ).some( i => i.uri === uri )
+        );
+    }
+
     // Instantiate
 
     public static getInstance () : Filter {
