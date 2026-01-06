@@ -5,6 +5,7 @@ import { Storage } from '@/core/Storage';
 import { Filter } from '@/model/Filter';
 import { ProfileIndex } from '@/model/ProfileIndex';
 import { ListIndex } from '@/model/ListIndex';
+import { Mover } from '@/model/Mover';
 import { TIndex, TModel, TServices } from '@/types/index';
 
 export * as Const from '@/core/Const';
@@ -24,5 +25,6 @@ export const index: TIndex = {
 };
 
 export const model: TModel = {
-    filter: Filter.getInstance()
+    filter: Filter.getInstance(),
+    mover: Mover.getInstance()
 }
