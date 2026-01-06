@@ -5,7 +5,7 @@ import { Utils } from '@/core/Utils';
 import { IFilter } from '@/interfaces/filter';
 import { Parser } from '@/parser/Parser';
 import { TFilterGroup, TFilterSpecial } from '@rtbnext/schema/src/abstract/const';
-import { TFilter, TFilterItem, TFilterList } from '@rtbnext/schema/src/model/filter';
+import { TFilter, TFilterCollection, TFilterItem, TFilterList } from '@rtbnext/schema/src/model/filter';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import { join } from 'node:path';
 
@@ -14,7 +14,7 @@ export class Filter implements IFilter {
     private static readonly storage = Storage.getInstance();
     private static instance: Filter;
 
-    private data: Partial< TFilterList > = {};
+    private data: Partial< TFilterCollection > = {};
 
     private constructor () {
         this.initDB();
@@ -50,23 +50,23 @@ export class Filter implements IFilter {
         );
     }
 
-    private setFilterData ( group: TFilterGroup, key: string, items: TFilterItem[] ) : void {
-        ( this.data[ group ] ??= {} as any )[ key ] = items;
+    private setFilterData ( group: TFilterGroup, key: string, filter: TFilter ) : void {
+        ( this.data[ group ] ??= {} as any )[ key ] = filter;
     }
 
     // Load & save filter
 
-    private loadFilter ( group: TFilterGroup, key: string ) : TFilterItem[] | undefined {
+    private loadFilter ( group: TFilterGroup, key: string ) : TFilter | undefined {
         log.debug( `Loading filter from ${group}/${key}` );
         return log.catch( () => {
             const resolved = this.joinPath( group, key );
             if ( ! resolved ) throw new Error( `Invalid filter path: ${group}/${key}` );
 
-            const list = Filter.storage.readJSON< TFilter >( resolved );
-            if ( ! list ) throw new Error( `Filter file not found: ${resolved}` );
+            const filter = Filter.storage.readJSON< TFilter >( resolved );
+            if ( ! filter ) throw new Error( `Filter file not found: ${resolved}` );
 
-            this.setFilterData( group, key, list.items );
-            return list.items;
+            this.setFilterData( group, key, filter );
+            return filter;
         }, `Failed to load filter at ${group}/${key}` );
     }
 
@@ -77,11 +77,12 @@ export class Filter implements IFilter {
             if ( ! resolved ) throw new Error( `Invalid filter path: ${group}/${key}` );
 
             const items = this.prepFilter( list );
-            this.setFilterData( group, key, items );
+            const filter = { ...Utils.metaData(), items, count: items.length };
+            this.setFilterData( group, key, filter );
 
-            if ( ! Filter.storage.writeJSON< TFilter >( resolved, {
-                ...Utils.metaData(), items, count: items.length
-            } ) ) throw new Error( `Failed to write filter file: ${resolved}` );
+            if ( ! Filter.storage.writeJSON< TFilter >( resolved, filter ) ) {
+                throw new Error( `Failed to write filter file: ${resolved}` );
+            }
         }, `Failed to save filter at ${group}/${key}` );
     }
 
@@ -95,31 +96,31 @@ export class Filter implements IFilter {
 
     // Get filter
 
-    public getFilter ( group: TFilterGroup, key: string ) : TFilterItem[] | false {
-        return ( this.data[ group ] as any )?.[ key ] ?? this.loadFilter( group, key ) ?? false;
+    public getFilter ( group: TFilterGroup, key: string ) : TFilter | undefined {
+        return ( this.data[ group ] as any )?.[ key ] ?? this.loadFilter( group, key );
     }
 
-    public getFilterByPath ( path: string ) : TFilterItem[] | false {
+    public getFilterByPath ( path: string ) : TFilter | undefined {
         const [ group, key ] = this.splitPath( path ) ?? [];
-        return group && key ? this.getFilter( group, key ) : false;
+        return group && key ? this.getFilter( group, key ) : undefined;
     }
 
-    public getGroup ( group: TFilterGroup ) : Record< string, TFilterItem[] > {
+    public getGroup ( group: TFilterGroup ) : Record< string, TFilter > | undefined {
         Filter.storage.scanDir( join( 'filter', group ) ).forEach( file => {
             const key = file.replace( '.json', '' ).split( '/' ).pop();
             if ( key && ! ( this.data[ group ] as any )?.[ key ] ) this.loadFilter( group, key );
         } );
 
-        return this.data[ group ] || {};
+        return this.data[ group ];
     }
 
-    public getSpecial ( special: TFilterSpecial ) : TFilterItem[] {
+    public getSpecial ( special: TFilterSpecial ) : TFilter | undefined {
         Filter.storage.scanDir( 'filter/special' ).forEach( file => {
             const key = file.replace( '.json', '' ).split( '/' ).pop();
             if ( key && ! this.data.special?.[ special ] ) this.loadFilter( 'special', special );
         } );
 
-        return this.data.special?.[ special ] || [];
+        return this.data.special?.[ special ];
     }
 
     // Has filter
@@ -127,8 +128,8 @@ export class Filter implements IFilter {
     public has ( path: string, uriLike: string ) : boolean {
         const [ group, key ] = this.splitPath( path ) ?? [];
         const uri = Utils.sanitize( uriLike );
-        return !! group && !! key && (
-            ( this.getFilter( group, key ) || [] ).some( i => i.uri === uri )
+        return !! group && !! key && !! (
+            this.getFilter( group, key )?.items?.some( i => i.uri === uri )
         );
     }
 
