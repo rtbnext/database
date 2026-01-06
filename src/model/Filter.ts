@@ -152,30 +152,27 @@ export class Filter implements IFilter {
             deceased: [], dropOff: [], family: [], selfMade: []
         } }
     ) : Partial< TFilterList > {
-        const { uri, realtime, info: {
-            shortName, name, industry, citizenship, residence, gender, birthDate,
-            maritalStatus, deceased, dropOff, family, selfMade
-        } } = data;
+        const { uri, info, realtime } = data;
+        const item: TFilterItem = { uri, name: info.shortName ?? info.name, value: undefined };
+        const decade = Parser.ageDecade( info.birthDate )?.toString();
 
-        const decade = Parser.ageDecade( birthDate )?.toString();
-        const item: TFilterItem = { uri, name: shortName ?? name, value: undefined };
-        const add = ( g: TFilterGroup, k: string, v: any = false ) => {
-            ( ( ( col as any )[ g ] ??= {} )[ k ] ??= [] ) &&
+        const add = ( g: TFilterGroup, k: string | undefined, v: any = false ) : void => {
+            g && k && ( ( ( col as any )[ g ] ??= {} )[ k ] ??= [] ) &&
             ( col as any )[ g ][ k ].push( { ...item, value: v === false ? k : v } )
         };
 
-        industry && add( 'industry', industry );
-        citizenship && add( 'citizenship', citizenship );
-        residence?.country && add( 'country', residence.country );
-        residence?.state && add( 'state', residence.state );
-        gender && add( 'gender', gender );
-        decade && add( 'age', decade, birthDate );
-        maritalStatus && add( 'maritalStatus', maritalStatus );
+        add( 'industry', info.industry );
+        add( 'citizenship', info.citizenship );
+        add( 'country', info.residence?.country );
+        add( 'state', info.residence?.state );
+        add( 'gender', info.gender );
+        add( 'age', decade, info.birthDate );
+        add( 'maritalStatus', info.maritalStatus );
 
-        deceased && add( 'special', 'deceased', undefined );
-        dropOff && add( 'special', 'dropOff', realtime?.date );
-        family && add( 'special', 'family', undefined );
-        selfMade.is && add( 'special', 'selfMade', selfMade.rank );
+        info.deceased && add( 'special', 'deceased', undefined );
+        info.dropOff && add( 'special', 'dropOff', realtime?.date );
+        info.family && add( 'special', 'family', undefined );
+        info.selfMade?.is && add( 'special', 'selfMade', info.selfMade.rank );
 
         return col;
     }
