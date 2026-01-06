@@ -103,6 +103,24 @@ export class Filter implements IFilter {
         return group && key ? this.getFilter( group, key ) : false;
     }
 
+    public getGroup ( group: TFilterGroup ) : Record< string, TFilterItem[] > {
+        Filter.storage.scanDir( join( 'filter', group ) ).forEach( file => {
+            const key = file.replace( '.json', '' ).split( '/' ).pop();
+            if ( key && ! ( this.data[ group ] as any )?.[ key ] ) this.loadFilter( group, key );
+        } );
+
+        return this.data[ group ] || {};
+    }
+
+    public getSpecial ( special: TFilterSpecial ) : TFilterItem[] {
+        Filter.storage.scanDir( 'filter/special' ).forEach( file => {
+            const key = file.replace( '.json', '' ).split( '/' ).pop();
+            if ( key && ! this.data.special?.[ special ] ) this.loadFilter( 'special', special );
+        } );
+
+        return this.data.special?.[ special ] || [];
+    }
+
     // Instantiate
 
     public static getInstance () : Filter {
