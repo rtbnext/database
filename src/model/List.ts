@@ -42,4 +42,20 @@ export class List extends Snapshot< TListSnapshot > implements IList {
         return true;
     }
 
+    // Instantiate
+
+    public static get ( uriLike: string ) : List | false {
+        try { return new List( List.index.get( uriLike ) ) }
+        catch { return false }
+    }
+
+    // Create new list
+
+    public static create ( uriLike: any, data: TListIndexItem, snapshot?: TListSnapshot ) : List | false {
+        const item = List.index.add( uriLike, data ); if ( ! item ) return false;
+        const list = new List( item ); if ( ! list ) return false;
+        if ( snapshot ) list.saveSnapshot( snapshot );
+        return list;
+    }
+
 }
