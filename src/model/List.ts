@@ -1,4 +1,5 @@
 import { Snapshot } from '@/abstract/Snapshot';
+import { log } from '@/core/Logger';
 import { IList } from '@/interfaces/list';
 import { ListIndex } from '@/model/ListIndex';
 import { TListIndexItem, TListSnapshot } from '@rtbnext/schema/src/model/list';
@@ -51,11 +52,20 @@ export class List extends Snapshot< TListSnapshot > implements IList {
 
     // Create new list
 
-    public static create ( uriLike: any, data: TListIndexItem, snapshot?: TListSnapshot ) : List | false {
-        const item = List.index.add( uriLike, data ); if ( ! item ) return false;
-        const list = new List( item ); if ( ! list ) return false;
-        if ( snapshot ) list.saveSnapshot( snapshot );
-        return list;
+    public static create (
+        uriLike: any, data: TListIndexItem, snapshot?: TListSnapshot
+    ) : List | false {
+        log.debug( `Creating List ${uriLike}` );
+        return log.catch( () => {
+            const item = List.index.add( uriLike, data );
+            if ( ! item ) throw new Error( `List index item for ${uriLike} could not be created` );
+
+            const list = new List( item );
+            if ( ! list ) throw new Error( `List ${item.uri} could not be created` );
+
+            if ( snapshot ) list.saveSnapshot( snapshot );
+            return list;
+        }, `Failed to create List ${uriLike}` ) ?? false;
     }
 
 }
