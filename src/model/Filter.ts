@@ -95,7 +95,12 @@ export class Filter implements IFilter {
     // Get filter
 
     public getFilter ( group: TFilterGroup, key: string ) : TFilterItem[] | false {
-        return ( this.data[ group ] as any )?.[ key ] ?? this.loadFilter( group, key ) ?? [];
+        return ( this.data[ group ] as any )?.[ key ] ?? this.loadFilter( group, key ) ?? false;
+    }
+
+    public getFilterByPath ( path: string ) : TFilterItem[] | false {
+        const [ group, key ] = this.splitPath( path ) ?? [];
+        return group && key ? this.getFilter( group, key ) : false;
     }
 
     // Instantiate
