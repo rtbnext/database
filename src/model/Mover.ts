@@ -1,9 +1,9 @@
 import { Snapshot } from '@/abstract/Snapshot';
 import { Utils } from '@/core/Utils';
-import { ISnapshot } from '@/interfaces/snapshot';
+import { IMover } from '@/interfaces/snapshot';
 import { TMover, TMoverEntry } from '@rtbnext/schema/src/model/mover';
 
-export class Mover extends Snapshot< TMover > implements ISnapshot< TMover > {
+export class Mover extends Snapshot< TMover > implements IMover {
 
     private static instance: Mover;
 
