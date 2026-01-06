@@ -3,6 +3,7 @@ import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IFilter } from '@/interfaces/filter';
+import { Parser } from '@/parser/Parser';
 import { TFilterGroup, TFilterSpecial } from '@rtbnext/schema/src/abstract/const';
 import { TFilter, TFilterItem, TFilterList } from '@rtbnext/schema/src/model/filter';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
@@ -151,24 +152,30 @@ export class Filter implements IFilter {
             deceased: [], dropOff: [], family: [], selfMade: []
         } }
     ) : Partial< TFilterList > {
-        const { uri, info: {
-            shortName, name, industry, citizenship, residence, gender,
+        const { uri, realtime, info: {
+            shortName, name, industry, citizenship, residence, gender, birthDate,
             maritalStatus, deceased, dropOff, family, selfMade
-        }, realtime } = data;
+        } } = data;
 
+        const decade = Parser.ageDecade( birthDate )?.toString();
         const item: TFilterItem = { uri, name: shortName ?? name, value: undefined };
+        const add = ( g: TFilterGroup, k: string, v: any = false ) => {
+            ( ( ( col as any )[ g ] ??= {} )[ k ] ??= [] ) &&
+            ( col as any )[ g ][ k ].push( { ...item, value: v === false ? k : v } )
+        };
 
-        if ( industry ) ( ( col.industry ??= {} )[ industry ] ??= [] ).push( { ...item, value: industry } );
-        if ( citizenship ) ( ( col.citizenship ??= {} )[ citizenship ] ??= [] ).push( { ...item, value: citizenship } );
-        if ( residence?.country ) ( ( col.country ??= {} )[ residence.country ] ??= [] ).push( { ...item, value: residence.country } );
-        if ( residence?.state ) ( ( col.state ??= {} )[ residence.state ] ??= [] ).push( { ...item, value: residence.state } );
-        if ( gender ) ( ( col.gender ??= {} )[ gender ] ??= [] ).push( { ...item, value: gender } );
-        if ( maritalStatus ) ( ( col.maritalStatus ??= {} )[ maritalStatus ] ??= [] ).push( { ...item, value: maritalStatus } );
+        industry && add( 'industry', industry );
+        citizenship && add( 'citizenship', citizenship );
+        residence?.country && add( 'country', residence.country );
+        residence?.state && add( 'state', residence.state );
+        gender && add( 'gender', gender );
+        decade && add( 'age', decade, birthDate );
+        maritalStatus && add( 'maritalStatus', maritalStatus );
 
-        if ( deceased ) col.special?.deceased.push( item );
-        if ( dropOff ) col.special?.dropOff.push( { ...item, value: realtime?.date } );
-        if ( family ) col.special?.family.push( item );
-        if ( selfMade.is ) col.special?.selfMade.push( { ...item, value: selfMade.rank } );
+        deceased && add( 'special', 'deceased', undefined );
+        dropOff && add( 'special', 'dropOff', realtime?.date );
+        family && add( 'special', 'family', undefined );
+        selfMade.is && add( 'special', 'selfMade', selfMade.rank );
 
         return col;
     }
