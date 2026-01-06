@@ -1,8 +1,9 @@
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { ISnapshot } from '@/interfaces/snapshot';
+import { TSnapshot } from '@rtbnext/schema/src/abstract/generic';
 
-export abstract class Snapshot implements ISnapshot {
+export abstract class Snapshot< T extends TSnapshot > implements ISnapshot< T > {
 
     protected static readonly storage = Storage.getInstance();
     protected dates: string[];
