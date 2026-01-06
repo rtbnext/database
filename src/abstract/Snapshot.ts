@@ -91,10 +91,12 @@ export abstract class Snapshot< T extends TSnapshot > implements ISnapshot< T > 
             if ( ! force && this.hasDate( snapshot.date ) ) {
                 throw new Error( `Snapshot for date ${snapshot.date} already exists` );
             }
+
             const path = this.datedPath( snapshot.date );
             if ( ! Snapshot.storage.writeJSON< T >( path, snapshot ) ) {
                 throw new Error( `Failed to write snapshot to ${path}` );
             }
+
             this.dates = this.scanDates();
             return true;
         }, `Failed to save snapshot for date ${snapshot.date}` ) ?? false;
