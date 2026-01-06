@@ -1,5 +1,6 @@
 import { IConfig } from '@/interfaces/config';
 import { IFetch } from '@/interfaces/fetch';
+import { IFilter } from '@/interfaces/filter';
 import { IListIndex, IProfileIndex } from '@/interfaces/index';
 import { IQueue } from '@/interfaces/queue';
 import { IStorage } from '@/interfaces/storage';
@@ -7,6 +8,10 @@ import { IStorage } from '@/interfaces/storage';
 export interface TIndex {
     profile: IProfileIndex;
     list: IListIndex;
+}
+
+export interface TModel {
+    filter: IFilter;
 }
 
 export interface TServices {
