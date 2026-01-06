@@ -18,6 +18,13 @@ export class Filter implements IFilter {
         this.initDB();
     }
 
+    private initDB () : void {
+        log.debug( 'Initializing filter storage paths' );
+        [ ...FilterGroup, 'special' ].forEach(
+            group => Filter.storage.ensurePath( join( 'filter', group ), true )
+        );
+    }
+
     // Path helper
 
     private splitPath ( path: string ) : [ TFilterGroup, string ] | undefined {
@@ -133,15 +140,6 @@ export class Filter implements IFilter {
 
         FilterSpecial.forEach( s => collection.special?.[ s ] &&
             this.saveSpecial( s, collection.special[ s ] )
-        );
-    }
-
-    // Init DB
-
-    public initDB () : void {
-        log.debug( 'Initializing filter storage paths' );
-        [ ...FilterGroup, 'special' ].forEach(
-            group => Filter.storage.ensurePath( join( 'filter', group ), true )
         );
     }
 

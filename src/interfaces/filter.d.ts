@@ -9,5 +9,4 @@ export interface IFilter {
     getSpecial ( special: TFilterSpecial ) : TFilter[];
     has ( path: string, uriLike: string ) : boolean;
     save ( collection: Partial< TFilterCollection > ) : void;
-    initDB () : void;
 }

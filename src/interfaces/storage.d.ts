@@ -11,5 +11,4 @@ export interface IStorage {
     datedCSV< T extends any[] > ( path: string, content: T, force: boolean = false ) : boolean;
     move ( from: string, to: string, force: boolean = false ) : boolean;
     remove ( path: string, force: boolean = true ) : boolean;
-    initDB () : void;
 }

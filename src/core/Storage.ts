@@ -21,6 +21,14 @@ export class Storage implements IStorage {
         this.initDB();
     }
 
+    private initDB () : void {
+        log.debug( `Initializing storage at ${this.path}` );
+        this.ensurePath( this.path );
+        [ 'profile', 'list', 'filter', 'mover', 'stats', 'queue' ].forEach(
+            path => this.ensurePath( path, true )
+        );
+    }
+
     // Private helper methods
 
     private resolvePath ( path: string ) : string {
@@ -148,16 +156,6 @@ export class Storage implements IStorage {
             log.debug( `Removed ${path}` );
             return true;
         }, `Failed to delete ${path}` );
-    }
-
-    // Init DB
-
-    public initDB () : void {
-        log.debug( `Initializing storage at ${this.path}` );
-        this.ensurePath( this.path );
-        [ 'profile', 'list', 'filter', 'mover', 'stats', 'queue' ].forEach(
-            path => this.ensurePath( path, true )
-        );
     }
 
     // Instantiate
