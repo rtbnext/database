@@ -18,7 +18,7 @@ export class Profile implements IProfile {
     private item: TProfileIndexItem;
     private data?: TProfileData;
     private history?: TProfileHistory;
-    private meta: TMetaData[ '@metadata' ];
+    private meta: TMetaData;
 
     private constructor ( item?: TProfileIndexItem ) {
         if ( ! item ) throw new Error( `Profile index item not given` );
@@ -28,9 +28,9 @@ export class Profile implements IProfile {
         this.item = item;
 
         Profile.storage.ensurePath( this.path, true );
-        this.meta = ( Profile.storage.readJSON< TMetaData >(
+        this.meta = Profile.storage.readJSON< TMetaData >(
             this.resolvePath( 'meta.json' )
-        ) || Utils.metaData() )[ '@metadata' ];
+        ) || Utils.metaData();
     }
 
     // Private helper
@@ -40,7 +40,7 @@ export class Profile implements IProfile {
     }
 
     private touch () : void {
-        this.meta.lastModified = new Date().toISOString();
+        this.meta[ '@metadata' ].lastModified = new Date().toISOString();
     }
 
     private updateIndex ( aliases: string[] = [], mode: 'replace' | 'unique' = 'unique' ) : void {
@@ -67,19 +67,19 @@ export class Profile implements IProfile {
     }
 
     public getMeta () : TMetaData[ '@metadata' ] {
-        return this.meta;
+        return this.meta[ '@metadata' ];
     }
 
     public schemaVersion () : number {
-        return this.meta.schemaVersion;
+        return this.meta[ '@metadata' ].schemaVersion;
     }
 
     public modified () : string {
-        return this.meta.lastModified;
+        return this.meta[ '@metadata' ].lastModified;
     }
 
     public modifiedTime () : number {
-        return new Date( this.meta.lastModified ).getTime();
+        return new Date( this.meta[ '@metadata' ].lastModified ).getTime();
     }
 
     // Verify profile
@@ -160,7 +160,7 @@ export class Profile implements IProfile {
             ) ) throw new Error( `Failed to write profile history` );
 
             if ( this.meta && ! Profile.storage.writeJSON< TMetaData >(
-                this.resolvePath( 'meta.json' ), { '@metadata': this.meta }
+                this.resolvePath( 'meta.json' ), this.meta
             ) ) throw new Error( `Failed to write profile metadata` );
         }, `Failed to save profile: ${this.uri}` );
     }
