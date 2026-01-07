@@ -146,19 +146,23 @@ export class Profile implements IProfile {
 
     public save () : void {
         log.debug( `Saving profile: ${this.uri}` );
-        Profile.index.update( this.uri, this.item );
+        log.catch( () => {
+            if ( ! Profile.index.update( this.uri, this.item ) ) {
+                throw new Error( `Failed to update profile index` );
+            }
 
-        this.data && Profile.storage.writeJSON< TProfileData >(
-            this.resolvePath( 'profile.json' ), this.data
-        );
+            if ( this.data && ! Profile.storage.writeJSON< TProfileData >(
+                this.resolvePath( 'profile.json' ), this.data
+            ) ) throw new Error( `Failed to write profile data` );
 
-        this.history && Profile.storage.writeCSV< TProfileHistory >(
-            this.resolvePath( 'history.csv' ), this.history
-        );
+            if ( this.history && ! Profile.storage.writeCSV< TProfileHistory >(
+                this.resolvePath( 'history.csv' ), this.history
+            ) ) throw new Error( `Failed to write profile history` );
 
-        this.meta && Profile.storage.writeJSON< TMetaData >(
-            this.resolvePath( 'meta.json' ), { '@metadata': this.meta }
-        );
+            if ( this.meta && ! Profile.storage.writeJSON< TMetaData >(
+                this.resolvePath( 'meta.json' ), { '@metadata': this.meta }
+            ) ) throw new Error( `Failed to write profile metadata` );
+        }, `Failed to save profile: ${this.uri}` );
     }
 
     // Move profile
