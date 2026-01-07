@@ -8,6 +8,7 @@ export interface IProfile {
     schemaVersion () : number;
     modified () : string;
     modifiedTime () : number;
+    verify ( id: string ) : boolean;
     getData () : TProfileData;
     setData (
         data: TProfileData, aliases?: string[],
