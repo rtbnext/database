@@ -236,4 +236,16 @@ export class Profile implements IProfile {
         return profile;
     }
 
+    // Delete profile
+
+    public static delete ( uriLike: string ) : boolean {
+        const uri = Utils.sanitize( uriLike );
+        const path = join( 'profile', uri );
+
+        try {
+            if ( ! Profile.storage.remove( path ) ) return false;
+            Profile.index.delete( uri ); return true;
+        } catch { return false }
+    }
+
 }
