@@ -37,4 +37,8 @@ export class Profile implements IProfile {
         return join( this.path, path );
     }
 
+    private touch () : void {
+        this.meta.lastModified = new Date().toISOString();
+    }
+
 }
