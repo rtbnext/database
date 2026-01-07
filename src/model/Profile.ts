@@ -41,4 +41,26 @@ export class Profile implements IProfile {
         this.meta.lastModified = new Date().toISOString();
     }
 
+    // Basic getters
+
+    public getUri () : string {
+        return this.uri;
+    }
+
+    public getMeta () : TMetaData[ '@metadata' ] {
+        return this.meta;
+    }
+
+    public schemaVersion () : number {
+        return this.meta.schemaVersion;
+    }
+
+    public modified () : string {
+        return this.meta.lastModified;
+    }
+
+    public modifiedTime () : number {
+        return new Date( this.meta.lastModified ).getTime();
+    }
+
 }
