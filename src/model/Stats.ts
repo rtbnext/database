@@ -15,7 +15,13 @@ export class Stats implements IStats {
 
     private initDB () : void {
         log.debug( 'Initializing stats storage paths' );
-        StatsGroup.forEach( group => Stats.storage.ensurePath( join( 'stats', group ), true ) );
+        StatsGroup.forEach( group => Stats.storage.ensurePath( this.resolvePath( group ), true ) );
+    }
+
+    // Private helper
+
+    private resolvePath ( path: string ) : string {
+        return join( 'stats', path );
     }
 
     // Instantiate
