@@ -1,4 +1,5 @@
 import { Storage } from '@/core/Storage';
+import { Utils } from '@/core/Utils';
 import { IProfile } from '@/interfaces/profile';
 import { ProfileIndex } from '@/model/ProfileIndex';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
@@ -15,7 +16,7 @@ export class Profile implements IProfile {
     private item: TProfileIndexItem;
     private data?: TProfileData;
     private history?: TProfileHistory;
-    private meta?: TMetaData;
+    private meta: TMetaData[ '@metadata' ];
 
     private constructor ( item?: TProfileIndexItem ) {
         if ( ! item ) throw new Error( `Profile index item not given` );
@@ -25,6 +26,15 @@ export class Profile implements IProfile {
         this.item = item;
 
         Profile.storage.ensurePath( this.path, true );
+        this.meta = ( Profile.storage.readJSON< TMetaData >(
+            this.resolvePath( 'meta.json' )
+        ) || Utils.metaData() )[ '@metadata' ];
+    }
+
+    // Private helper
+
+    private resolvePath ( path: string ) : string {
+        return join( this.path, path );
     }
 
 }
