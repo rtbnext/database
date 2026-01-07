@@ -5,6 +5,7 @@ import { IListIndex, IProfileIndex } from '@/interfaces/index';
 import { IQueue } from '@/interfaces/queue';
 import { IMover } from '@/interfaces/mover';
 import { IStorage } from '@/interfaces/storage';
+import { IStats } from '@/interfaces/stats';
 
 export interface TIndex {
     profile: IProfileIndex;
@@ -14,6 +15,7 @@ export interface TIndex {
 export interface TModel {
     filter: IFilter;
     mover: IMover;
+    stats: IStats;
 }
 
 export interface TServices {
