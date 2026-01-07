@@ -82,6 +82,12 @@ export class Profile implements IProfile {
         return new Date( this.meta.lastModified ).getTime();
     }
 
+    // Verify profile
+
+    public verify ( id: string ) : boolean {
+        return Utils.verifyHash( id, this.getData().id );
+    }
+
     // Manage profile data
 
     public getData () : TProfileData {
