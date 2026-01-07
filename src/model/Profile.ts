@@ -4,6 +4,7 @@ import { IProfile } from '@/interfaces/profile';
 import { ProfileIndex } from '@/model/ProfileIndex';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
 import { TProfileData, TProfileHistory, TProfileIndexItem } from '@rtbnext/schema/src/model/profile';
+import deepmerge from 'deepmerge';
 import { join } from 'node:path';
 
 export class Profile implements IProfile {
@@ -65,6 +66,29 @@ export class Profile implements IProfile {
 
     public modifiedTime () : number {
         return new Date( this.meta.lastModified ).getTime();
+    }
+
+    // Manage profile data
+
+    public getData () : TProfileData {
+        return this.data ||= Profile.storage.readJSON< TProfileData >(
+            join( this.path, 'profile.json' )
+        ) || {} as TProfileData;
+    }
+
+    public setData ( data: TProfileData, aliases?: string[] ) : void {
+        this.data = data;
+        this.touch();
+    }
+
+    public updateData (
+        data: Partial< TProfileData >, aliases?: string[],
+        mode: 'concat' | 'replace' | 'unique' = 'replace'
+    ) : void {
+        this.data = deepmerge< TProfileData >( this.getData(), data, {
+            arrayMerge: ( t, s ) => Utils.mergeArray( t, s, mode )
+        } );
+        this.touch();
     }
 
 }
