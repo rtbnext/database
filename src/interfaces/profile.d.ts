@@ -9,10 +9,14 @@ export interface IProfile {
     modified () : string;
     modifiedTime () : number;
     getData () : TProfileData;
-    setData ( data: TProfileData, aliases?: string[] ) : void;
+    setData (
+        data: TProfileData, aliases?: string[],
+        aliasMode: 'replace' | 'unique' = 'unique'
+    ) : void;
     updateData (
         data: Partial< TProfileData >, aliases?: string[],
-        mode: 'concat' | 'replace' | 'unique' = 'replace'
+        mode: 'concat' | 'replace' | 'unique' = 'replace',
+        aliasMode: 'replace' | 'unique' = 'unique'
     ) : void;
     getHistory () : TProfileHistory;
     setHistory ( history: TProfileHistory ) : void;

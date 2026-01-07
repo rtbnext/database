@@ -42,7 +42,7 @@ export class Profile implements IProfile {
         this.meta.lastModified = new Date().toISOString();
     }
 
-    private updateIndex ( aliases: string[] = [] ) : void {
+    private updateIndex ( aliases: string[] = [], mode: 'replace' | 'unique' = 'unique' ) : void {
         const {
             uri, info: { shortName: name }, bio: { cv },
             wiki: { desc, image: { file, thumb } = {} } = {}
@@ -50,7 +50,7 @@ export class Profile implements IProfile {
 
         this.item = {
             uri, name, desc, image: thumb ?? file,
-            aliases: Utils.mergeArray( this.item.aliases, aliases, 'unique' ),
+            aliases: Utils.mergeArray( this.item.aliases, aliases, mode ),
             text: Utils.buildSearchText( cv )
         };
     }
@@ -89,20 +89,24 @@ export class Profile implements IProfile {
         ) || {} as TProfileData;
     }
 
-    public setData ( data: TProfileData, aliases?: string[] ) : void {
+    public setData (
+        data: TProfileData, aliases?: string[],
+        aliasMode: 'replace' | 'unique' = 'unique'
+    ) : void {
         this.data = data;
-        this.updateIndex( aliases );
+        this.updateIndex( aliases, aliasMode );
         this.touch();
     }
 
     public updateData (
         data: Partial< TProfileData >, aliases?: string[],
-        mode: 'concat' | 'replace' | 'unique' = 'replace'
+        mode: 'concat' | 'replace' | 'unique' = 'replace',
+        aliasMode: 'replace' | 'unique' = 'unique'
     ) : void {
         this.data = deepmerge< TProfileData >( this.getData(), data, {
             arrayMerge: ( t, s ) => Utils.mergeArray( t, s, mode )
         } );
-        this.updateIndex( aliases );
+        this.updateIndex( aliases, aliasMode );
         this.touch();
     }
 
