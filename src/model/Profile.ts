@@ -47,6 +47,10 @@ export class Profile implements IProfile {
         return this.uri;
     }
 
+    public getItem () : TProfileIndexItem {
+        return this.item;
+    }
+
     public getMeta () : TMetaData[ '@metadata' ] {
         return this.meta;
     }
