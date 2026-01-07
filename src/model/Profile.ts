@@ -189,4 +189,27 @@ export class Profile implements IProfile {
         }, `Failed to move profile: ${this.uri} -> ${uri}` ) ?? false;
     }
 
+    // Instantiate
+
+    public static get ( uriLike: string ) : Profile | false {
+        return log.catch(
+            () => new Profile( Profile.index.get( uriLike ) ),
+            `Failed to get profile: ${uriLike}`
+        ) ?? false;
+    }
+
+    public static getByItem ( item: TProfileIndexItem ) : Profile | false {
+        return log.catch(
+            () => new Profile( item ),
+            `Failed to get profile by item: ${item.uri}`
+        ) ?? false;
+    }
+
+    public static find ( uriLike: string ) : Profile | false {
+        return log.catch(
+            () => new Profile( Profile.index.find( uriLike ).values().next().value ),
+            `Failed to find profile: ${uriLike}`
+        ) ?? false;
+    }
+
 }
