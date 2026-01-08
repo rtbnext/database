@@ -1,10 +1,10 @@
-import { TDBStats, TGlobalStats, THistory, TProfileStats, TScatter, TWealthStats } from '@rtbnext/schema/src/model/stats';
+import * as S from '@rtbnext/schema/src/model/stats';
 
 export interface IStats {
-    getGlobalStats () : TGlobalStats;
-    getDBStats () : TDBStats;
-    getHistory () : THistory;
-    getProfileStats () : TProfileStats;
-    getWealthStats () : TWealthStats;
-    getScatter () : TScatter;
+    getGlobalStats () : S.TGlobalStats;
+    getDBStats () : S.TDBStats;
+    getHistory () : S.THistory;
+    getProfileStats () : S.TProfileStats;
+    getWealthStats () : S.TWealthStats;
+    getScatter () : S.TScatter;
 }
