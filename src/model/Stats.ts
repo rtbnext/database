@@ -3,6 +3,7 @@ import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
+import { Parser } from '@/parser/Parser';
 import * as S from '@rtbnext/schema/src/model/stats';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -70,23 +71,31 @@ export class Stats implements IStats {
     // generate DB stats
 
     public generateDBStats () : boolean {
-        const stats = { files: 0, size: 0 };
+        return log.catch( () => {
+            log.debug( 'Generating DB stats ...' );
+            const stats = { files: 0, size: 0 };
 
-        const scan = ( path: string ) : void => {
-            readdirSync( path, { recursive: true } ).forEach( p => {
-                if ( p === '.' || p === '..' || typeof p !== 'string' ) return;
-                const fullPath = join( path, p );
-                const stat = Stats.storage.stat( fullPath );
-                if ( stat ) stat.isDirectory() ? scan( fullPath ) : (
-                    stats.files++, stats.size += stat.size
-                );
-            } );
-        };
+            const scan = ( path: string ) : void => {
+                readdirSync( path, { recursive: true } ).forEach( p => {
+                    if ( p === '.' || p === '..' || typeof p !== 'string' ) return;
+                    const fullPath = join( path, p );
+                    const stat = Stats.storage.stat( fullPath );
+                    if ( stat ) stat.isDirectory() ? scan( fullPath ) : (
+                        stats.files++, stats.size += stat.size
+                    );
+                } );
+            };
 
-        scan( Stats.storage.getRoot() );
-        return this.saveStats< S.TDBStats >(
-            'db.json', 'json', this.prepStats< S.TDBStats >( stats )
-        );
+            scan( Stats.storage.getRoot() );
+            return this.saveStats< S.TDBStats >( 'db.json', 'json',
+                this.prepStats< S.TDBStats >(
+                    Parser.container< Partial< S.TDBStats > >( {
+                        files: { value: stats.files, type: 'number' },
+                        size: { value: stats.size, type: 'number' }
+                    } )
+                )
+            );
+        }, `Failed to generate DB stats` ) ?? false;
     }
 
     // Instantiate
