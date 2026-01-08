@@ -4,6 +4,7 @@ import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
+import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
 import * as S from '@rtbnext/schema/src/model/stats';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -68,6 +69,8 @@ export class Stats implements IStats {
         return this.getStats< S.TDBStats >( 'db.json', 'json' );
     }
 
+    // Get grouped stats
+
     // Stats setter
 
     public setGlobalStats ( data: Partial< S.TGlobalStats > ) : boolean {
@@ -121,6 +124,42 @@ export class Stats implements IStats {
                 } )
             ) );
         }, `Failed to generate DB stats` ) ?? false;
+    }
+
+    // Set grouped stats
+
+    public setGroupedStats< T extends string = string > (
+        group: TStatsGroup, raw: Record< T, S.TStatsGroupItem >
+    ) : boolean {
+        return log.catch( () => {
+            const data = Object.fromEntries(
+                Object.entries< S.TStatsGroupItem >( raw ).map( ( [ key, item ] ) => {
+                    item.total = Parser.money( item.total );
+                    item.quota = Parser.pct( item.quota );
+                    item.today = {
+                        value: Parser.money( item.today?.value ),
+                        pct: Parser.pct( item.today?.pct )
+                    };
+                    item.ytd = {
+                        value: Parser.money( item.ytd?.value ),
+                        pct: Parser.pct( item.ytd?.pct )
+                    };
+
+                    Stats.storage.datedCSV< S.THistoryItem >(
+                        this.resolvePath( `${group}/${key}.csv` ),
+                        [ item.date, item.count, item.total, item.woman, item.quota,
+                          item.today?.value ?? 0, item.today?.pct ?? 0 ],
+                        true
+                    );
+
+                    return [ key, item ];
+                } )
+            ) as Record< T, S.TStatsGroupItem >;
+
+            Stats.storage.writeJSON< S.TStatsGroup< T >[ 'index' ] >(
+                this.resolvePath( `${group}/index.json` ), this.prepStats( data as any )
+            );
+        }, `Failed to set grouped stats for group ${group}` ) ?? false;
     }
 
     // Instantiate
