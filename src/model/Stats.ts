@@ -164,8 +164,8 @@ export class Stats implements IStats {
                 } )
             ) as Record< T, S.TStatsGroupItem >;
 
-            Stats.storage.writeJSON< S.TStatsGroup< T >[ 'index' ] >(
-                this.resolvePath( `${group}/index.json` ), this.prepStats( data as any )
+            this.saveStats< S.TStatsGroup< T >[ 'index' ] >(
+                `${group}/index.json`, 'json', this.prepStats( data as any )
             );
         }, `Failed to set grouped stats for group ${group}` ) ?? false;
     }
