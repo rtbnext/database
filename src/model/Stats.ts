@@ -30,6 +30,11 @@ export class Stats implements IStats {
             ( this.resolvePath( path ) ) || ( format === 'csv' ? [] : {} ) ) as T;
     }
 
+    private saveStats< T > ( path: string, format: 'json' | 'csv', data: T ) : boolean {
+        return ( Stats.storage[ format === 'csv' ? 'writeCSV' : 'writeJSON' ] as any )
+            ( this.resolvePath( path ), data );
+    }
+
     // Stats getter
 
     public getGlobalStats () : S.TGlobalStats {
