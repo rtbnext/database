@@ -79,6 +79,17 @@ export class Stats implements IStats {
         return this.getStats< S.THistory >( `${group}/${key}.csv`, 'csv' );
     }
 
+    public getGroupedStats ( group: TStatsGroup ) : S.TStatsGroup< string > {
+        const index = this.getGroupedStatsIndex( group );
+        const history = {};
+
+        for ( const key of Object.keys( index.items ) ) {
+            ( history as any )[ key ] = this.getGroupedStatsHistory( group, key );
+        }
+
+        return { index, history };
+    }
+
     // Stats setter
 
     public setGlobalStats ( data: Partial< S.TGlobalStats > ) : boolean {
@@ -140,7 +151,7 @@ export class Stats implements IStats {
         group: TStatsGroup, raw: Record< T, S.TStatsGroupItem >
     ) : boolean {
         return log.catch( () => {
-            const data = Object.fromEntries(
+            const items = Object.fromEntries(
                 Object.entries< S.TStatsGroupItem >( raw ).map( ( [ key, item ] ) => {
                     item.total = Parser.money( item.total );
                     item.quota = Parser.pct( item.quota );
@@ -165,7 +176,7 @@ export class Stats implements IStats {
             ) as Record< T, S.TStatsGroupItem >;
 
             this.saveStats< S.TStatsGroup< T >[ 'index' ] >(
-                `${group}/index.json`, 'json', this.prepStats( data as any )
+                `${group}/index.json`, 'json', this.prepStats( { items } as any )
             );
         }, `Failed to set grouped stats for group ${group}` ) ?? false;
     }
