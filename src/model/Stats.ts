@@ -48,10 +48,6 @@ export class Stats implements IStats {
         return this.getStats< S.TGlobalStats >( 'global.json', 'json' );
     }
 
-    public getDBStats () : S.TDBStats {
-        return this.getStats< S.TDBStats >( 'db.json', 'json' );
-    }
-
     public getHistory () : S.THistory {
         return this.getStats< S.THistory >( 'history.csv', 'csv' );
     }
@@ -66,6 +62,25 @@ export class Stats implements IStats {
 
     public getScatter () : S.TScatter {
         return this.getStats< S.TScatter >( 'scatter.json', 'json' );
+    }
+
+    public getDBStats () : S.TDBStats {
+        return this.getStats< S.TDBStats >( 'db.json', 'json' );
+    }
+
+    // Stats setter
+
+    public setGlobalStats ( data: Partial< S.TGlobalStats > ) : boolean {
+        return this.saveStats( 'global.json', 'json', this.prepStats( data ) );
+    }
+
+    // Update history (add new line)
+
+    public updateHistory ( data: Partial< S.TGlobalStats > ) : boolean {
+        return Stats.storage.datedCSV< S.THistoryItem >( this.resolvePath( 'history.csv' ), [
+            data.date!, data.count!, data.total!, data.woman!, data.quota!,
+            data.today?.value ?? 0, data.today?.pct ?? 0
+        ], true );
     }
 
     // generate DB stats
@@ -87,24 +102,13 @@ export class Stats implements IStats {
             };
 
             scan( Stats.storage.getRoot() );
-            return this.saveStats< S.TDBStats >( 'db.json', 'json',
-                this.prepStats< S.TDBStats >(
-                    Parser.container< Partial< S.TDBStats > >( {
-                        files: { value: stats.files, type: 'number' },
-                        size: { value: stats.size, type: 'number' }
-                    } )
-                )
-            );
+            return this.saveStats( 'db.json', 'json', this.prepStats(
+                Parser.container< Partial< S.TDBStats > >( {
+                    files: { value: stats.files, type: 'number' },
+                    size: { value: stats.size, type: 'number' }
+                } )
+            ) );
         }, `Failed to generate DB stats` ) ?? false;
-    }
-
-    // Update history (add new line)
-
-    public updateHistory ( data: S.TGlobalStats ) : boolean {
-        return Stats.storage.datedCSV< S.THistoryItem >( this.resolvePath( 'history.csv' ), [
-            data.date, data.count, data.total, data.woman, data.quota,
-            data.today?.value ?? 0, data.today?.pct ?? 0
-        ], true );
     }
 
     // Instantiate
