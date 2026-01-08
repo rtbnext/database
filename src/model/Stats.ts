@@ -4,7 +4,9 @@ import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
+import { TStatsAggregator } from '@/types/stats';
 import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import * as S from '@rtbnext/schema/src/model/stats';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -182,6 +184,14 @@ export class Stats implements IStats {
 
     public static getInstance () : Stats {
         return Stats.instance ||= new Stats();
+    }
+
+    // Aggregate stats data
+
+    public static aggregate (
+        data: TProfileData, col: TStatsAggregator = {}
+    ) : TStatsAggregator {
+        return {};
     }
 
 }
