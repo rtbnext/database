@@ -7,4 +7,5 @@ export interface IStats {
     getProfileStats () : S.TProfileStats;
     getWealthStats () : S.TWealthStats;
     getScatter () : S.TScatter;
+    generateDBStats () : boolean;
 }
