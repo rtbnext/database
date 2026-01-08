@@ -8,6 +8,8 @@ export interface IStats {
     getScatter () : S.TScatter;
     getHistory () : S.THistory;
     getDBStats () : S.TDBStats;
+    getGroupedStatsIndex ( group: TStatsGroup ) : S.TStatsGroup< string >[ 'index' ];
+    getGroupedStatsHistory ( group: TStatsGroup, key: string ) : S.THistory;
     setGlobalStats ( data: Partial< S.TGlobalStats > ) : boolean;
     setProfileStats ( data: Partial< S.TProfileStats > ) : boolean;
     setWealthStats ( data: Partial< S.TWealthStats > ) : boolean;
