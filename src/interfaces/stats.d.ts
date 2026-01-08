@@ -1,3 +1,4 @@
+import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
 import * as S from '@rtbnext/schema/src/model/stats';
 
 export interface IStats {
@@ -13,4 +14,7 @@ export interface IStats {
     setScatter ( data: Partial< S.TScatter > ) : boolean;
     updateHistory ( data: Partial< S.TGlobalStats > ) : boolean;
     generateDBStats () : boolean;
+    setGroupedStats< T extends string = string > (
+        group: TStatsGroup, raw: Record< T, S.TStatsGroupItem >
+    ) : boolean;
 }
