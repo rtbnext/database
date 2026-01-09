@@ -4,7 +4,6 @@ import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
-import { TStatsAggregator } from '@/types/stats';
 import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import * as S from '@rtbnext/schema/src/model/stats';
@@ -244,9 +243,7 @@ export class Stats implements IStats {
 
     // Aggregate stats data
 
-    public static aggregate (
-        data: TProfileData, col: Partial< TStatsAggregator > = {}
-    ) : Partial< TStatsAggregator > {
+    public static aggregate ( data: TProfileData, col: any = {} ) : any {
         const { uri, info, realtime } = data;
         const networth = realtime?.networth;
         const rank = realtime?.rank;
