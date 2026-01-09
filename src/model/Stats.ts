@@ -118,54 +118,58 @@ export class Stats implements IStats {
 
     // Generate wealth stats
 
-    public generateWealthStats ( scatter: S.TScatterItem[] ) : void {
-        if ( ! scatter || ! scatter.length ) return;
-        scatter.sort( ( a, b ) => a.networth - b.networth );
+    public generateWealthStats ( scatter: S.TScatterItem[] ) : boolean {
+        return log.catch( () => {
+            log.debug( 'Generating wealth stats ...' );
+            if ( ! scatter || ! scatter.length ) throw new Error( 'No scatter data provided' );
+            scatter.sort( ( a, b ) => a.networth - b.networth );
 
-        const count = scatter.length;
-        const total = Parser.money( scatter.reduce( ( acc, i ) => acc + i.networth, 0 ) );
-        const medianIndex = Math.floor( count / 2 );
-        const median = Parser.money( count % 2 === 0 ? (
-            scatter[ medianIndex - 1 ].networth + scatter[ medianIndex ].networth
-        ) / 2 : scatter[ medianIndex ].networth );
-        const mean = Parser.money( total / count );
-        const variance = scatter.reduce( ( acc, i ) => {
-            const diff = i.networth - mean; return acc + diff * diff;
-        }, 0 ) / count;
-        const stdDev = Parser.money( Math.sqrt( variance ) );
+            const count = scatter.length;
+            const total = Parser.money( scatter.reduce( ( acc, i ) => acc + i.networth, 0 ) );
+            const medianIndex = Math.floor( count / 2 );
+            const median = Parser.money( count % 2 === 0 ? (
+                scatter[ medianIndex - 1 ].networth + scatter[ medianIndex ].networth
+            ) / 2 : scatter[ medianIndex ].networth );
+            const mean = Parser.money( total / count );
+            const variance = scatter.reduce( ( acc, i ) => {
+                const diff = i.networth - mean; return acc + diff * diff;
+            }, 0 ) / count;
+            const stdDev = Parser.money( Math.sqrt( variance ) );
 
-        const percentiles: S.TWealthStats[ 'percentiles' ] = {};
-        Percentiles.forEach( p => {
-            const idx = Math.ceil( ( parseInt( p ) / 100 ) * count ) - 1;
-            percentiles[ p ] = scatter[ idx ].networth;
-        } );
-
-        const quartiles: S.TWealthStats[ 'quartiles' ] = [
-            scatter[ Math.floor( count * 0.25 ) ].networth,
-            scatter[ Math.floor( count * 0.5 ) ].networth,
-            scatter[ Math.floor( count * 0.75 ) ].networth
-        ];
-
-        const decades: S.TWealthStats[ 'decades' ] = {};
-        const gender: S.TWealthStats[ 'gender' ] = {};
-        const spread: S.TWealthStats[ 'spread' ] = {};
-
-        scatter.forEach( item => {
-            const decade = Math.max( 30, Math.min( 90, Math.floor( item.age / 10 ) * 10 ) );
-            decades[ decade ] = Parser.money( ( decades[ decade ] || 0 ) + item.networth );
-            gender[ item.gender ] = Parser.money( ( gender[ item.gender ] || 0 ) + item.networth );
-
-            WealthSpread.forEach( n => {
-                if ( item.networth >= Number( n ) * 1000 ) ( spread as any )[ n ] = (
-                    ( spread as any )[ n ] || 0
-                ) + 1;
+            const percentiles: S.TWealthStats[ 'percentiles' ] = {};
+            Percentiles.forEach( p => {
+                const idx = Math.ceil( ( parseInt( p ) / 100 ) * count ) - 1;
+                percentiles[ p ] = scatter[ idx ].networth;
             } );
-        } );
 
-        this.setWealthStats( {
-            total, median, mean, stdDev, percentiles, quartiles, decades, gender, spread,
-            max: scatter.at( -1 )!.networth, min: scatter[ 0 ].networth
-        } );
+            const quartiles: S.TWealthStats[ 'quartiles' ] = [
+                scatter[ Math.floor( count * 0.25 ) ].networth,
+                scatter[ Math.floor( count * 0.5 ) ].networth,
+                scatter[ Math.floor( count * 0.75 ) ].networth
+            ];
+
+            const decades: S.TWealthStats[ 'decades' ] = {};
+            const gender: S.TWealthStats[ 'gender' ] = {};
+            const spread: S.TWealthStats[ 'spread' ] = {};
+
+            scatter.forEach( item => {
+                const { gender: g, age, networth } = item;
+                const decade = Math.max( 30, Math.min( 90, Math.floor( age / 10 ) * 10 ) );
+                decades[ decade ] = Parser.money( ( decades[ decade ] || 0 ) + networth );
+                gender[ g ] = Parser.money( ( gender[ g ] || 0 ) + networth );
+
+                WealthSpread.forEach( n => {
+                    if ( networth >= Number( n ) * 1000 ) ( spread as any )[ n ] = (
+                        ( spread as any )[ n ] || 0
+                    ) + 1;
+                } );
+            } );
+
+            return this.setWealthStats( {
+                total, median, mean, stdDev, percentiles, quartiles, decades, gender, spread,
+                max: scatter.at( -1 )!.networth, min: scatter[ 0 ].networth
+            } )
+        }, `Failed to generate wealth stats` ) ?? false;
     }
 
     // Generate DB stats
