@@ -121,36 +121,21 @@ export class Stats implements IStats {
     }
 
     public setWealthStats ( data: Partial< S.TWealthStats > ) : boolean {
-        const { percentiles = {}, decades = {}, gender = {}, spread = {} } = data;
-
-        Object.entries( percentiles ).forEach(
-            ( [ k, v ] ) => ( percentiles as any )[ k ] = Parser.money( v )
-        );
-
-        Object.entries( decades ).forEach(
-            ( [ k, v ] ) => ( decades as any )[ k ] = Parser.money( v )
-        );
-
-        Object.entries( gender ).forEach(
-            ( [ k, v ] ) => ( gender as any )[ k ] = Parser.money( v )
-        );
-
-        Object.entries( spread ).forEach(
-            ( [ k, v ] ) => ( spread as any )[ k ] = Parser.number( v )
-        );
-
-        return this.saveStats( 'wealth.json', 'json', this.prepStats( {
-            percentiles, decades, gender, spread,
-            ...Parser.container< Partial< S.TWealthStats > >( {
+        return this.saveStats( 'wealth.json', 'json', this.prepStats(
+            Parser.container< Partial< S.TWealthStats > >( {
+                percentiles: { value: data.percentiles, type: 'obj', args: [ 'money' ] },
                 quartiles: { value: data.quartiles, type: 'list', args: [ 'money' ] },
                 total: { value: data.total, type: 'money' },
                 max: { value: data.max, type: 'money' },
                 min: { value: data.min, type: 'money' },
                 mean: { value: data.mean, type: 'money' },
                 median: { value: data.median, type: 'money' },
-                stdDev: { value: data.stdDev, type: 'money' }
+                stdDev: { value: data.stdDev, type: 'money' },
+                decades: { value: data.decades, type: 'obj', args: [ 'money' ] },
+                gender: { value: data.gender, type: 'obj', args: [ 'money' ] },
+                spread: { value: data.spread, type: 'obj', args: [ 'number' ] }
             } )
-        } ) );
+        ) );
     }
 
     public setScatter ( data: Partial< S.TScatter > ) : boolean {
