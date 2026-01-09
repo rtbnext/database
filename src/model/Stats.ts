@@ -249,15 +249,23 @@ export class Stats implements IStats {
     // Aggregate stats data
 
     public static aggregate ( data: TProfileData, date: string, col: any = {} ) : any {
-        const { uri, info, realtime } = data;
-        const networth = realtime?.networth;
-        const rank = realtime?.rank;
+        const { uri, info, realtime, realtime: { rank, networth } = {} } = data;
         const age = Parser.age( info.birthDate );
         const item = { uri, name: info.shortName ?? info.name };
 
         const inc = ( path: string, k?: any, v?: number ) : void => path.split( '.' ).reduce(
             ( curr, p, i, arr ) => ( curr[ p ] ??= {}, i === arr.length - 1 && k
                 ? ( curr[ p ][ k ] = ( curr[ p ][ k ] || 0 ) + ( v ?? 1 ) )
+                : ( curr = curr[ p ] ), curr ), col );
+
+        const max = ( path: string, n: number ) : void => path.split( '.' ).reduce(
+            ( curr, p, i, arr ) => ( curr[ p ] ??= {}, i === arr.length - 1
+                ? ( curr[ p ] = Math.max( curr[ p ] || -Infinity, n ) )
+                : ( curr = curr[ p ] ), curr ), col );
+
+        const min = ( path: string, n: number ) : void => path.split( '.' ).reduce(
+            ( curr, p, i, arr ) => ( curr[ p ] ??= {}, i === arr.length - 1
+                ? ( curr[ p ] = Math.min( curr[ p ] || Infinity, n ) )
                 : ( curr = curr[ p ] ), curr ), col );
 
         const short = ( n: number ) => n >= 10 ? 'over-10' : n >= 5 ? '5-to-10' : n === 4
@@ -271,6 +279,13 @@ export class Stats implements IStats {
         if ( info.maritalStatus ) inc( 'profile.maritalStatus', info.maritalStatus );
         if ( info.selfMade?.rank ) inc( 'profile.selfMade', info.selfMade.rank );
         if ( info.philanthropyScore ) inc( 'profile.philanthropyScore', info.philanthropyScore );
+
+        if ( info.gender && age ) {
+            inc( `profile.agePyramid.${info.gender}`, 'count' );
+            inc( `profile.agePyramid.${info.gender}.decades`, Parser.ageDecade( info.birthDate ) );
+            max( `profile.agePyramid.${info.gender}.max`, age );
+            min( `profile.agePyramid.${info.gender}.min`, age );
+        }
 
         if ( info.children ) {
             inc( 'profile.children.full', info.children );
