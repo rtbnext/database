@@ -5,7 +5,6 @@ import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
 import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
-import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import * as S from '@rtbnext/schema/src/model/stats';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -40,8 +39,10 @@ export class Stats implements IStats {
     }
 
     private saveStats< T > ( path: string, format: 'json' | 'csv', data: T ) : boolean {
-        return ( Stats.storage[ format === 'csv' ? 'writeCSV' : 'writeJSON' ] as any )
-            ( this.resolvePath( path ), data );
+        return log.catch( () =>
+            ( Stats.storage[ format === 'csv' ? 'writeCSV' : 'writeJSON' ] as any )
+            ( this.resolvePath( path ), data ), `Failed to save stats to ${path}`
+        ) ?? false;
     }
 
     // Stats getter
@@ -109,10 +110,13 @@ export class Stats implements IStats {
     // Update history (add new line)
 
     public updateHistory ( data: Partial< S.TGlobalStats > ) : boolean {
-        return Stats.storage.datedCSV< S.THistoryItem >( this.resolvePath( 'history.csv' ), [
-            data.date!, data.count!, data.total!, data.woman!, data.quota!,
-            data.today?.value ?? 0, data.today?.pct ?? 0
-        ], true );
+        return log.catch(
+            () => Stats.storage.datedCSV< S.THistoryItem >( this.resolvePath( 'history.csv' ), [
+                data.date!, data.count!, data.total!, data.woman!, data.quota!,
+                data.today?.value ?? 0, data.today?.pct ?? 0
+            ], true ),
+            `Failed to update history`
+        ) ?? false;
     }
 
     // Generate wealth stats
@@ -239,104 +243,6 @@ export class Stats implements IStats {
 
     public static getInstance () : Stats {
         return Stats.instance ||= new Stats();
-    }
-
-    // Aggregate stats data
-
-    public static aggregate ( data: TProfileData, date: string, col: any = {
-        scatter: [], groups: { industry: {}, citizenship: {} }, profile: {
-            gender: {}, maritalStatus: {}, selfMade: {}, philanthropyScore: {},
-            children: { full: {}, short: {} }, agePyramid: {
-                m: { count: 0, decades: {}, min: Infinity, max: -Infinity, mean: 0 },
-                f: { count: 0, decades: {}, min: Infinity, max: -Infinity, mean: 0 }
-            }
-        }
-    } ) : any {
-        const { uri, info, realtime } = data;
-        const networth = realtime?.networth;
-        const rank = realtime?.rank;
-        const age = Parser.age( info.birthDate );
-        const decade = Parser.ageDecade( info.birthDate );
-        const woman = info.gender === 'f';
-        const item = { uri, name: info.shortName ?? info.name };
-
-        if ( info.gender ) {
-            col.profile.gender[ info.gender ] = ( col.profile.gender[ info.gender ] || 0 ) + 1;
-
-            if ( age ) {
-                col.profile.agePyramid[ info.gender ].count++;
-                col.profile.agePyramid[ info.gender ].max = Math.max(
-                    col.profile.agePyramid[ info.gender ].max, age
-                );
-                col.profile.agePyramid[ info.gender ].min = Math.min(
-                    col.profile.agePyramid[ info.gender ].min, age
-                );
-                col.profile.agePyramid[ info.gender ].mean += age;
-
-                if ( decade ) col.profile.agePyramid[ info.gender ].decades[ decade ] = (
-                    col.profile.agePyramid[ info.gender ].decades[ decade ] || 0
-                ) + 1;
-            }
-        }
-
-        if ( info.maritalStatus ) col.profile.maritalStatus[ info.maritalStatus ] = (
-            col.profile.maritalStatus[ info.maritalStatus ] || 0
-        ) + 1;
-
-        if ( info.selfMade?.rank ) col.profile.selfMade[ info.selfMade.rank ] = (
-            col.profile.selfMade[ info.selfMade.rank ] || 0
-        ) + 1;
-
-        if ( info.philanthropyScore ) col.profile.philanthropyScore[ info.philanthropyScore ] = (
-            col.profile.philanthropyScore[ info.philanthropyScore ] || 0
-        ) + 1;
-
-        if ( info.children ) {
-            col.profile.children.full[ info.children ] = (
-                col.profile.children.full[ info.children ] || 0
-            ) + 1;
-
-            const short = info.children >= 10 ? 'over-10' : info.children >= 5 ? '5-to-10'
-                : info.children === 4 ? 'four' : info.children === 3 ? 'three'
-                : info.children === 2 ? 'two' : info.children === 1 ? 'one' : 'none';
-            col.profile.children.short[ short ] = ( col.profile.children.short[ short ] || 0 ) + 1;
-        } else {
-            col.profile.children.short.none = ( col.profile.children.short.none || 0 ) + 1;
-        }
-
-        if ( realtime?.date !== date || ! networth ) return col;
-
-        if ( info.gender && age && networth ) ( col.scatter ??= [] ).push( {
-            ...item, gender: info.gender, age, networth
-        } );
-
-        let k: any;
-        StatsGroup.forEach( key => {
-            if ( k = ( info as any )[ key ] ) {
-                col.groups[ key ][ k ] ||= {
-                    date, count: 0, total: 0, woman: 0, quota: 0,
-                    today: { value: 0, pct: 0 }, ytd: { value: 0, pct: 0 },
-                    first: { ...item, rank, networth }
-                };
-                col.groups[ key ][ k ].count++;
-                col.groups[ key ][ k ].total += networth;
-                col.groups[ key ][ k ].woman += +woman;
-                col.groups[ key ][ k ].quota = (
-                    col.groups[ key ][ k ].woman / col.groups[ key ][ k ].count * 100
-                );
-
-                if ( rank! < col.groups[ key ][ k ].first.rank ) col.groups[ key ][ k ].first = {
-                    ...item, rank, networth
-                };
-
-                col.groups[ key ][ k ].today.value += realtime.today?.value ?? 0;
-                col.groups[ key ][ k ].today.pct += realtime.today?.pct ?? 0;
-                col.groups[ key ][ k ].ytd.value += realtime.ytd?.value ?? 0;
-                col.groups[ key ][ k ].ytd.pct += realtime.ytd?.pct ?? 0;
-            }
-        } );
-
-        return col;
     }
 
 }
