@@ -159,11 +159,9 @@ export class Stats implements IStats {
     }
 
     public setScatter ( data: Partial< S.TScatter > ) : boolean {
-        return this.saveStats( 'scatter.json', 'json', this.prepStats(
-            Parser.container< Partial< S.TScatter > >( {
-                count: { value: data.count, type: 'number' }
-            } )
-        ) );
+        return this.saveStats( 'scatter.json', 'json', this.prepStats( {
+            count: Parser.number( data.count ), items: data.items
+        } ) );
     }
 
     // Update history (add new line)
