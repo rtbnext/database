@@ -6,9 +6,11 @@ import { Primitive } from 'devtypes/types/primitives';
 import { getAlpha2Code } from 'i18n-iso-countries';
 import { abbr } from 'us-state-converter';
 
+export type TParserMethod = keyof typeof Parser;
+
 export interface TParserContainer {
     value: any;
-    type: keyof typeof Parser;
+    type: TParserMethod;
     strict?: boolean;
     args?: any[];
 }
@@ -29,7 +31,7 @@ export class Parser {
     // Helper
 
     public static strict< T = any > (
-        value: any, method: keyof typeof Parser, ...args: any
+        value: any, method: TParserMethod, ...args: any
     ) : T | undefined {
         return value === null || value === undefined ? undefined
             : ( Parser as any )[ method ]( value, ...args ) as T;
@@ -43,7 +45,7 @@ export class Parser {
     }
 
     public static list< T extends string | ( string | number )[] > (
-        value: T | T[], type: keyof typeof Parser = 'primitive', delimiter: string = ',',
+        value: T | T[], type: TParserMethod = 'primitive', delimiter: string = ',',
         strict: boolean = true, ...args: any
     ) : T[] {
         return ( Array.isArray( value ) ? value : value.split( delimiter ) ).map(
@@ -53,7 +55,7 @@ export class Parser {
     }
 
     public static obj< T = any > (
-        value: T, type: keyof typeof Parser = 'primitive',
+        value: T, type: TParserMethod = 'primitive',
         strict: boolean = true, ...args: any
     ) : T {
         if ( typeof value !== 'object' || value === null ) return {} as T;
