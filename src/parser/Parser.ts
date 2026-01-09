@@ -42,9 +42,14 @@ export class Parser {
             : clean ? Parser.safeStr( value ) : Parser.string( value );
     }
 
-    public static list ( value: any, delimiter: string = ',' ) : Primitive[] {
-        const list = Array.isArray( value ) ? value : value.split( delimiter );
-        return list.map( Parser.primitive ).filter( Boolean );
+    public static list< T extends string | ( string | number )[] > (
+        value: T | T[], type: keyof typeof Parser = 'primitive', delimiter: string = ',',
+        strict: boolean = true, ...args: any
+    ) : T[] {
+        return ( Array.isArray( value ) ? value : value.split( delimiter ) ).map(
+            i => strict ? Parser.strict( value, type, ...( args || [] ) )
+                : ( Parser as any )[ type ]( i, ...( args || [] ) )
+        ).filter( Boolean ) as T[];
     }
 
     public static map<
