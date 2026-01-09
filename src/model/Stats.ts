@@ -210,7 +210,17 @@ export class Stats implements IStats {
         if ( ! scatter || ! scatter.length ) return;
         scatter.sort( ( a, b ) => a.networth - b.networth );
 
-        //
+        const count = scatter.length;
+        const total = Parser.money( scatter.reduce( ( acc, i ) => acc + i.networth, 0 ) );
+        const medianIndex = Math.floor( count / 2 );
+        const median = Parser.money( count % 2 === 0 ? (
+            scatter[ medianIndex - 1 ].networth + scatter[ medianIndex ].networth
+        ) / 2 : scatter[ medianIndex ].networth );
+        const mean = Parser.money( total / count );
+        const variance = scatter.reduce( ( acc, i ) => {
+            const diff = i.networth - mean; return acc + diff * diff;
+        }, 0 ) / count;
+        const stdDev = Parser.money( Math.sqrt( variance ) );
     }
 
 }
