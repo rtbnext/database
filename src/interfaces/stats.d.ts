@@ -16,7 +16,7 @@ export interface IStats {
     setWealthStats ( data: Partial< S.TWealthStats > ) : boolean;
     setScatter ( data: Partial< S.TScatter > ) : boolean;
     updateHistory ( data: Partial< S.TGlobalStats > ) : boolean;
-    generateWealthStats ( scatter: S.TScatterItem[] ) : void;
+    generateWealthStats ( scatter: S.TScatterItem[] ) : boolean;
     generateDBStats () : boolean;
     setGroupedStats< T extends string = string > (
         group: TStatsGroup, raw: Record< T, S.TStatsGroupItem >
