@@ -253,6 +253,10 @@ export class Stats implements IStats {
         const age = Parser.age( info.birthDate );
         const item = { uri, name: info.shortName ?? info.name };
 
+        const set = ( path: string, n: any ) : void => path.split( '.' ).reduce(
+            ( curr, p, i, arr ) => ( curr[ p ] ??= {}, i === arr.length - 1
+                ? ( curr[ p ] = n ) : ( curr = curr[ p ] ), curr ), col );
+
         const inc = ( path: string, n?: number ) : void => path.split( '.' ).reduce(
             ( curr, p, i, arr ) => ( curr[ p ] ??= {}, i === arr.length - 1
                 ? ( curr[ p ] = ( curr[ p ] || 0 ) + ( n ?? 1 ) )
@@ -281,6 +285,7 @@ export class Stats implements IStats {
             inc( `profile.agePyramid.${info.gender}.total`, age );
             max( `profile.agePyramid.${info.gender}.max`, age );
             min( `profile.agePyramid.${info.gender}.min`, age );
+
             inc( `profile.agePyramid.${info.gender}.decades.${
                 Parser.ageDecade( info.birthDate )
             }` );
@@ -293,13 +298,33 @@ export class Stats implements IStats {
             inc( 'profile.children.short.none' );
         }
 
-        if ( ! networth || realtime?.date !== date ) return col;
+        if ( ! networth || ! rank || realtime?.date !== date ) return col;
 
         if ( info.gender && age && networth ) ( col.scatter ??= [] ).push( {
             ...item, gender: info.gender, age, networth
         } );
 
-        //
+        let k: any;
+        StatsGroup.forEach( key => {
+            if ( k = ( info as any )[ key ] ) {
+                inc( `groups.${key}.${k}.count` );
+                inc( `groups.${key}.${k}.total`, networth );
+                inc( `groups.${key}.${k}.woman`, +( info.gender === 'f' ) );
+
+                set( `groups.${key}.${k}.quota`, (
+                    col.groups[ key ][ k ].woman / col.groups[ key ][ k ].count * 100
+                ) );
+
+                inc( `groups.${key}.${k}.today.value`, realtime.today?.value ?? 0 );
+                inc( `groups.${key}.${k}.today.pct`, realtime.today?.pct ?? 0 );
+                inc( `groups.${key}.${k}.ytd.value`, realtime.ytd?.value ?? 0 );
+                inc( `groups.${key}.${k}.ytd.pct`, realtime.ytd?.pct ?? 0 );
+
+                if ( rank < ( col?.groups?.[ key ]?.[ k ]?.first?.rank ?? Infinity ) ) set(
+                    `groups.${key}.${k}.first`, { ...item, rank, networth }
+                );
+            }
+        } );
 
         return col;
     }
