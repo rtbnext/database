@@ -1,4 +1,4 @@
-import { StatsGroup } from '@/core/Const';
+import { Percentiles, StatsGroup } from '@/core/Const';
 import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
@@ -221,6 +221,12 @@ export class Stats implements IStats {
             const diff = i.networth - mean; return acc + diff * diff;
         }, 0 ) / count;
         const stdDev = Parser.money( Math.sqrt( variance ) );
+
+        const percentiles: S.TWealthStats[ 'percentiles' ] = {};
+        Percentiles.forEach( p => {
+            const idx = Math.ceil( ( parseInt( p ) / 100 ) * count ) - 1;
+            percentiles[ p ] = scatter[ idx ].networth;
+        } );
     }
 
 }
