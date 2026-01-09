@@ -121,7 +121,17 @@ export class Stats implements IStats {
     }
 
     public setWealthStats ( data: Partial< S.TWealthStats > ) : boolean {
-        return this.saveStats( 'wealth.json', 'json', this.prepStats( data ) );
+        return this.saveStats( 'wealth.json', 'json', this.prepStats(
+            Parser.container< Partial< S.TWealthStats > >( {
+                quartiles: { value: data.quartiles, type: 'list', args: [ 'money' ] },
+                total: { value: data.total, type: 'money' },
+                max: { value: data.max, type: 'money' },
+                min: { value: data.min, type: 'money' },
+                mean: { value: data.mean, type: 'money' },
+                median: { value: data.median, type: 'money' },
+                stdDev: { value: data.stdDev, type: 'money' }
+            } )
+        ) );
     }
 
     public setScatter ( data: Partial< S.TScatter > ) : boolean {
