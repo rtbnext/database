@@ -5,6 +5,7 @@ import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
 import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import * as S from '@rtbnext/schema/src/model/stats';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -243,6 +244,22 @@ export class Stats implements IStats {
 
     public static getInstance () : Stats {
         return Stats.instance ||= new Stats();
+    }
+
+    // Aggregate stats data
+
+    public static aggregate ( data: TProfileData, date: string, col: any = {} ) : any {
+        const { uri, info, realtime } = data;
+        const networth = realtime?.networth;
+        const rank = realtime?.rank;
+        const age = Parser.age( info.birthDate );
+        const item = { uri, name: info.shortName ?? info.name };
+
+        if ( info.gender && age ) ( col.scatter ??= [] ).push( {
+            ...item, gender: info.gender, age, networth
+        } );
+
+        return col;
     }
 
 }
