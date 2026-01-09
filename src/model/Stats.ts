@@ -206,7 +206,9 @@ export class Stats implements IStats {
         return col;
     }
 
-    public static calcWealthStats ( scatter: S.TScatterItem[] ) : any {
+    public static calcWealthStats (
+        scatter: S.TScatterItem[]
+    ) : Omit< S.TWealthStats, '@metadata' > | undefined {
         if ( ! scatter || ! scatter.length ) return;
         scatter.sort( ( a, b ) => a.networth - b.networth );
 
@@ -227,6 +229,12 @@ export class Stats implements IStats {
             const idx = Math.ceil( ( parseInt( p ) / 100 ) * count ) - 1;
             percentiles[ p ] = scatter[ idx ].networth;
         } );
+
+        const quartiles: S.TWealthStats[ 'quartiles' ] = [
+            scatter[ Math.floor( count * 0.25 ) ].networth,
+            scatter[ Math.floor( count * 0.5 ) ].networth,
+            scatter[ Math.floor( count * 0.75 ) ].networth
+        ];
     }
 
 }
