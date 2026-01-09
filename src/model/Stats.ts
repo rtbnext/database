@@ -250,24 +250,14 @@ export class Stats implements IStats {
 
     public static aggregate ( data: TProfileData, date: string, col: any = {} ) : any {
         const { uri, info, realtime, realtime: { rank, networth } = {} } = data;
-        const age = Parser.age( info.birthDate );
+        const age = Parser.age( info.birthDate ), decade = Parser.ageDecade( info.birthDate );
         const item = { uri, name: info.shortName ?? info.name };
 
-        const upd = ( op: 'set' | 'inc' | 'max' | 'min', path: string, n?: any ) : void =>
-            path.split( '.' ).reduce( ( curr, p, i, arr ) => (
-                curr[ p ] ??= {}, i === arr.length - 1 ? ( op === 'set' ? ( curr[ p ] = n )
-                    : op === 'inc' ? ( curr[ p ] = ( curr[ p ] || 0 ) + ( n ?? 1 ) )
-                    : op === 'max' ? ( curr[ p ] = Math.max( curr[ p ] || -Infinity, n ) )
-                    : ( curr[ p ] = Math.min( curr[ p ] || Infinity, n ) )
-                ) : ( curr = curr[ p ] ), curr ), col
-            );
-
-        const set = ( path: string, n: any ) : void => upd( 'set', path, n );
-        const inc = ( path: string, n?: number ) : void => upd( 'inc', path, n );
-        const max = ( path: string, n: number ) : void => upd( 'max', path, n );
-        const min = ( path: string, n: number ) : void => upd( 'min', path, n );
-
-        const short = ( n: number ) => n >= 10 ? 'over-10' : n >= 5 ? '5-to-10' : n === 4
+        const set = ( path: string, n: any ) : void => Utils.update( 'set', col, path, n );
+        const inc = ( path: string, n?: number ) : void => Utils.update( 'inc', col, path, n );
+        const max = ( path: string, n: number ) : void => Utils.update( 'max', col, path, n );
+        const min = ( path: string, n: number ) : void => Utils.update( 'min', col, path, n );
+        const srt = ( n: number ) => n >= 10 ? 'over-10' : n >= 5 ? '5-to-10' : n === 4
             ? 'four' : n === 3 ? 'three' : n === 2 ? 'two' : n === 1 ? 'one' : 'none';
 
         if ( info.gender ) inc( `profile.gender.${info.gender}` );
@@ -275,20 +265,17 @@ export class Stats implements IStats {
         if ( info.selfMade?.rank ) inc( `profile.selfMade.${info.selfMade.rank}` );
         if ( info.philanthropyScore ) inc( `profile.philanthropyScore.${info.philanthropyScore}` );
 
-        if ( info.gender && age ) {
+        if ( info.gender && age && decade ) {
             inc( `profile.agePyramid.${info.gender}.count` );
+            inc( `profile.agePyramid.${info.gender}.decades.${decade}` );
             inc( `profile.agePyramid.${info.gender}.total`, age );
             max( `profile.agePyramid.${info.gender}.max`, age );
             min( `profile.agePyramid.${info.gender}.min`, age );
-
-            inc( `profile.agePyramid.${info.gender}.decades.${
-                Parser.ageDecade( info.birthDate )
-            }` );
         }
 
         if ( info.children ) {
             inc( `profile.children.full.${info.children}` );
-            inc( `profile.children.short.${ short( info.children ) }` );
+            inc( `profile.children.short.${ srt( info.children ) }` );
         } else {
             inc( 'profile.children.short.none' );
         }
