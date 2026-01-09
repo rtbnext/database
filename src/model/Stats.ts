@@ -117,7 +117,27 @@ export class Stats implements IStats {
     }
 
     public setProfileStats ( data: Partial< S.TProfileStats > ) : boolean {
-        return this.saveStats( 'profile.json', 'json', this.prepStats( data ) );
+        return this.saveStats( 'profile.json', 'json', this.prepStats( {
+            ...Parser.container< Partial< S.TProfileStats > >( {
+                gender: { value: data.gender, type: 'obj', args: [ 'number' ] },
+                maritalStatus: { value: data.maritalStatus, type: 'obj', args: [ 'number' ] },
+                children: { value: Parser.container< S.TProfileStats[ 'children' ] >( {
+                    full: { value: data.children?.full, type: 'obj', args: [ 'number' ] },
+                    short: { value: data.children?.short, type: 'obj', args: [ 'number' ] },
+                } ), type: 'container' },
+                selfMade: { value: data.selfMade, type: 'obj', args: [ 'number' ] },
+                philanthropyScore: { value: data.philanthropyScore, type: 'obj', args: [ 'number' ] }
+            } ),
+            agePyramid: Object.entries( data.agePyramid! ).forEach( ( [ gender, item ] ) => 
+                ( data.agePyramid as any )[ gender ] = Parser.container< S.TAgePyramidGroup >( {
+                    count: { value: item.count, type: 'number' },
+                    decades: { value: item.decades, type: 'obj', args: [ 'number' ] },
+                    max: { value: item.max, type: 'number' },
+                    min: { value: item.min, type: 'number' },
+                    mean: { value: item.mean, type: 'number' }
+                } )
+            )
+        } ) );
     }
 
     public setWealthStats ( data: Partial< S.TWealthStats > ) : boolean {
