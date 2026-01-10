@@ -7,4 +7,8 @@ export class StatsJob extends Job implements IJob {
         super( args, 'Stats' );
     }
 
+    public async run () : Promise< void > {
+        await this.protect( async () => {} );
+    }
+
 }
