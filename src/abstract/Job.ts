@@ -27,17 +27,17 @@ export abstract class Job implements IJob {
         this.silent = !! this.args.silent;
         this.safeMode = !! this.args.safeMode;
 
-        this.log( `Run job: ${job}`, this.args );
+        this.log( `Run job`, this.args );
     }
 
     // Job helper
 
     protected log ( msg: string, meta?: any, as: TLoggingLevel = 'info' ) : void {
-        if ( ! this.silent ) log[ as ]( msg, meta );
+        if ( ! this.silent ) log[ as ]( `[${this.job}] ${msg}`, meta );
     }
 
     protected err ( err: unknown, msg?: string ) : void {
-        if ( ! this.silent ) log.errMsg( err, msg );
+        if ( ! this.silent ) log.errMsg( err, msg ? `[${this.job}] ${msg}` : undefined );
     }
 
     // Job getter
