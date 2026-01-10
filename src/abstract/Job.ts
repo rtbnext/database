@@ -87,6 +87,6 @@ export async function jobRunner< T extends typeof Job > (
 
     await log.catchAsync( async () => {
         const args = [ ...new Set( [ ...opt, ...process.argv.slice( 2 ) ] ) ];
-        const job = new ( cls as any )( args ); ( job[ method ] as any )();
+        const job = new ( cls as any )( args ); await ( job[ method ] as any )();
     }, `Failed to run job ${cls.name}` );
 }
