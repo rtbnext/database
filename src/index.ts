@@ -7,20 +7,13 @@ import { ProfileIndex } from '@/model/ProfileIndex';
 import { ListIndex } from '@/model/ListIndex';
 import { Mover } from '@/model/Mover';
 import { Stats } from '@/model/Stats';
-import { TIndex, TModel, TServices } from '@/types/index';
+import { TIndex, TJobs, TModel, TServices } from '@/types/index';
+import { StatsJob } from './job/Stats';
 
 export * as Const from '@/core/Const';
 export { log } from '@/core/Logger';
 export { List } from '@/model/List';
 export { Profile } from '@/model/Profile';
-
-export const services: TServices = {
-    config: Config.getInstance(),
-    fetch: Fetch.getInstance(),
-    profileQueue: ProfileQueue.getInstance(),
-    listQueue: ListQueue.getInstance(),
-    storage: Storage.getInstance()
-};
 
 export const index: TIndex = {
     profile: ProfileIndex.getInstance(),
@@ -31,4 +24,16 @@ export const model: TModel = {
     filter: Filter.getInstance(),
     mover: Mover.getInstance(),
     stats: Stats.getInstance()
-}
+};
+
+export const services: TServices = {
+    config: Config.getInstance(),
+    fetch: Fetch.getInstance(),
+    profileQueue: ProfileQueue.getInstance(),
+    listQueue: ListQueue.getInstance(),
+    storage: Storage.getInstance()
+};
+
+export const jobs: TJobs = {
+    stats: StatsJob
+};

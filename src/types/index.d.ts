@@ -27,6 +27,4 @@ export interface TServices {
     readonly storage: IStorage;
 }
 
-export interface TJobs {
-    readonly stats: IJob;
-}
+export type TJobs = Record< 'stats', new ( ...args: any[] ) => IJob >;
