@@ -65,12 +65,12 @@ export class Stats implements IStats {
         return this.getStats< S.TScatter >( 'scatter.json', 'json' );
     }
 
-    public getHistory () : S.THistory {
-        return this.getStats< S.THistory >( 'history.csv', 'csv' );
-    }
-
     public getDBStats () : S.TDBStats {
         return this.getStats< S.TDBStats >( 'db.json', 'json' );
+    }
+
+    public getHistory () : S.THistory {
+        return this.getStats< S.THistory >( 'history.csv', 'csv' );
     }
 
     // Get grouped stats
@@ -165,6 +165,15 @@ export class Stats implements IStats {
         } ) );
     }
 
+    public setDBStats ( data: Partial< S.TDBStats > ) : boolean {
+        return this.saveStats( 'db.json', 'json', this.prepStats(
+            Parser.container< Partial< S.TDBStats > >( {
+                files: { value: data.files, type: 'number' },
+                size: { value: data.size, type: 'number' }
+            } )
+        ) );
+    }
+
     // Update history (add new line)
 
     public updateHistory ( data: Partial< S.TGlobalStats > ) : boolean {
@@ -253,12 +262,7 @@ export class Stats implements IStats {
             };
 
             scan( Stats.storage.getRoot() );
-            return this.saveStats( 'db.json', 'json', this.prepStats(
-                Parser.container< Partial< S.TDBStats > >( {
-                    files: { value: stats.files, type: 'number' },
-                    size: { value: stats.size, type: 'number' }
-                } )
-            ) );
+            return this.setDBStats( stats );
         }, `Failed to generate DB stats` ) ?? false;
     }
 
