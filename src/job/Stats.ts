@@ -20,7 +20,7 @@ export class StatsJob extends Job implements IJob {
             const index = ProfileIndex.getInstance().getIndex();
             if ( ! date || ! index.size ) throw new Error( `No data available` );
 
-            let filter = {}, stats = {};
+            let filter: any = {}, stats: any = {};
 
             for ( const item of index.values() ) {
                 const profile = Profile.getByItem( item );
@@ -32,6 +32,8 @@ export class StatsJob extends Job implements IJob {
             }
 
             this.filter.save( filter );
+            this.stats.setProfileStats( stats.profile );
+            this.stats.setScatter( stats.scatter );
         } );
     }
 
