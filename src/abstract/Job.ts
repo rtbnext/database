@@ -42,6 +42,17 @@ export abstract class Job implements IJob {
         if ( ! this.silent ) log.errMsg( err, msg ? `[${this.job}] ${msg}` : undefined );
     }
 
+    protected async protect<
+        F extends ( ...args: any[] ) => any,
+        R = Awaited< ReturnType< F > >
+    > ( fn: F ) : Promise< R | undefined > {
+        try { return await fn() }
+        catch ( err ) {
+            if ( ! this.silent ) this.err( err );
+            if ( ! this.safeMode ) throw err;
+        }
+    }
+
     // Job getter
 
     public getJobName () : string {
