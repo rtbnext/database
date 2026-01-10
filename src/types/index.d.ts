@@ -6,16 +6,17 @@ import { IQueue } from '@/interfaces/queue';
 import { IMover } from '@/interfaces/mover';
 import { IStorage } from '@/interfaces/storage';
 import { IStats } from '@/interfaces/stats';
+import { IJob } from '@/interfaces/job';
 
 export interface TIndex {
-    profile: IProfileIndex;
-    list: IListIndex;
+    readonly profile: IProfileIndex;
+    readonly list: IListIndex;
 }
 
 export interface TModel {
-    filter: IFilter;
-    mover: IMover;
-    stats: IStats;
+    readonly filter: IFilter;
+    readonly mover: IMover;
+    readonly stats: IStats;
 }
 
 export interface TServices {
@@ -24,4 +25,8 @@ export interface TServices {
     readonly profileQueue: IQueue;
     readonly listQueue: IQueue;
     readonly storage: IStorage;
+}
+
+export interface TJobs {
+    readonly stats: IJob;
 }
