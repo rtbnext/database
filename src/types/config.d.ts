@@ -6,6 +6,11 @@ export interface TLoggingConfig {
     file?: boolean;
 }
 
+export interface TJobConfig {
+    silent: boolean;
+    safeMode: boolean;
+}
+
 export interface TStorageConfig {
     baseDir: string;
     compression: boolean;
@@ -41,6 +46,7 @@ export interface TQueueConfig {
 
 export interface TConfigObject {
     logging: TLoggingConfig;
+    job: TJobConfig;
     storage: TStorageConfig;
     fetch: TFetchConfig;
     queue: TQueueConfig;
