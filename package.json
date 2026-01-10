@@ -17,7 +17,7 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
     "@rtbnext/schema": "github:rtbnext/schema",
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.0.5",
     "devtypes": "^1.0.2",
     "rollup": "^4.55.1",
     "rollup-plugin-prettier": "^4.1.2",
