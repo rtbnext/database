@@ -5,6 +5,7 @@ import { ListQueue, ProfileQueue } from '@/core/Queue';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IJob } from '@/interfaces/job';
+import { TLoggingLevel } from '@/types/config';
 import { TArgs } from '@/types/generic';
 
 export abstract class Job implements IJob {
@@ -27,6 +28,16 @@ export abstract class Job implements IJob {
         this.safeMode = !! this.args.safeMode;
 
         log.info( `Run job: ${job}`, this.args );
+    }
+
+    // Job helper
+
+    protected log ( msg: string, meta?: any, as: TLoggingLevel = 'info' ) : void {
+        if ( ! this.silent ) log[ as ]( msg, meta );
+    }
+
+    protected err ( err: unknown, msg?: string ) : void {
+        if ( ! this.silent ) log.errMsg( err, msg );
     }
 
 }
