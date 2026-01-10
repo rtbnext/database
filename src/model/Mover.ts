@@ -1,7 +1,8 @@
 import { Snapshot } from '@/abstract/Snapshot';
 import { Utils } from '@/core/Utils';
 import { IMover } from '@/interfaces/mover';
-import { TMover, TMoverEntry } from '@rtbnext/schema/src/model/mover';
+import { Parser } from '@/parser/Parser';
+import { TMover, TMoverEntry, TMoverItem, TMoverSubject } from '@rtbnext/schema/src/model/mover';
 
 export class Mover extends Snapshot< TMover > implements IMover {
 
@@ -40,16 +41,30 @@ export class Mover extends Snapshot< TMover > implements IMover {
 
         return super.saveSnapshot( {
             ...Utils.metaData(),
-            date: snapshot.date,
-            today: {
-                networth: { winner: winner[ 0 ], loser: loser[ 0 ] },
-                percent: { winner: winner[ 1 ], loser: loser[ 1 ] }
-            },
-            ytd: {
-                networth: { winner: winner[ 2 ], loser: loser[ 2 ] },
-                percent: { winner: winner[ 3 ], loser: loser[ 3 ] }
-            }
-        }, force );
+            ...Parser.container< Partial< TMover > >( {
+                date: { value: snapshot.date, type: 'date' },
+                today: { value: Parser.container< TMoverItem >( {
+                    networth: { value: Parser.container< TMoverSubject >( {
+                        winner: { value: winner[ 0 ], type: 'money' },
+                        loser: { value: loser[ 0 ], type: 'money' }
+                    } ), type: 'container' },
+                    percent: { value: Parser.container< TMoverSubject >( {
+                        winner: { value: winner[ 1 ], type: 'pct' },
+                        loser: { value: loser[ 1 ], type: 'pct' }
+                    } ), type: 'container' }
+                } ), type: 'container' },
+                ytd: { value: Parser.container< TMoverItem >( {
+                    networth: { value: Parser.container< TMoverSubject >( {
+                        winner: { value: winner[ 2 ], type: 'money' },
+                        loser: { value: loser[ 2 ], type: 'money' }
+                    } ), type: 'container' },
+                    percent: { value: Parser.container< TMoverSubject >( {
+                        winner: { value: winner[ 3 ], type: 'pct' },
+                        loser: { value: loser[ 3 ], type: 'pct' }
+                    } ), type: 'container' }
+                } ), type: 'container' }
+            } )
+        } as TMover, force );
     }
 
     // Instantiate
