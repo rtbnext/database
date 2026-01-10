@@ -27,7 +27,7 @@ export abstract class Job implements IJob {
         this.silent = !! this.args.silent;
         this.safeMode = !! this.args.safeMode;
 
-        log.info( `Run job: ${job}`, this.args );
+        this.log( `Run job: ${job}`, this.args );
     }
 
     // Job helper
