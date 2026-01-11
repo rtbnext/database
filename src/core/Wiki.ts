@@ -58,7 +58,10 @@ export class Wiki {
             log.debug( `Wikipedia page info received for: ${title}` );
             const raw = res.data.query.pages[ 0 ];
 
-            if ( ! image && raw.pageimage ) image = await this.queryCommonsImage( raw.pageimage );
+            if ( ! image && raw.pageimage ) {
+                log.debug( `Querying page image from Wikimedia Commons: ${raw.pageimage}` );
+                image = await this.queryCommonsImage( raw.pageimage );
+            }
 
             return { image, ...Parser.container< TWiki >( {
                 uri: { value: title, type: 'string' },
