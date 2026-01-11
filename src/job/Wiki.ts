@@ -19,6 +19,15 @@ export class WikiJob extends Job implements IJob {
         profile.save();
     }
 
+    private async assign ( profile: Profile, title: string ) : Promise< void > {
+        this.log( `Assigning wiki page "${title}" to profile: ${ profile.getUri() }` );
+        const wiki = await Wiki.queryWikiPage( title );
+        if ( ! wiki ) return;
+
+        profile.updateData( { wiki } );
+        profile.save();
+    }
+
     public async run () : Promise< void > {
         await this.protect( async () => {
             const profile = Profile.find( Parser.strict( this.args.profile ?? '', 'string' )! );
