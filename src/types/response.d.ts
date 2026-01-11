@@ -145,3 +145,17 @@ export interface TListResponse {
         }[];
     };
 }
+
+export interface TCommonsResponse {
+    query: {
+        pages: {
+            imageinfo?: {
+                url: string;
+                descriptionurl: string;
+                thumburl?: string;
+                responsiveUrls?: Record< string, string >;
+                extmetadata?: Record< string, { value?: string } >;
+            }[];
+        }[];
+    };
+}
