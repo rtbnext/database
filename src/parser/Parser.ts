@@ -122,6 +122,16 @@ export class Parser {
         return format === 'iso' ? value : value.split( '-' ).slice( 0, format.length ).join( '-' );
     }
 
+    // URI component
+
+    public static decodeURI ( value: any ) : string {
+        return decodeURIComponent( Parser.string( value ) );
+    }
+
+    public static encodeURI ( value: any ) : string {
+        return encodeURIComponent( Parser.string( value ) );
+    }
+
     // Profile
 
     public static age ( value: any ) : number | undefined {
