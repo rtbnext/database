@@ -1,8 +1,8 @@
 import { Fetch } from '@/core/Fetch';
 import { log } from '@/core/Logger';
 import { Parser } from '@/parser/Parser';
-import { TCommonsResponse } from '@/types/response';
-import { TImage } from '@rtbnext/schema/src/abstract/generic';
+import { TCommonsResponse, TWikipediaResponse } from '@/types/response';
+import { TImage, TWiki } from '@rtbnext/schema/src/abstract/generic';
 
 export class Wiki {
 
@@ -38,6 +38,36 @@ export class Wiki {
                 credits: { value: credits, type: 'safeStr' }
             } );
         }, `Failed to query Wikimedia Commons image: ${title}` );
+    }
+
+    public static async queryWikiPage (
+        title: string, qid?: string, image?: TImage, confidence: number = 1
+    ) : Promise< TWiki | undefined > {
+        return await log.catchAsync( async () => {
+            const res = await Wiki.fetch.wikipedia< TWikipediaResponse >( {
+                action: 'query', prop: 'extracts|info|pageprops|pageimages',
+                titles: title, redirects: 1, exintro: 1, explaintext: 1,
+                exsectionformat: 'plain', piprop: 'name', pilimit: 1
+            } );
+
+            if ( ! res?.success || ! res.data || ! res.data.query.pages.length ) return;
+            const raw = res.data.query.pages[ 0 ];
+
+            if ( ! image && raw.pageimage ) image = await this.queryCommonsImage( raw.pageimage );
+
+            return { image, ...Parser.container< TWiki >( {
+                uri: { value: title, type: 'string' },
+                pageId: { value: raw.pageid, type: 'number' },
+                refId: { value: raw.lastrevid, type: 'number' },
+                confidence: { value: confidence, type: 'number', args: [ 3 ] },
+                name: { value: raw.title, type: 'string' },
+                lastModified: { value: raw.touched, type: 'date', args: [ 'iso' ] },
+                summary: { value: raw.extract ?? '', type: 'list', args: [ '\n' ], strict: false },
+                sortKey: { value: raw.pageprops?.defaultsort, type: 'string' },
+                wikidata: { value: qid ?? raw.pageprops?.[ 'wikibase_item' ], type: 'string' },
+                desc: { value: raw.pageprops?.[ 'wikibase-shortdesc' ], type: 'safeStr' }
+            } ) };
+        } );
     }
 
 }
