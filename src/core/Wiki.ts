@@ -1,7 +1,7 @@
 import { Fetch } from '@/core/Fetch';
 import { log } from '@/core/Logger';
 import { Parser } from '@/parser/Parser';
-import { TCommonsResponse, TWikidataResponse, TWikidataResponseItem, TWikipediaResponse } from '@/types/response';
+import * as R from '@/types/response';
 import { TImage, TWiki, TWikidata } from '@rtbnext/schema/src/abstract/generic';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 
@@ -10,7 +10,7 @@ export class Wiki {
     private static readonly fetch = Fetch.getInstance();
 
     private static scoreWDItem (
-        item: TWikidataResponseItem, data: Partial< TProfileData >
+        item: R.TWikidataResponseItem, data: Partial< TProfileData >
     ) : number {
         const { shortName, gender, birthDate, citizenship } = data.info ?? {};
         let score = 0;
@@ -87,8 +87,8 @@ export class Wiki {
             LIMIT 20
         `;
 
-        const res = await Wiki.fetch.wikidata< TWikidataResponse >( sparql );
-        let best: { score: number, item: TWikidataResponseItem } | undefined;
+        const res = await Wiki.fetch.wikidata< R.TWikidataResponse >( sparql );
+        let best: { score: number, item: R.TWikidataResponseItem } | undefined;
 
         for ( const item of res.data?.results.bindings ?? [] ) {
             const score = Wiki.scoreWDItem( item, data );
@@ -107,7 +107,7 @@ export class Wiki {
     public static async queryCommonsImage ( title: string ) : Promise< TImage | undefined > {
         log.debug( `Querying Wikimedia Commons image: ${title}` );
         return await log.catchAsync( async () => {
-            const res = await Wiki.fetch.commons< TCommonsResponse >( {
+            const res = await Wiki.fetch.commons< R.TCommonsResponse >( {
                 action: 'query', titles: `File:${title}`, prop: 'imageinfo', redirects: 1,
                 iiprop: 'url|extmetadata', iiurlwidth: 400
             } );
@@ -141,7 +141,7 @@ export class Wiki {
     ) : Promise< TWiki | undefined > {
         log.debug( `Querying Wikipedia page: ${title}` );
         return await log.catchAsync( async () => {
-            const res = await Wiki.fetch.wikipedia< TWikipediaResponse >( {
+            const res = await Wiki.fetch.wikipedia< R.TWikipediaResponse >( {
                 action: 'query', prop: 'extracts|info|pageprops|pageimages',
                 titles: title, redirects: 1, exintro: 1, explaintext: 1,
                 exsectionformat: 'plain', piprop: 'name', pilimit: 1
