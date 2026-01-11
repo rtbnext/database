@@ -146,6 +146,22 @@ export interface TListResponse {
     };
 }
 
+export interface TWikipediaResponse {
+    query: {
+        pages: {
+            pageid: number;
+            title: string;
+            extract?: string;
+            touched: string;
+            lastrevid: number;
+            pageimage?: string;
+            pageprops?: {
+                [ K in 'defaultsort' | 'wikibase-shortdesc' | 'wikibase_item' ]?: string;
+            };
+        }[];
+    };
+}
+
 export interface TCommonsResponse {
     query: {
         pages: {
