@@ -44,7 +44,7 @@ export class Parser {
             : clean ? Parser.safeStr( value ) : Parser.string( value );
     }
 
-    public static list< T extends string | ( string | number )[] > (
+    public static list< T extends string | ( string | number | undefined )[] > (
         value: T | T[], type: TParserMethod = 'primitive', delimiter: string = ',',
         strict: boolean = true, ...args: any
     ) : T[] {
