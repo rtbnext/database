@@ -119,12 +119,14 @@ abstract class Queue implements IQueue {
         );
     }
 
-    public remove ( uriLike: string ) : number {
-        const keys = this.getByUri( uriLike ).map( i => i.key );
+    public remove ( ...uriLike: string[] ) : number {
+        const keys = [ ...new Set( uriLike.map(
+            uri => this.getByUri( uri ).map( i => i.key )
+        ).flat() ) ];
 
         if ( keys && keys.length ) {
             keys.forEach( this.queue.delete.bind( this.queue ) );
-            log.debug( `Remove from queue [${this.type}] by URI: ${uriLike}`, keys );
+            log.debug( `Remove from queue [${this.type}] by URI(s): ${uriLike}`, keys );
             this.saveQueue();
         }
 
