@@ -1,3 +1,7 @@
-import { IWiki } from '@/interfaces/wiki';
+import { Fetch } from '@/core/Fetch';
 
-export class Wiki implements IWiki {}
+export class Wiki {
+
+    private static readonly fetch = Fetch.getInstance();
+
+}
