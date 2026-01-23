@@ -4,7 +4,7 @@ import { IProfileParser } from '@/interfaces/parser';
 import { Parser } from '@/parser/Parser';
 import { TParsedProfileName } from '@/types/parser';
 import { TProfileResponse } from '@/types/response';
-import { TEducation } from '@rtbnext/schema/src/abstract/generic';
+import { TEducation, TSelfMade } from '@rtbnext/schema/src/abstract/generic';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 
 export class ProfileParser implements IProfileParser {
@@ -98,9 +98,9 @@ export class ProfileParser implements IProfileParser {
         ) );
     }
 
-    public selfMade () : TProfileData[ 'info' ][ 'selfMade' ] {
+    public selfMade () : TSelfMade {
         return this.cache( 'selfMade', () =>
-            Parser.container< TProfileData[ 'info' ][ 'selfMade' ] >( {
+            Parser.container< TSelfMade >( {
                 type: { value: this.raw.selfMadeType, type: 'string' },
                 is: { value: this.raw.selfMade, type: 'boolean' },
                 rank: { value: this.raw.selfMadeRank, type: 'number' }
