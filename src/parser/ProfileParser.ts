@@ -4,6 +4,7 @@ import { IProfileParser } from '@/interfaces/parser';
 import { Parser } from '@/parser/Parser';
 import { TParsedProfileName } from '@/types/parser';
 import { TProfileResponse } from '@/types/response';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
 
 export class ProfileParser implements IProfileParser {
 
@@ -47,6 +48,32 @@ export class ProfileParser implements IProfileParser {
             this.raw.name, this.raw.lastName, this.raw.firstName,
             Parser.boolean( this.raw.asianFormat )
         ) );
+    }
+
+    public info () : TProfileData[ 'info' ] {
+        return this.cache( 'info', () => ( {
+            ...Parser.container< Partial< TProfileData[ 'info' ] > >( {
+                deceased: { value: this.raw.deceased, type: 'boolean' },
+                embargo: { value: this.raw.embargo, type: 'boolean' },
+                gender: { value: this.raw.gender, type: 'gender' },
+                birthDate: { value: this.raw.birthDate, type: 'date' },
+                birthPlace: { value: {
+                    country: this.raw.birthCountry,
+                    state: this.raw.birthState,
+                    city: this.raw.birthCity
+                }, type: 'location' },
+                residence: { value: {
+                    country: this.raw.countryOfResidence,
+                    state: this.raw.stateProvince,
+                    city: this.raw.city
+                }, type: 'location' },
+                maritalStatus: { value: this.raw.maritalStatus, type: 'maritalStatus' },
+                children: { value: this.raw.numberOfChildren, type: 'number' },
+                industry: { value: this.raw.industries, type: 'industry' },
+                source: { value: this.raw.source, type: 'list' }
+            } ),
+            ...this.name()
+        } as TProfileData[ 'info' ] ) );
     }
 
     public static name (
