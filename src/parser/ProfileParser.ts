@@ -21,10 +21,14 @@ export class ProfileParser implements IProfileParser {
         );
     }
 
+    // Caching
+
     private cache< T = any > ( key: string, fn: () => T ) : T {
         if ( ! this.cachedData.has( key ) ) this.cachedData.set( key, fn() );
         return this.cachedData.get( key );
     }
+
+    // Raw data
 
     public rawData () : TProfileResponse[ 'person' ] {
         return this.raw;
@@ -33,6 +37,8 @@ export class ProfileParser implements IProfileParser {
     public sortedLists () : TProfileResponse[ 'person' ][ 'personLists' ] {
         return this.lists;
     }
+
+    // URIs & IDs
 
     public uri () : string {
         return this.cache( 'uri', () => Utils.sanitize( this.raw.uri ) );
@@ -52,6 +58,8 @@ export class ProfileParser implements IProfileParser {
                 .sort();
         } );
     }
+
+    // Profile parser
 
     public name () : TParsedProfileName {
         return this.cache( 'name', () => ProfileParser.name(
@@ -182,6 +190,8 @@ export class ProfileParser implements IProfileParser {
             } ) )
         );
     }
+
+    // Public methods
 
     public static name (
         value: any, lastName: any = undefined, firstName: any = undefined,
