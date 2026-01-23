@@ -10,7 +10,9 @@ import { ProfileIndex } from '@/model/ProfileIndex';
 import { ListIndex } from '@/model/ListIndex';
 import { Mover } from '@/model/Mover';
 import { Stats } from '@/model/Stats';
-import { TIndex, TModel, TServices } from '@/types/index';
+import { Parser } from '@/parser/Parser';
+import { ProfileParser } from '@/parser/ProfileParser';
+import { TIndex, TModel, TParser, TServices } from '@/types/index';
 import { TJobs } from '@/types/job';
 
 export * as Const from '@/core/Const';
@@ -36,6 +38,11 @@ export const services: TServices = {
     profileQueue: ProfileQueue.getInstance(),
     listQueue: ListQueue.getInstance(),
     storage: Storage.getInstance()
+};
+
+export const parser: TParser = {
+    parser: Parser,
+    profile: ProfileParser
 };
 
 export const jobs: TJobs = {

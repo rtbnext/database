@@ -6,6 +6,8 @@ import { IQueue } from '@/interfaces/queue';
 import { IMover } from '@/interfaces/mover';
 import { IStorage } from '@/interfaces/storage';
 import { IStats } from '@/interfaces/stats';
+import { Parser } from '@/parser/Parser';
+import { ProfileParser } from '@/parser/ProfileParser';
 
 export interface TIndex {
     readonly profile: IProfileIndex;
@@ -24,4 +26,9 @@ export interface TServices {
     readonly profileQueue: IQueue;
     readonly listQueue: IQueue;
     readonly storage: IStorage;
+}
+
+export interface TParser {
+    readonly parser: typeof Parser;
+    readonly profile: typeof ProfileParser
 }
