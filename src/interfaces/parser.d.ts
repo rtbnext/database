@@ -13,4 +13,7 @@ export interface IProfileParser {
     selfMade () : TSelfMade;
     philanthropyScore () : number | undefined;
     organization () : TOrganization | undefined;
+    bio () : TProfileData[ 'bio' ];
+    cv () : string[];
+    facts () : string[];
 }
