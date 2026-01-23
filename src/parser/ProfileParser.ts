@@ -4,6 +4,7 @@ import { IProfileParser } from '@/interfaces/parser';
 import { Parser } from '@/parser/Parser';
 import { TParsedProfileName } from '@/types/parser';
 import { TProfileResponse } from '@/types/response';
+import { TEducation } from '@rtbnext/schema/src/abstract/generic';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 
 export class ProfileParser implements IProfileParser {
@@ -73,7 +74,9 @@ export class ProfileParser implements IProfileParser {
                 source: { value: this.raw.source, type: 'list' }
             } ),
             ...this.name(),
-            citizenship: this.citizenship()
+            citizenship: this.citizenship(),
+            education: this.education(),
+            selfMade: this.selfMade()
         } as TProfileData[ 'info' ] ) );
     }
 
@@ -83,6 +86,26 @@ export class ProfileParser implements IProfileParser {
             this.raw.countryOfResidence,
             'country'
         ) );
+    }
+
+    public education () : TEducation[] {
+        return this.cache( 'education', () => ( this.raw.educations ?? [] )
+            .filter( Boolean )
+            .map( item => Parser.container< TEducation >( {
+                school: { value: item.school, type: 'string' },
+                degree: { value: item.degree, type: 'string' }
+            } )
+        ) );
+    }
+
+    public selfMade () : TProfileData[ 'info' ][ 'selfMade' ] {
+        return this.cache( 'selfMade', () =>
+            Parser.container< TProfileData[ 'info' ][ 'selfMade' ] >( {
+                type: { value: this.raw.selfMadeType, type: 'string' },
+                is: { value: this.raw.selfMade, type: 'boolean' },
+                rank: { value: this.raw.selfMadeRank, type: 'number' }
+            } )
+        );
     }
 
     public static name (
