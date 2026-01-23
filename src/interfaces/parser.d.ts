@@ -20,4 +20,5 @@ export interface IProfileParser {
     cv () : string[];
     facts () : string[];
     related () : G.TRelation[];
+    media () : G.TImage[];
 }
