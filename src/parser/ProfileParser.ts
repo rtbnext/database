@@ -1,3 +1,4 @@
+import { REGEX_FAMILY, REGEX_SPACE_DELIMITER } from '@/core/RegEx';
 import { Utils } from '@/core/Utils';
 import { IProfileParser } from '@/interfaces/parser';
 import { Parser } from '@/parser/Parser';
@@ -52,14 +53,14 @@ export class ProfileParser implements IProfileParser {
         value: any, lastName: any = undefined, firstName: any = undefined,
         asianFormat: boolean = false
     ) : TParsedProfileName {
-        const clean = Parser.string( value ).replace( /&\s*family/i, '' ).trim();
-        const family = /&\s*family/i.test( value );
-        const parts = clean.split( /\s+/ ).filter( Boolean );
+        const clean = Parser.string( value ).replace( REGEX_FAMILY, '' ).trim();
+        const family = REGEX_FAMILY.test( value );
+        const parts = clean.split( REGEX_SPACE_DELIMITER ).filter( Boolean );
 
         const fN = firstName ? Parser.string( firstName ) : (
             asianFormat ? parts.slice( 1 ).join( ' ' ) : parts.slice( 0, -1 ).join( ' ' )
         );
-        const lN = lastName ? Parser.string( lastName.replace( /&\s*family/i, '' ) ) : (
+        const lN = lastName ? Parser.string( lastName.replace( REGEX_FAMILY, '' ) ) : (
             asianFormat ? parts[ 0 ] || '' : parts.pop() || ''
         );
 

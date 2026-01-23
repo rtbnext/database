@@ -1,5 +1,6 @@
 import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
+import { REGEX_NONUM, REGEX_SPACES } from '@/core/RegEx';
 import { Utils } from '@/core/Utils';
 import { IFetch } from '@/interfaces/fetch';
 import { Parser } from '@/parser/Parser';
@@ -96,7 +97,7 @@ export class Fetch implements IFetch {
     // Special fetch methods
 
     public async wayback< T > ( url: string, ts: any ) : Promise< Resp.TResponse< T > > {
-        const timestamp = Parser.date( ts, 'ymd' )!.replaceAll( /[^\d]/g, '' );
+        const timestamp = Parser.date( ts, 'ymd' )!.replaceAll( REGEX_NONUM, '' );
         const res = await this.single< Resp.TWaybackResponse >(
             this.config.endpoints.wayback
                 .replace( '{URL}', encodeURIComponent( url ) )
@@ -134,7 +135,7 @@ export class Fetch implements IFetch {
     public async wikidata< T > ( sparql: string ) : Promise< Resp.TResponse< T > > {
         return this.single< T >(
             this.config.endpoints.wikidata.replace( '{SPARQL}',
-                encodeURIComponent( sparql.replace( /\s+/g, ' ' ).trim() )
+                encodeURIComponent( sparql.replace( REGEX_SPACES, ' ' ).trim() )
             )
         );
     }

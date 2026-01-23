@@ -1,3 +1,4 @@
+import { REGEX_DIACRITICS, REGEX_NOALNUM } from '@/core/RegEx';
 import { Parser } from '@/parser/Parser';
 import { TAggregator, TArgs, TMeasuredResult } from '@/types/generic';
 import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
@@ -12,7 +13,7 @@ export class Utils {
     // Sanitize IDs and URIs
 
     public static sanitize ( value: any, delimiter: string = '-' ) : string {
-        return Parser.string( value ).toLowerCase().replace( /[^a-z0-9]/g, delimiter )
+        return Parser.string( value ).toLowerCase().replace( REGEX_NOALNUM, delimiter )
             .replace( new RegExp( `[${delimiter}]{2,}`, 'g' ), delimiter );
     }
 
@@ -180,8 +181,8 @@ export class Utils {
 
     public static buildSearchText ( value: any, minLength: number = 4 ) : string {
         return Array.from( new Set( String( value )
-            .normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
-            .toLowerCase().replace( /[^a-z0-9]+/g, ' ' ).split( ' ' )
+            .normalize( 'NFD' ).replace( REGEX_DIACRITICS, '' )
+            .toLowerCase().replace( REGEX_NOALNUM, ' ' ).split( ' ' )
             .filter( w => w.length >= minLength ).filter( Boolean )
         ) ).join( ' ' );
     }
