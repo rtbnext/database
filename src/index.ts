@@ -10,6 +10,7 @@ import { ProfileIndex } from '@/model/ProfileIndex';
 import { ListIndex } from '@/model/ListIndex';
 import { Mover } from '@/model/Mover';
 import { Stats } from '@/model/Stats';
+import { ListParser } from '@/parser/ListParser';
 import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
 import { TIndex, TModel, TParser, TServices, TUtils } from '@/types/index';
@@ -47,7 +48,8 @@ export const services: TServices = {
 
 export const parser: TParser = {
     parser: Parser,
-    profile: ProfileParser
+    profile: ProfileParser,
+    list: ListParser
 };
 
 export const utils: TUtils = {

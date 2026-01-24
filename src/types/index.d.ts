@@ -6,6 +6,7 @@ import { IQueue } from '@/interfaces/queue';
 import { IMover } from '@/interfaces/mover';
 import { IStorage } from '@/interfaces/storage';
 import { IStats } from '@/interfaces/stats';
+import { ListParser } from '@/parser/ListParser';
 import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
 import { ProfileMerger } from '@/utils/ProfileMerger';
@@ -31,9 +32,10 @@ export interface TServices {
 
 export interface TParser {
     readonly parser: typeof Parser;
-    readonly profile: typeof ProfileParser
+    readonly profile: typeof ProfileParser;
+    readonly list: typeof ListParser;
 }
 
 export interface TUtils {
-    readonly profileMerger: typeof ProfileMerger
+    readonly profileMerger: typeof ProfileMerger;
 }

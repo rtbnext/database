@@ -24,3 +24,5 @@ export interface IProfileParser {
     related () : Generic.TRelation[];
     media () : Generic.TImage[];
 }
+
+export interface IListParser {}
