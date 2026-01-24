@@ -1,1 +1,7 @@
-export class ProfileMerger {}
+export class ProfileMerger {
+
+    // Prevent instantiation
+
+    private constructor () {}
+
+}

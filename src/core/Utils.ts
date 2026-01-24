@@ -194,4 +194,8 @@ export class Utils {
         return tokens[ looseMatch ? 'some' : 'every' ]( t => text.includes( t ) );
     }
 
+    // Prevent instantiation
+
+    private constructor () {}
+
 }

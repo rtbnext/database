@@ -200,4 +200,8 @@ export class Wiki {
         ) : undefined;
     }
 
+    // Prevent instantiation
+
+    private constructor () {}
+
 }

@@ -194,4 +194,8 @@ export class Parser {
         } : undefined;
     }
 
+    // Prevent instantiation
+
+    private constructor () {}
+
 }
