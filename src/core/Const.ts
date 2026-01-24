@@ -1,5 +1,6 @@
-import { TIndustryResolver, TMaritalStatusResolver } from '@/types/generic';
 import * as Const from '@rtbnext/schema/src/abstract/const';
+
+import { TIndustryResolver, TMaritalStatusResolver } from '@/types/generic';
 
 // Basics
 

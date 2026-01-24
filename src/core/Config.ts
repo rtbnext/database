@@ -1,11 +1,13 @@
-import { Utils } from '@/core/Utils';
-import { IConfig } from '@/interfaces/config';
-import * as Conf from '@/types/config';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import process, { cwd } from 'node:process';
+
 import deepmerge from 'deepmerge';
 import { parse } from 'yaml';
+
+import { Utils } from '@/core/Utils';
+import { IConfig } from '@/interfaces/config';
+import * as Conf from '@/types/config';
 
 export class Config implements IConfig {
 

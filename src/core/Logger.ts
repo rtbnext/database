@@ -1,10 +1,11 @@
+import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { exit } from 'node:process';
+
 import { Config } from '@/core/Config';
 import { Utils } from '@/core/Utils';
 import { ILogger } from '@/interfaces/logger';
 import { TLoggingConfig, TLoggingLevel } from '@/types/config';
-import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { exit } from 'node:process';
 
 export class Logger implements ILogger {
 

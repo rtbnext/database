@@ -1,9 +1,10 @@
+import { TImage, TWiki, TWikidata } from '@rtbnext/schema/src/abstract/generic';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
+
 import { Fetch } from '@/core/Fetch';
 import { log } from '@/core/Logger';
 import { Parser } from '@/parser/Parser';
 import * as Resp from '@/types/response';
-import { TImage, TWiki, TWikidata } from '@rtbnext/schema/src/abstract/generic';
-import { TProfileData } from '@rtbnext/schema/src/model/profile';
 
 export class Wiki {
 

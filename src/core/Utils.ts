@@ -1,10 +1,12 @@
+import { hrtime } from 'node:process';
+
+import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
+import { ListLike } from 'devtypes/types/lists';
+import { sha256 } from 'js-sha256';
+
 import { REGEX_DIACRITICS, REGEX_NOALNUM } from '@/core/RegEx';
 import { Parser } from '@/parser/Parser';
 import { TAggregator, TArgs, TMeasuredResult } from '@/types/generic';
-import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
-import { hrtime } from 'node:process';
-import { ListLike } from 'devtypes/types/lists';
-import { sha256 } from 'js-sha256';
 
 export class Utils {
 

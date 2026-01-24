@@ -1,3 +1,5 @@
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+
 import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
 import { REGEX_NONUM, REGEX_SPACES } from '@/core/RegEx';
@@ -6,7 +8,6 @@ import { IFetch } from '@/interfaces/fetch';
 import { Parser } from '@/parser/Parser';
 import { TFetchConfig } from '@/types/config';
 import * as Resp from '@/types/response';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 export class Fetch implements IFetch {
 

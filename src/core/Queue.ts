@@ -1,23 +1,25 @@
+import { join } from 'node:path';
+
+import { sha256 } from 'js-sha256';
+
 import { Config } from '@/core/Config';
 import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IQueue } from '@/interfaces/queue';
 import { TQueueConfig } from '@/types/config';
-import { TQueue, TQueueItem, TQueueOptions, TQueueStorage, TQueueType } from '@/types/queue';
-import { join } from 'node:path';
-import { sha256 } from 'js-sha256';
+import * as Q from '@/types/queue';
 
 abstract class Queue implements IQueue {
 
     protected static readonly storage = Storage.getInstance();
 
     protected readonly config: TQueueConfig;
-    protected readonly type: TQueueType;
+    protected readonly type: Q.TQueueType;
     protected readonly path: string;
-    protected queue: TQueue;
+    protected queue: Q.TQueue;
 
-    protected constructor ( type: TQueueType ) {
+    protected constructor ( type: Q.TQueueType ) {
         const { root, queue } = Config.getInstance();
         this.config = queue;
         this.type = type;
@@ -26,16 +28,16 @@ abstract class Queue implements IQueue {
         this.queue = this.loadQueue();
     }
 
-    protected loadQueue () : TQueue {
-        return new Map( ( Queue.storage.readJSON< TQueueStorage >( this.path ) || [] ).map(
-            ( i: TQueueItem ) => [ i.key, i ]
+    protected loadQueue () : Q.TQueue {
+        return new Map( ( Queue.storage.readJSON< Q.TQueueStorage >( this.path ) || [] ).map(
+            ( i: Q.TQueueItem ) => [ i.key, i ]
         ) );
     }
 
     protected saveQueue () : void {
         const { defaultPrio = 0 } = this.config;
-        Queue.storage.writeJSON< TQueueStorage >( this.path,
-            Array.from( this.queue.values() ).sort( ( a: TQueueItem, b: TQueueItem ) =>
+        Queue.storage.writeJSON< Q.TQueueStorage >( this.path,
+            Array.from( this.queue.values() ).sort( ( a: Q.TQueueItem, b: Q.TQueueItem ) =>
                 ( b.prio ?? defaultPrio ) - ( a.prio ?? defaultPrio ) || 
                 ( new Date( a.ts ).getTime() - new Date( b.ts ).getTime() )
             )
@@ -48,7 +50,7 @@ abstract class Queue implements IQueue {
 
     // Basic queue operations
 
-    public getQueue () : TQueueItem[] {
+    public getQueue () : Q.TQueueItem[] {
         return Array.from( this.queue.values() );
     }
 
@@ -56,7 +58,7 @@ abstract class Queue implements IQueue {
         return this.queue.size;
     }
 
-    public getByKey ( key: string ) : TQueueItem | undefined {
+    public getByKey ( key: string ) : Q.TQueueItem | undefined {
         return this.queue.get( key );
     }
 
@@ -64,7 +66,7 @@ abstract class Queue implements IQueue {
         return this.queue.has( key );
     }
 
-    public getByUri ( uriLike: string ) : TQueueItem[] {
+    public getByUri ( uriLike: string ) : Q.TQueueItem[] {
         const uri = Utils.sanitize( uriLike );
         return [ ...this.queue.values() ].filter( i => i.uri === uri );
     }
@@ -81,7 +83,7 @@ abstract class Queue implements IQueue {
 
     // Add queue items
 
-    public add ( opt: TQueueOptions, save: boolean = true ) : boolean {
+    public add ( opt: Q.TQueueOptions, save: boolean = true ) : boolean {
         const { uriLike, args, prio } = opt;
         return log.catch( () => {
             if ( this.queue.size > this.config.maxSize ) throw new Error(
@@ -92,7 +94,7 @@ abstract class Queue implements IQueue {
             const key = this.key( uri, args );
             const item = this.queue.get( key );
             const ts = item?.ts || Utils.date( 'iso' );
-            const data: TQueueItem = { key, uri, ts, args, prio };
+            const data: Q.TQueueItem = { key, uri, ts, args, prio };
 
             if ( JSON.stringify( item ) === JSON.stringify( data ) ) return false;
 
@@ -104,7 +106,7 @@ abstract class Queue implements IQueue {
         }, `Failed to add item to queue [${this.type}]: ${uriLike}` ) ?? false;
     }
 
-    public addMany ( items: TQueueOptions[] ) : number {
+    public addMany ( items: Q.TQueueOptions[] ) : number {
         const added = items.reduce( ( acc, item ) => acc + +this.add( item, false ), 0 );
         this.saveQueue();
         return added;
@@ -135,8 +137,8 @@ abstract class Queue implements IQueue {
 
     // Get items from queue (processing)
 
-    public next ( n: number = 1 ) : TQueueItem[] {
-        const items: TQueueItem[] = [];
+    public next ( n: number = 1 ) : Q.TQueueItem[] {
+        const items: Q.TQueueItem[] = [];
 
         for ( const [ k, item ] of this.queue ) if ( items.length < n ) {
             items.push( item ); this.queue.delete( k );
