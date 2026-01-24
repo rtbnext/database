@@ -18,7 +18,8 @@
       "@/job/*": [ "job/*" ],
       "@/model/*": [ "model/*" ],
       "@/parser/*": [ "parser/*" ],
-      "@/types/*": [ "types/*" ]
+      "@/types/*": [ "types/*" ],
+      "@/utils/*": [ "utils/*" ]
     }
   },
   "tsc-alias": {
