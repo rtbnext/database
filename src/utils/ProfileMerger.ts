@@ -2,6 +2,7 @@ import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import { CmpStrAsync, CmpStrResult } from 'cmpstr';
 
 import { REGEX_URI_CLEANUP } from '@/core/RegEx';
+import { Profile } from '@/model/Profile';
 import { ProfileIndex } from '@/model/ProfileIndex';
 
 CmpStrAsync.filter.add( 'input', 'normalizeUri', ( uri: string ) : string =>
@@ -36,6 +37,22 @@ export class ProfileMerger {
         ) return false;
 
         return true;
+    }
+
+    // Find matching profiles
+
+    public static findMatching ( data: Partial< TProfileData > ) : Profile[] {
+        if ( ! data.id || ! data.uri ) return [];
+        const res: Profile[] = [];
+
+        for ( const uri of ProfileMerger.similarURIs( data.uri ) ) {
+            const profile = Profile.get( uri );
+            if ( profile && ProfileMerger.mergeableProfiles(
+                profile.getData(), data as TProfileData
+            ) ) res.push( profile );
+        }
+
+        return res;
     }
 
     // Prevent instantiation
