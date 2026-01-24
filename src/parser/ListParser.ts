@@ -1,9 +1,7 @@
 import { Utils } from '@/core/Utils';
 import { IListParser } from '@/interfaces/parser';
 import { Parser } from '@/parser/Parser';
-import { TListResponse } from '@/types/response';
-
-export type TListResponseEntry = TListResponse[ 'personList' ][ 'personsLists' ][ number ];
+import { TListResponseEntry } from '@/types/response';
 
 export class ListParser implements IListParser {
 

@@ -146,6 +146,8 @@ export interface TListResponse {
     };
 }
 
+export type TListResponseEntry = TListResponse[ 'personList' ][ 'personsLists' ][ number ];
+
 export interface TWikidataResponse {
     results: { bindings: TWikidataResponseItem[] };
 }
