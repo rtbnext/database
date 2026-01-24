@@ -35,6 +35,8 @@ export class Ranking {
             names.set( listUri, { name, desc: listDescription } );
         }
 
+        // Merge existing and new entries
+        const allListUris = new Set( [ ...lists.keys(), ...entries.keys() ] );
         const result: TRanking[] = [];
 
         if ( addQueue && queue.length ) this.queue.addMany( queue );
