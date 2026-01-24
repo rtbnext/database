@@ -1,12 +1,14 @@
+import { join } from 'node:path';
+
+import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
+import * as P from '@rtbnext/schema/src/model/profile';
+import deepmerge from 'deepmerge';
+
 import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IProfile } from '@/interfaces/profile';
 import { ProfileIndex } from '@/model/ProfileIndex';
-import { TMetaData } from '@rtbnext/schema/src/abstract/generic';
-import * as P from '@rtbnext/schema/src/model/profile';
-import { join } from 'node:path';
-import deepmerge from 'deepmerge';
 
 export class Profile implements IProfile {
 

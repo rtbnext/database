@@ -1,6 +1,7 @@
+import { TListIndex, TListIndexItem } from '@rtbnext/schema/src/model/list';
+
 import { Index } from '@/abstract/Index';
 import { IListIndex } from '@/interfaces/index';
-import { TListIndex, TListIndexItem } from '@rtbnext/schema/src/model/list';
 
 export class ListIndex extends Index< TListIndexItem, TListIndex > implements IListIndex {
 

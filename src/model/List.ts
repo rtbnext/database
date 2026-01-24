@@ -1,8 +1,9 @@
+import { TListIndexItem, TListSnapshot } from '@rtbnext/schema/src/model/list';
+
 import { Snapshot } from '@/abstract/Snapshot';
 import { log } from '@/core/Logger';
 import { IList } from '@/interfaces/list';
 import { ListIndex } from '@/model/ListIndex';
-import { TListIndexItem, TListSnapshot } from '@rtbnext/schema/src/model/list';
 
 export class List extends Snapshot< TListSnapshot > implements IList {
 

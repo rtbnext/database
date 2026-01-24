@@ -1,15 +1,17 @@
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { TChangeItem } from '@rtbnext/schema/src/abstract/assets';
+import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
+import * as S from '@rtbnext/schema/src/model/stats';
+
 import { Percentiles, StatsGroup, WealthSpread } from '@/core/Const';
 import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
-import { TChangeItem } from '@rtbnext/schema/src/abstract/assets';
-import { TStatsGroup } from '@rtbnext/schema/src/abstract/const';
-import { TProfileData } from '@rtbnext/schema/src/model/profile';
-import * as S from '@rtbnext/schema/src/model/stats';
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
 
 export class Stats implements IStats {
 

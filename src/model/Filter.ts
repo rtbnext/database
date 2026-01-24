@@ -1,13 +1,15 @@
+import { join } from 'node:path';
+
+import { TFilterGroup, TFilterSpecial } from '@rtbnext/schema/src/abstract/const';
+import * as F from '@rtbnext/schema/src/model/filter';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
+
 import { FilterGroup, FilterSpecial } from '@/core/Const';
 import { log } from '@/core/Logger';
 import { Storage } from '@/core/Storage';
 import { Utils } from '@/core/Utils';
 import { IFilter } from '@/interfaces/filter';
 import { Parser } from '@/parser/Parser';
-import { TFilterGroup, TFilterSpecial } from '@rtbnext/schema/src/abstract/const';
-import * as F from '@rtbnext/schema/src/model/filter';
-import { TProfileData } from '@rtbnext/schema/src/model/profile';
-import { join } from 'node:path';
 
 export class Filter implements IFilter {
 

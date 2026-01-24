@@ -1,8 +1,9 @@
+import { TProfileIndex, TProfileIndexItem } from '@rtbnext/schema/src/model/profile';
+
 import { Index } from '@/abstract/Index';
 import { log } from '@/core/Logger';
 import { Utils } from '@/core/Utils';
 import { IProfileIndex } from '@/interfaces/index';
-import { TProfileIndex, TProfileIndexItem } from '@rtbnext/schema/src/model/profile';
 
 export class ProfileIndex extends Index< TProfileIndexItem, TProfileIndex > implements IProfileIndex {
 
