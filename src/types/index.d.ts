@@ -10,6 +10,7 @@ import { ListParser } from '@/parser/ListParser';
 import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
 import { ProfileMerger } from '@/utils/ProfileMerger';
+import { Ranking } from '@/utils/Ranking';
 
 export interface TIndex {
     readonly profile: IProfileIndex;
@@ -38,4 +39,5 @@ export interface TParser {
 
 export interface TUtils {
     readonly profileMerger: typeof ProfileMerger;
+    readonly ranking: typeof Ranking;
 }
