@@ -1,5 +1,6 @@
+import { TAsset, TRealtime } from '@rtbnext/schema/src/abstract/assets';
 import * as Generic from '@rtbnext/schema/src/abstract/generic';
-import { TProfileBio, TProfileInfo } from '@rtbnext/schema/src/model/profile';
+import { TProfileBio, TProfileData, TProfileInfo } from '@rtbnext/schema/src/model/profile';
 
 import { ICache } from '@/interfaces/cache';
 import { TParsedProfileName } from '@/types/parser';
@@ -38,4 +39,9 @@ export interface IListParser extends ICache {
     info () : Partial< TProfileInfo >;
     bio () : TProfileBio;
     age () : number | undefined;
+    assets () : TAsset[];
+    realtime (
+        data?: Partial< TProfileData >,
+        prev?: string, next?: string
+    ) : TRealtime | undefined;
 }
