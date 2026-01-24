@@ -12,8 +12,9 @@ import { Mover } from '@/model/Mover';
 import { Stats } from '@/model/Stats';
 import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
-import { TIndex, TModel, TParser, TServices } from '@/types/index';
+import { TIndex, TModel, TParser, TServices, TUtils } from '@/types/index';
 import { TJobs } from '@/types/job';
+import { ProfileMerger } from '@/utils/ProfileMerger';
 
 export * as Const from '@/core/Const';
 export { log } from '@/core/Logger';
@@ -43,6 +44,10 @@ export const services: TServices = {
 export const parser: TParser = {
     parser: Parser,
     profile: ProfileParser
+};
+
+export const utils: TUtils = {
+    profileMerger: ProfileMerger
 };
 
 export const jobs: TJobs = {

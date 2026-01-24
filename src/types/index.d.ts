@@ -8,6 +8,7 @@ import { IStorage } from '@/interfaces/storage';
 import { IStats } from '@/interfaces/stats';
 import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
+import { ProfileMerger } from '@/utils/ProfileMerger';
 
 export interface TIndex {
     readonly profile: IProfileIndex;
@@ -31,4 +32,8 @@ export interface TServices {
 export interface TParser {
     readonly parser: typeof Parser;
     readonly profile: typeof ProfileParser
+}
+
+export interface TUtils {
+    readonly profileMerger: typeof ProfileMerger
 }
