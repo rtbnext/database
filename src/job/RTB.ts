@@ -41,6 +41,12 @@ export class RTBJob extends Job implements IJob {
             for ( const [ i, raw ] of Object.entries( entries ) ) {
                 raw.date = new Date( listDate ).getTime();
                 const parser = new ListParser( raw );
+                const uri = parser.uri();
+                const id = parser.id();
+                const rank = parser.rank();
+                const networth = parser.networth();
+
+                if ( ! rank || ! networth ) continue;
 
                 // ...
             }
