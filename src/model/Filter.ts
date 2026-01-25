@@ -148,9 +148,7 @@ export class Filter implements IFilter {
 
     // Aggregate filter data
 
-    public static aggregate (
-        data: TProfileData, col: Partial< F.TFilterList > = {}
-    ) : Partial< F.TFilterList > {
+    public static aggregate ( data: TProfileData, col: Partial< F.TFilterList > ) : void {
         const { uri, info, realtime } = data;
         const item: F.TFilterItem = { uri, name: info.shortName ?? info.name, value: undefined };
         const decade = Parser.ageDecade( info.birthDate )?.toString();
@@ -172,8 +170,6 @@ export class Filter implements IFilter {
         info.dropOff && add( 'special', 'dropOff', realtime?.date );
         info.family && add( 'special', 'family', undefined );
         info.selfMade?.is && add( 'special', 'selfMade', info.selfMade.rank );
-
-        return col;
     }
 
 }

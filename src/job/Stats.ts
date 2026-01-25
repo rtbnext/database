@@ -1,3 +1,5 @@
+import { TFilterList } from '@rtbnext/schema/src/model/filter';
+
 import { Job, jobRunner } from '@/abstract/Job';
 import { StatsGroup } from '@/core/Const';
 import { IJob } from '@/interfaces/job';
@@ -22,15 +24,15 @@ export class StatsJob extends Job implements IJob {
             if ( ! date || ! index.size ) throw new Error( `No data available` );
 
             this.log( `Generating stats for ${date} with ${index.size} profiles` );
-            let filter: any = {}, stats: any = {};
+            const filter: Partial< TFilterList > = {}, stats: any = {};
 
             for ( const item of index.values() ) {
                 const profile = Profile.getByItem( item );
                 if ( ! profile ) continue;
 
                 const data = profile.getData();
-                stats = Stats.aggregate( data, date, stats );
-                filter = Filter.aggregate( data, filter );
+                Stats.aggregate( data, date, stats );
+                Filter.aggregate( data, filter );
             }
 
             this.log( `Saving stats for ${date}` );

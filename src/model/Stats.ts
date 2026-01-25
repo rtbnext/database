@@ -317,7 +317,7 @@ export class Stats implements IStats {
 
     // Aggregate stats data
 
-    public static aggregate ( data: TProfileData, date: string, col: any = {} ) : any {
+    public static aggregate ( data: TProfileData, date: string, col: any ) : void {
         return log.catch( () => {
             const { uri, info, realtime, realtime: { rank, networth } = {} } = data;
             const age = Parser.age( info.birthDate ), decade = Parser.ageDecade( info.birthDate );
@@ -383,9 +383,7 @@ export class Stats implements IStats {
                     );
                 }
             } );
-
-            return col;
-        }, `Failed to aggregate stats data`) ?? col;
+        }, `Failed to aggregate stats data` );
     }
 
 }
