@@ -5,6 +5,7 @@ import { Job, jobRunner } from '@/abstract/Job';
 import { Fetch } from '@/core/Fetch';
 import { ProfileQueue } from '@/core/Queue';
 import { IJob } from '@/interfaces/job';
+import { List } from '@/model/List';
 import { Stats } from '@/model/Stats';
 import { ListParser } from '@/parser/ListParser';
 import { Parser } from '@/parser/Parser';
@@ -31,9 +32,9 @@ export class RTBJob extends Job implements IJob {
             const listDate = Parser.date( this.args.date ?? new Date(), 'ymd' )!;
             if ( date === listDate ) throw new Error( 'RTB list is already up to date' );
 
-            const list = res.data.personList.personsLists;
+            const rawList = res.data.personList.personsLists;
             const th = Date.now() - Job.config.queue.tsThreshold;
-            const entries = list.filter( i => i.rank && i.finalWorth ).filter( Boolean ).sort(
+            const entries = rawList.filter( i => i.rank && i.finalWorth ).filter( Boolean ).sort(
                 ( a, b ) => a.rank! - b.rank!
             );
 
@@ -99,6 +100,19 @@ export class RTBJob extends Job implements IJob {
                     source: profileData.info?.source!
                 } );
             }
+
+            // Get or create list
+            const list = List.get( 'rtb' ) || List.create( 'rtb', {
+                uri: 'rtb',
+                name: 'The World’s Real-Time Billionaires',
+                shortName: 'Real-Time Billionaires',
+                desc: 'Today’s richest people in the world',
+                text: 'todays richest people world',
+                date: listDate,
+                count: items.length,
+                columns: [ 'rank', 'profile', 'networth', 'today', 'ytd', 'age', 'citizenship', 'source' ],
+                filters: [ 'gender', 'industry', 'citizenship' ]
+            } );
         } );
     }
 
