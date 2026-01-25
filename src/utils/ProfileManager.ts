@@ -30,10 +30,6 @@ export class ProfileManager {
         return Profile.create( uriLike, profileData as TProfileData, [], aliases );
     }
 
-    private static handleURIChange ( profile: Profile, newUri: string, makeAlias: boolean = true ) : boolean {
-        return profile.getUri() !== newUri ? profile.move( newUri, makeAlias ) : false;
-    }
-
     // Lookup profile by URI and ID, or find a similar matching profile
 
     public static lookup (
@@ -52,6 +48,12 @@ export class ProfileManager {
 
     public static determineAction ( lookup: TProfileLookupResult ) : TProfileOperation {
         return lookup.isExisting ? 'update' : lookup.isSimilar ? 'merge' : 'create';
+    }
+
+    // Handle URI change
+
+    public static handleURIChange ( profile: Profile, newUri: string, makeAlias: boolean = true ) : boolean {
+        return profile.getUri() !== newUri ? profile.move( newUri, makeAlias ) : false;
     }
 
     // Perform profile operation
