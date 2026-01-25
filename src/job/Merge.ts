@@ -12,6 +12,7 @@ export class MergeJob extends Job implements IJob {
     private listMergeable ( ...uriLike: any[] ) : void {
         for ( const [ uri, list ] of Object.entries( ProfileMerger.listCandidates( uriLike ) ) ) {
             console.log( `Candidates for ${uri}:` );
+
             if ( ! list.length ) console.log( ' - None' );
             for ( const candidate of list ) console.log( ` - ${candidate}` );
         }
@@ -19,8 +20,17 @@ export class MergeJob extends Job implements IJob {
 
     private isMergeable ( target: Profile, source: Profile ) : void {
         const test = ProfileMerger.mergeableProfiles( target.getData(), source.getData() );
+
         if ( test ) console.log( `Profiles ${ target.getUri() } and ${ source.getUri() } are mergeable.` );
         else console.log( `Profiles ${ target.getUri() } and ${ source.getUri() } are NOT mergeable.` );
+    }
+
+    private merge ( target: Profile, source: Profile, force: boolean, makeAlias: boolean ) : void {
+        this.log( `Merging profile ${ source.getUri() } into ${ target.getUri() }` );
+        const res = ProfileMerger.mergeProfiles( target, source, force, makeAlias );
+
+        if ( res ) this.log( `Merge completed successfully.` );
+        else this.log( `Merge failed: profiles are not mergeable.`, undefined, 'error' );
     }
 
     public async run () : Promise< void > {
