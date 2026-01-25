@@ -97,7 +97,7 @@ export class RTBJob extends Job implements IJob {
                 const name = profileData.info?.shortName ?? profileData.info?.name!;
 
                 // Aggregate mover data
-                Mover.aggregate( realtime, uri, name, mover );
+                Mover.aggregate( realtime, uri, name, mover, total );
 
                 // Push list item
                 items.push( {

@@ -87,12 +87,12 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
 
     public static aggregate (
         data: TRealtime | undefined, uri: string, name: string,
-        col: Omit< M.TMover, '@metadata' >
+        col: Omit< M.TMover, '@metadata' >, total: number = 0
     ) : void {
         if ( data?.today?.value ) {
             const type = data.today.value > 0 ? 'winner' : 'loser';
             col.today.total.value += data.today.value;
-            col.today.total.pct += data.today.pct;
+            col.today.total.pct = total ? col.today.total.value / total : 0;
             col.today.networth[ type ].push( { uri, name, value: data.today.value } );
             col.today.percent[ type ].push( { uri, name, value: data.today.pct } );
         }
@@ -100,7 +100,7 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
         if ( data?.ytd?.value ) {
             const type = data.ytd.value > 0 ? 'winner' : 'loser';
             col.ytd.total.value += data.ytd.value;
-            col.ytd.total.pct += data.ytd.pct;
+            col.ytd.total.pct = total ? col.ytd.total.value / total : 0;
             col.ytd.networth[ type ].push( { uri, name, value: data.ytd.value } );
             col.ytd.percent[ type ].push( { uri, name, value: data.ytd.pct } );
         }
