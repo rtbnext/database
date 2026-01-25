@@ -57,14 +57,14 @@ export class RTBJob extends Job implements IJob {
                     continue;
                 }
 
-                let profileData = {
+                let profileData: Partial< TProfileData > = {
                     uri, id, info: parser.info(), bio: parser.bio(),
                     assets: parser.assets()
-                };
+                } as Partial< TProfileData >;
 
                 // Process profile using ProfileManager
                 const { profile, action } = ProfileManager.process(
-                    uri, id, profileData as Partial< TProfileData >, [], 'updateData'
+                    uri, id, profileData, [], 'updateData'
                 );
 
                 if ( ! profile ) {
@@ -74,6 +74,30 @@ export class RTBJob extends Job implements IJob {
 
                 ProfileManager.updateQueue( queue, profile, action, th );
                 profileData = profile.getData();
+
+                // Process realtime data
+                const prev = entries[ Number( i ) - 1 ]?.uri;
+                const next = entries[ Number( i ) + 1 ]?.uri;
+                const realtime = parser.realtime( profileData, prev, next );
+                const { value = 0, pct = 0 } = realtime?.today ?? {};
+
+                profile.updateData( { realtime } );
+                profile.addHistory( [ listDate, rank, networth, value, pct ] );
+                profile.save();
+                profileData = profile.getData();
+
+                // Push list item
+                items.push( {
+                    uri, rank, networth,
+                    today: realtime?.today,
+                    ytd: realtime?.ytd,
+                    name: profileData.info?.shortName ?? profileData.info?.name!,
+                    gender: profileData.info?.gender,
+                    age: parser.age(),
+                    citizenship: profileData.info?.citizenship,
+                    industry: profileData.info?.industry!,
+                    source: profileData.info?.source!
+                } );
             }
         } );
     }
