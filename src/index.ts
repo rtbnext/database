@@ -2,6 +2,7 @@ import { Config } from '@/core/Config';
 import { Fetch } from '@/core/Fetch';
 import { ListQueue, ProfileQueue } from '@/core/Queue';
 import { Storage } from '@/core/Storage';
+import { MoveJob } from '@/job/Move';
 import { QueueJob } from '@/job/Queue';
 import { StatsJob } from '@/job/Stats';
 import { WikiJob } from '@/job/Wiki';
@@ -59,6 +60,7 @@ export const utils: TUtils = {
 };
 
 export const jobs: TJobs = {
+    move: MoveJob,
     queue: QueueJob,
     stats: StatsJob,
     wiki: WikiJob
