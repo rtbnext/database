@@ -55,9 +55,11 @@ export class ProfileJob extends Job implements IJob {
                 }
 
                 // Process profile using ProfileManager
-                const { profile, action } = ProfileManager.process(
+                const { action } = ProfileManager.process(
                     uri, id, profileData, parser.aliases(), method
                 );
+
+                this.log( `Profile with uri ${uri} processed in ${action} mode` );
             }
         } );
     }
