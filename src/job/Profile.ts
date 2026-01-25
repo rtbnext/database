@@ -1,8 +1,11 @@
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
+
 import { Job, jobRunner } from '@/abstract/Job';
 import { Fetch } from '@/core/Fetch';
 import { ProfileQueue } from '@/core/Queue';
 import { IJob } from '@/interfaces/job';
 import { Parser } from '@/parser/Parser';
+import { ProfileParser } from '@/parser/ProfileParser';
 
 export class ProfileJob extends Job implements IJob {
 
@@ -20,11 +23,20 @@ export class ProfileJob extends Job implements IJob {
                 ? this.args.profile.split( ',' ).filter( Boolean )
                 : ProfileJob.queue.nextUri( Job.config.fetch.rateLimit.batchSize );
 
-            for ( const row of await ProfileJob.fetch.profile( ...batch ) ) {
-                if ( ! row?.success || ! row.data ) {
-                    this.log( 'Request failed', row, 'warn' );
+            for ( const raw of await ProfileJob.fetch.profile( ...batch ) ) {
+                if ( ! raw?.success || ! raw.data ) {
+                    this.log( 'Request failed', raw, 'warn' );
                     continue;
                 }
+
+                const parser = new ProfileParser( raw.data );
+                const uri = parser.uri();
+                const id = parser.id();
+                const aliases = parser.aliases();
+                const profileData: Partial< TProfileData > = {
+                    uri, id, info: parser.info(), bio: parser.bio(),
+                    related: parser.related(), media: parser.media()
+                };
             }
         } );
     }
