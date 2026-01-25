@@ -8,10 +8,14 @@ export class ProfileManager {
 
     // Lookup profile by URI and ID, or find a similar matching profile
 
-    public static lookup ( uri: string, id: string, profileData: Partial< TProfileData > ) : TProfileLookupResult {
-        let profile = Profile.find( uri );
-        const isExisting = profile && profile.verify( id );
-        const isSimilar = ! isExisting && !! ( profile = ProfileMerger.findMatching( profileData )[ 0 ] );
+    public static lookup (
+        uriLike: string, id?: string, profileData?: Partial< TProfileData >
+    ) : TProfileLookupResult {
+        let profile = Profile.find( uriLike );
+        const isExisting = profile && profile.verify( id ?? '' );
+        const isSimilar = ! isExisting && !! (
+            profile = ProfileMerger.findMatching( profileData ?? {} )[ 0 ]
+        );
 
         return { profile, isExisting, isSimilar };
     }
