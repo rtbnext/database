@@ -4,6 +4,7 @@ import { Snapshot } from '@/abstract/Snapshot';
 import { log } from '@/core/Logger';
 import { IList } from '@/interfaces/list';
 import { ListIndex } from '@/model/ListIndex';
+import { Utils } from '@/core/Utils';
 
 export class List extends Snapshot< TListSnapshot > implements IList {
 
@@ -32,8 +33,8 @@ export class List extends Snapshot< TListSnapshot > implements IList {
 
     // Save list snapshot
 
-    public saveSnapshot ( snapshot: TListSnapshot, force: boolean = false ) : boolean {
-        const res = super.saveSnapshot( snapshot, force );
+    public saveSnapshot ( snapshot: Omit< TListSnapshot, '@metadata' >, force: boolean = false ) : boolean {
+        const res = super.saveSnapshot( { ...Utils.metaData(), ...snapshot }, force );
         if ( ! res || ! List.index.update( this.uri, {
             date: snapshot.date,
             count: snapshot.stats.count
@@ -54,7 +55,7 @@ export class List extends Snapshot< TListSnapshot > implements IList {
     // Create new list
 
     public static create (
-        uriLike: any, data: TListIndexItem, snapshot?: TListSnapshot
+        uriLike: any, data: TListIndexItem, snapshot?: Omit< TListSnapshot, '@metadata' >
     ) : List | false {
         log.debug( `Creating List ${uriLike}` );
         return log.catch( () => {

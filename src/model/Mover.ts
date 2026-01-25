@@ -20,14 +20,14 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
             .slice( 0, 10 );
     }
 
-    private prepWinner ( snapshot: M.TMover ) : M.TMoverEntry[][] {
+    private prepWinner ( snapshot: Omit< M.TMover, '@metadata' > ) : M.TMoverEntry[][] {
         return [
             snapshot.today.networth.winner, snapshot.today.percent.winner,
             snapshot.ytd.networth.winner, snapshot.ytd.percent.winner
         ].map( a => this.prep( a, 'desc' ) );
     }
 
-    private prepLoser ( snapshot: M.TMover ) : M.TMoverEntry[][] {
+    private prepLoser ( snapshot: Omit< M.TMover, '@metadata' > ) : M.TMoverEntry[][] {
         return [
             snapshot.today.networth.loser, snapshot.today.percent.loser,
             snapshot.ytd.networth.loser, snapshot.ytd.percent.loser
@@ -36,13 +36,13 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
 
     // Save snapshot data
 
-    public saveSnapshot ( snapshot: M.TMover, force?: boolean ) : boolean {
+    public saveSnapshot ( snapshot: Omit< M.TMover, '@metadata' >, force?: boolean ) : boolean {
         const winner = this.prepWinner( snapshot );
         const loser = this.prepLoser( snapshot );
 
         return super.saveSnapshot( {
             ...Utils.metaData(),
-            ...Parser.container< Partial< M.TMover > >( {
+            ...Parser.container< Omit< M.TMover, '@metadata' > >( {
                 date: { value: snapshot.date, type: 'date' },
                 today: { value: Parser.container< M.TMoverItem >( {
                     networth: { value: Parser.container< M.TMoverSubject >( {
