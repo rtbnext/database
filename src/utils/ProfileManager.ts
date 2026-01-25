@@ -6,7 +6,7 @@ import { ProfileMerger } from '@/utils/ProfileMerger';
 
 export class ProfileManager {
 
-    // Private helper
+    // Private helpers
 
     private static execute (
         lookup: TProfileLookupResult, uriLike: string, profileData: Partial< TProfileData >,
@@ -27,6 +27,10 @@ export class ProfileManager {
         }
 
         return Profile.create( uriLike, profileData as TProfileData, [], aliases );
+    }
+
+    private static handleURIChange ( profile: Profile, newUri: string, makeAlias: boolean = true ) : boolean {
+        return profile.getUri() !== newUri ? profile.move( newUri, makeAlias ) : false;
     }
 
     // Lookup profile by URI and ID, or find a similar matching profile
