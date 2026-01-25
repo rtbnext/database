@@ -4,7 +4,7 @@ import { Snapshot } from '@/abstract/Snapshot';
 import { Utils } from '@/core/Utils';
 import { IMover } from '@/interfaces/mover';
 import { Parser } from '@/parser/Parser';
-import { TRealtime } from '@rtbnext/schema/src/abstract/assets';
+import { TChangeItem, TRealtime } from '@rtbnext/schema/src/abstract/assets';
 
 export class Mover extends Snapshot< M.TMover > implements IMover {
 
@@ -46,6 +46,10 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
             ...Parser.container< Omit< M.TMover, '@metadata' > >( {
                 date: { value: snapshot.date, type: 'date' },
                 today: { value: Parser.container< M.TMoverItem >( {
+                    total: { value: Parser.container< TChangeItem >( {
+                        value: { value: snapshot.today.total.value, type: 'money' },
+                        pct: { value: snapshot.today.total.pct, type: 'pct' }
+                    } ), type: 'container' },
                     networth: { value: Parser.container< M.TMoverSubject >( {
                         winner: { value: winner[ 0 ], type: 'money' },
                         loser: { value: loser[ 0 ], type: 'money' }
@@ -56,6 +60,10 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
                     } ), type: 'container' }
                 } ), type: 'container' },
                 ytd: { value: Parser.container< M.TMoverItem >( {
+                    total: { value: Parser.container< TChangeItem >( {
+                        value: { value: snapshot.ytd.total.value, type: 'money' },
+                        pct: { value: snapshot.ytd.total.pct, type: 'pct' }
+                    } ), type: 'container' },
                     networth: { value: Parser.container< M.TMoverSubject >( {
                         winner: { value: winner[ 2 ], type: 'money' },
                         loser: { value: loser[ 2 ], type: 'money' }
@@ -83,12 +91,16 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
     ) : void {
         if ( data?.today?.value ) {
             const type = data.today.value > 0 ? 'winner' : 'loser';
+            col.today.total.value += data.today.value;
+            col.today.total.pct += data.today.pct;
             col.today.networth[ type ].push( { uri, name, value: data.today.value } );
             col.today.percent[ type ].push( { uri, name, value: data.today.pct } );
         }
 
         if ( data?.ytd?.value ) {
             const type = data.ytd.value > 0 ? 'winner' : 'loser';
+            col.ytd.total.value += data.ytd.value;
+            col.ytd.total.pct += data.ytd.pct;
             col.ytd.networth[ type ].push( { uri, name, value: data.ytd.value } );
             col.ytd.percent[ type ].push( { uri, name, value: data.ytd.pct } );
         }
@@ -99,8 +111,16 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
     public static factory ( date?: any ) : Omit< M.TMover, '@metadata' > {
         return {
             date: Parser.date( date ?? new Date(), 'ymd' )!,
-            today: { networth: { winner: [], loser: [] }, percent: { winner: [], loser: [] } },
-            ytd: { networth: { winner: [], loser: [] }, percent: { winner: [], loser: [] } }
+            today: {
+                total: { value: 0, pct: 0 },
+                networth: { winner: [], loser: [] },
+                percent: { winner: [], loser: [] }
+            },
+            ytd: {
+                total: { value: 0, pct: 0 },
+                networth: { winner: [], loser: [] },
+                percent: { winner: [], loser: [] }
+            }
         };
     }
 
