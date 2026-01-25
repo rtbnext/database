@@ -2,6 +2,7 @@ import { Config } from '@/core/Config';
 import { Fetch } from '@/core/Fetch';
 import { ListQueue, ProfileQueue } from '@/core/Queue';
 import { Storage } from '@/core/Storage';
+import { MergeJob } from '@/job/Merge';
 import { MoveJob } from '@/job/Move';
 import { QueueJob } from '@/job/Queue';
 import { StatsJob } from '@/job/Stats';
@@ -60,6 +61,7 @@ export const utils: TUtils = {
 };
 
 export const jobs: TJobs = {
+    merge: MergeJob,
     move: MoveJob,
     queue: QueueJob,
     stats: StatsJob,
