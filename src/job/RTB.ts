@@ -1,4 +1,5 @@
 import { TRTBListItem } from '@rtbnext/schema/src/model/list';
+import { TProfileData } from '@rtbnext/schema/src/model/profile';
 
 import { Job, jobRunner } from '@/abstract/Job';
 import { Fetch } from '@/core/Fetch';
@@ -7,7 +8,9 @@ import { IJob } from '@/interfaces/job';
 import { Stats } from '@/model/Stats';
 import { ListParser } from '@/parser/ListParser';
 import { Parser } from '@/parser/Parser';
+import { TQueueOptions } from '@/types/queue';
 import { TListResponse } from '@/types/response';
+import { ProfileManager } from '@/utils/ProfileManager';
 
 export class RTBJob extends Job implements IJob {
 
@@ -37,21 +40,40 @@ export class RTBJob extends Job implements IJob {
             this.log( `Processing RTB list dated ${listDate} (${entries.length} items)` );
 
             const items: TRTBListItem[] = [];
+            const queue: TQueueOptions[] = [];
 
             for ( const [ i, raw ] of Object.entries( entries ) ) {
                 raw.date = new Date( listDate ).getTime();
+
+                // Parse raw list data
                 const parser = new ListParser( raw );
                 const uri = parser.uri();
                 const id = parser.id();
                 const rank = parser.rank();
                 const networth = parser.networth();
 
-                if ( ! rank || ! networth ) continue;
+                if ( ! rank || ! networth ) {
+                    this.log( `Skipping invalid RTB entry for ${uri}` );
+                    continue;
+                }
 
                 let profileData = {
                     uri, id, info: parser.info(), bio: parser.bio(),
                     assets: parser.assets()
                 };
+
+                // Process profile using ProfileManager
+                const { profile, action } = ProfileManager.process(
+                    uri, id, profileData as Partial< TProfileData >, [], 'updateData'
+                );
+
+                if ( ! profile ) {
+                    this.log( `Failed to process profile for ${uri}` );
+                    continue;
+                }
+
+                ProfileManager.updateQueue( queue, profile, action, th );
+                profileData = profile.getData();
             }
         } );
     }
