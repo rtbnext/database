@@ -24,6 +24,14 @@ export class RTBJob extends Job implements IJob {
             const { date } = RTBJob.stats.getGlobalStats();
             const listDate = Parser.date( this.args.date ?? new Date(), 'ymd' )!;
             if ( date === listDate ) throw new Error( 'RTB list is already up to date' );
+
+            const raw = res.data.personList.personsLists;
+            const th = Date.now() - Job.config.queue.tsThreshold;
+            const entries = raw.filter( i => i.rank && i.finalWorth ).filter( Boolean ).sort(
+                ( a, b ) => a.rank! - b.rank!
+            );
+
+            this.log( `Processing RTB list dated ${listDate} (${entries.length} items)` );
         } );
     }
 
