@@ -1,3 +1,4 @@
+import { TChangeItem } from '@rtbnext/schema/src/abstract/assets';
 import { TRTBListItem } from '@rtbnext/schema/src/model/list';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import { TGenericStats } from '@rtbnext/schema/src/model/stats';
@@ -7,6 +8,7 @@ import { Fetch } from '@/core/Fetch';
 import { ProfileQueue } from '@/core/Queue';
 import { IJob } from '@/interfaces/job';
 import { List } from '@/model/List';
+import { ProfileIndex } from '@/model/ProfileIndex';
 import { Mover } from '@/model/Mover';
 import { Stats } from '@/model/Stats';
 import { ListParser } from '@/parser/ListParser';
@@ -133,12 +135,27 @@ export class RTBJob extends Job implements IJob {
                 count: { value: count, type: 'number' },
                 total: { value: total, type: 'money' },
                 woman: { value: woman, type: 'number' },
-                quota: { value: ( woman / count ) * 100, type: 'pct' }
+                quota: { value: ( woman / count ) * 100, type: 'pct' },
+                today: { value: Parser.container< TChangeItem >( {
+                    value: { value: mover.today.total.value, type: 'money' },
+                    pct: { value: mover.today.total.pct, type: 'pct' }
+                } ), type: 'container' },
+                ytd: { value: Parser.container< TChangeItem >( {
+                    value: { value: mover.today.total.value, type: 'money' },
+                    pct: { value: mover.today.total.pct, type: 'pct' }
+                } ), type: 'container' }
             } );
+
+            const globalStats = { ...stats, stats: {
+                profiles: ProfileIndex.getInstance().size(),
+                days: list.getDates().length
+            } };
 
             list.saveSnapshot( { date: listDate, count, items, stats } );
             Mover.getInstance().saveSnapshot( mover );
             RTBJob.queue.addMany( queue );
+            RTBJob.stats.setGlobalStats( globalStats );
+            RTBJob.stats.updateHistory( globalStats );
         } );
     }
 
