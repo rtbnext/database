@@ -35,7 +35,6 @@ export class ProfileJob extends Job implements IJob {
                 const parser = new ProfileParser( raw.data );
                 const uri = parser.uri();
                 const id = parser.id();
-                const aliases = parser.aliases();
                 const profileData: Partial< TProfileData > = {
                     uri, id, info: parser.info(), bio: parser.bio(),
                     related: parser.related(), media: parser.media()
@@ -54,6 +53,11 @@ export class ProfileJob extends Job implements IJob {
                     profileData.wiki = wiki ? await Wiki.queryWikiPage( wiki.uri )
                         : await Wiki.fromProfileData( profileData );
                 }
+
+                // Process profile using ProfileManager
+                const { profile, action } = ProfileManager.process(
+                    uri, id, profileData, parser.aliases(), method
+                );
             }
         } );
     }
