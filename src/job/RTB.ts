@@ -1,5 +1,4 @@
 import { TRTBListItem } from '@rtbnext/schema/src/model/list';
-import { TMover } from '@rtbnext/schema/src/model/mover';
 import { TProfileData } from '@rtbnext/schema/src/model/profile';
 import { TGenericStats } from '@rtbnext/schema/src/model/stats';
 
@@ -46,7 +45,7 @@ export class RTBJob extends Job implements IJob {
             // Process list data
             let count = 0, total = 0, woman = 0;
             const items: TRTBListItem[] = [];
-            const mover: Partial< TMover > = {};
+            const mover = Mover.factory( listDate );
             const queue: TQueueOptions[] = [];
 
             for ( const [ i, raw ] of Object.entries( entries ) ) {
@@ -138,7 +137,7 @@ export class RTBJob extends Job implements IJob {
             } );
 
             list.saveSnapshot( { date: listDate, count, items, stats } );
-            Mover.getInstance().saveSnapshot( { date: listDate, ...mover as any } );
+            Mover.getInstance().saveSnapshot( mover );
             RTBJob.queue.addMany( queue );
         } );
     }
