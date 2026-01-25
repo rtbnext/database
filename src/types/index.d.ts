@@ -9,6 +9,7 @@ import { IStats } from '@/interfaces/stats';
 import { ListParser } from '@/parser/ListParser';
 import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
+import { ProfileManager } from '@/utils/ProfileManager';
 import { ProfileMerger } from '@/utils/ProfileMerger';
 import { Ranking } from '@/utils/Ranking';
 
@@ -38,6 +39,7 @@ export interface TParser {
 }
 
 export interface TUtils {
+    readonly profileManager: typeof ProfileManager;
     readonly profileMerger: typeof ProfileMerger;
     readonly ranking: typeof Ranking;
 }

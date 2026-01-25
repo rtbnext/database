@@ -17,6 +17,7 @@ import { Parser } from '@/parser/Parser';
 import { ProfileParser } from '@/parser/ProfileParser';
 import { TIndex, TModel, TParser, TServices, TUtils } from '@/types/index';
 import { TJobs } from '@/types/job';
+import { ProfileManager } from '@/utils/ProfileManager';
 import { ProfileMerger } from '@/utils/ProfileMerger';
 import { Ranking } from '@/utils/Ranking';
 
@@ -56,6 +57,7 @@ export const parser: TParser = {
 };
 
 export const utils: TUtils = {
+    profileManager: ProfileManager,
     profileMerger: ProfileMerger,
     ranking: Ranking
 };
