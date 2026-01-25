@@ -79,21 +79,29 @@ export class Mover extends Snapshot< M.TMover > implements IMover {
 
     public static aggregate (
         data: TRealtime | undefined, uri: string, name: string,
-        col: Partial< M.TMover > = {}
+        col: Omit< M.TMover, '@metadata' >
     ) : void {
-        const i = { uri, name };
-        col.today ||= { networth: { winner: [], loser: [] }, percent: { winner: [], loser: [] } };
-        col.ytd ||= { networth: { winner: [], loser: [] }, percent: { winner: [], loser: [] } };
-
         if ( data?.today?.value ) {
-            col.today.networth[ data.today.value > 0 ? 'winner' : 'loser' ].push( { ...i, value: data.today.value } );
-            col.today.percent[ data.today.pct > 0 ? 'winner' : 'loser' ].push( { ...i, value: data.today.pct } );
+            const type = data.today.value > 0 ? 'winner' : 'loser';
+            col.today.networth[ type ].push( { uri, name, value: data.today.value } );
+            col.today.percent[ type ].push( { uri, name, value: data.today.pct } );
         }
 
         if ( data?.ytd?.value ) {
-            col.ytd.networth[ data.ytd.value > 0 ? 'winner' : 'loser' ].push( { ...i, value: data.ytd.value } );
-            col.ytd.percent[ data.ytd.pct > 0 ? 'winner' : 'loser' ].push( { ...i, value: data.ytd.pct } );
+            const type = data.ytd.value > 0 ? 'winner' : 'loser';
+            col.ytd.networth[ type ].push( { uri, name, value: data.ytd.value } );
+            col.ytd.percent[ type ].push( { uri, name, value: data.ytd.pct } );
         }
+    }
+
+    // Factory method
+
+    public static factory ( date?: any ) : Omit< M.TMover, '@metadata' > {
+        return {
+            date: Parser.date( date ?? new Date(), 'ymd' )!,
+            today: { networth: { winner: [], loser: [] }, percent: { winner: [], loser: [] } },
+            ytd: { networth: { winner: [], loser: [] }, percent: { winner: [], loser: [] } }
+        };
     }
 
 }
