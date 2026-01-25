@@ -48,7 +48,10 @@ export class RTBJob extends Job implements IJob {
 
                 if ( ! rank || ! networth ) continue;
 
-                // ...
+                let profileData = {
+                    uri, id, info: parser.info(), bio: parser.bio(),
+                    assets: parser.assets()
+                };
             }
         } );
     }
