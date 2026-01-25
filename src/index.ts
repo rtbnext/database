@@ -7,6 +7,7 @@ import { MergeJob } from '@/job/Merge';
 import { MoveJob } from '@/job/Move';
 import { ProfileJob } from '@/job/Profile';
 import { QueueJob } from '@/job/Queue';
+import { RTBJob } from '@/job/RTB';
 import { StatsJob } from '@/job/Stats';
 import { WikiJob } from '@/job/Wiki';
 import { Filter } from '@/model/Filter';
@@ -70,6 +71,7 @@ export const jobs: TJobs = {
     move: MoveJob,
     profile: ProfileJob,
     queue: QueueJob,
+    rtb: RTBJob,
     stats: StatsJob,
     wiki: WikiJob
 };
