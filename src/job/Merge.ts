@@ -1,5 +1,6 @@
 import { Job, jobRunner } from '@/abstract/Job';
 import { IJob } from '@/interfaces/job';
+import { Profile } from '@/model/Profile';
 import { ProfileMerger } from '@/utils/ProfileMerger';
 
 export class MergeJob extends Job implements IJob {
@@ -14,6 +15,12 @@ export class MergeJob extends Job implements IJob {
             if ( ! list.length ) console.log( ' - None' );
             for ( const candidate of list ) console.log( ` - ${candidate}` );
         }
+    }
+
+    private isMergeable ( target: Profile, source: Profile ) : void {
+        const test = ProfileMerger.mergeableProfiles( target.getData(), source.getData() );
+        if ( test ) console.log( `Profiles ${ target.getUri() } and ${ source.getUri() } are mergeable.` );
+        else console.log( `Profiles ${ target.getUri() } and ${ source.getUri() } are NOT mergeable.` );
     }
 
     public async run () : Promise< void > {
