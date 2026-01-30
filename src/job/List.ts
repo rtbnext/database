@@ -2,6 +2,7 @@ import { Job, jobRunner } from '@/abstract/Job';
 import { Fetch } from '@/core/Fetch';
 import { ListQueue } from '@/core/Queue';
 import { IJob } from '@/interfaces/job';
+import { TListResponse } from '@/types/response';
 
 export class ListJob extends Job implements IJob {
 
@@ -19,7 +20,9 @@ export class ListJob extends Job implements IJob {
                 return;
             }
 
-            const list = ListJob.queue.nextUri( 1 );
+            const item = ListJob.queue.next( 1 )[ 0 ];
+            const { name, desc, year } = item.args as { name: string, desc: string, year: string };
+            const res = await ListJob.fetch.list< TListResponse >( name, year );
         } );
     }
 
