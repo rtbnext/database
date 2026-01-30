@@ -74,7 +74,11 @@ export class ListJob extends Job implements IJob {
 
                 ProfileManager.updateQueue( queue, profile, action, th );
                 profileData = profile.getData();
+
+                // ...
             }
+
+            // ...
         } );
     }
 
