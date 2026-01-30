@@ -25,7 +25,12 @@ export class ListJob extends Job implements IJob {
             const res = await ListJob.fetch.list< TListResponse >( name, year );
             if ( ! res?.success || ! res.data ) throw new Error( 'Request failed' );
 
-            // ...
+            const rawList = res.data.personList.personsLists;
+            const entries = rawList.filter( i => i.rank && i.finalWorth ).filter( Boolean ).sort(
+                ( a, b ) => a.rank! - b.rank!
+            );
+
+            this.log( `Processing "${name}" list from ${year} (${entries.length} items)` );
         } );
     }
 
