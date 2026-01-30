@@ -5,6 +5,7 @@ import { Fetch } from '@/core/Fetch';
 import { ListQueue } from '@/core/Queue';
 import { IJob } from '@/interfaces/job';
 import { ListParser } from '@/parser/ListParser';
+import { Parser } from '@/parser/Parser';
 import { TQueueOptions } from '@/types/queue';
 import { TListResponse } from '@/types/response';
 
@@ -36,12 +37,11 @@ export class ListJob extends Job implements IJob {
 
             this.log( `Processing "${name}" list from ${year} (${entries.length} items)` );
 
+            let listDate = Parser.date( entries[ 0 ].date || entries[ 0 ].timestamp, 'ymd' )!;
             const items: TListItem[] = [];
             const queue: TQueueOptions[] = [];
-            let date: string;
 
             for ( const [ i, raw ] of Object.entries( entries ) ) {
-                // Parse raw list data
                 const parser = new ListParser( raw );
                 const uri = parser.uri();
                 const id = parser.id();
