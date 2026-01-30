@@ -20,7 +20,7 @@ export class ListJob extends Job implements IJob {
 
     public async run () : Promise< void > {
         await this.protect( async () => {
-            if ( ListJob.queue.size() < 1 ) {
+            if ( ! ListJob.queue.size() ) {
                 this.log( `No items in the list queue to process.` );
                 return;
             }
@@ -35,6 +35,7 @@ export class ListJob extends Job implements IJob {
                 ( a, b ) => a.rank! - b.rank!
             );
 
+            if ( ! entries.length ) throw new Error( 'No valid entries found in the list' );
             this.log( `Processing "${name}" list from ${year} (${entries.length} items)` );
 
             let listDate = Parser.date( entries[ 0 ].date || entries[ 0 ].timestamp, 'ymd' )!;
