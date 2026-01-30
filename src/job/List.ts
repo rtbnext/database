@@ -12,7 +12,16 @@ export class ListJob extends Job implements IJob {
         super( args, 'List' );
     }
 
-    public async run () : Promise< void > {}
+    public async run () : Promise< void > {
+        await this.protect( async () => {
+            if ( ListJob.queue.size() < 1 ) {
+                this.log( `No items in the list queue to process.` );
+                return;
+            }
+
+            const list = ListJob.queue.nextUri( 1 );
+        } );
+    }
 
 }
 
